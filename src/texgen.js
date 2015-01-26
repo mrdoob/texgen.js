@@ -250,3 +250,82 @@ TG.Rect = function () {
 		}
 	} );
 }
+
+TG.Flare = function () {
+
+	var type = 0;
+	var radius = [ 128, 128 ];
+	var position = [ 128, 128 ];
+	var alpha = 1;
+	var gamma = 1;
+	var degree = 1;
+
+	return new TG.Program( {
+		radius: function ( radiusX, radiusY ) {
+						
+			if ( typeof radiusY === 'undefined')
+				radiusY = radiusX;
+
+			radius = [ radiusX, radiusY ];
+
+			return this;
+		},
+		position: function(x,y) {
+			position = [ x, y ];
+			return this;
+		},
+		type: function ( value ) {
+			type = value;
+			return this;
+		},
+		degree: function ( value ) {
+			degree = value;
+			return this;
+		},
+		getSource: function () {
+			
+			var source = 'var dx = ' + position[ 0 ] + ' - x, dy = ' + position[ 1 ] + ' - y; ';
+			source += 'var d = Math.sqrt( dx * dx / ' + radius[ 0 ]*radius[ 0 ] + ' + dy * dy / ' + radius[ 1 ]*radius[ 1 ] +');';
+
+			switch (type) {
+				
+				case 0:
+					source += 'var color = (1-d);'
+					source += 'color *= 1-TG.Utils.smoothStep(1-.01, 1+.02, d);'
+					break;
+				case 1:
+					source += 'var color = d'+ Array( degree ).join( '*d' ) + ';';
+					source += 'color *= 1-TG.Utils.smoothStep(1-.01, 1+.02, d);'
+					break;
+				case 2:
+					source += 'var color = 1-Math.abs(d-0.9)/0.1;'
+					source += 'if (color < 0) color = 0;'
+					source += 'color = color'+ Array( degree ).join( '*color' ) + ';'
+					break;
+			}
+
+			return source;
+		}
+	} );
+
+};
+
+
+// Utils
+TG.Utils = {};
+
+TG.Utils.smoothStep = function ( edge0, edge1, x )
+{
+    // Scale, bias and saturate x to 0..1 range
+    x = TG.Utils.clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 ); 
+    
+	// Evaluate polynomial
+    return x * x * ( 3 - 2 * x );
+}
+
+
+TG.Utils.clamp = function( value, min, max ) {
+
+  return Math.min( Math.max( value, min ), max );
+  
+};

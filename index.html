@@ -140,6 +140,54 @@
 
 			document.body.appendChild( texture );
 
+			//
+
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Rect().set( 50, 20, 200, 150 ) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
+			//
+
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Flare().type( 0 ).position( 128, 128 ).radius( 128 ) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Flare().type( 1 ).radius( 128 ) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
+
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Flare().type( 1 ).radius( 128 ).degree( 6 ) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Flare().type( 2 ).radius( 128 ).degree( 4 ) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
+/*			
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Flare().type( 2 ) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
+				var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Flare().type( 3 ).radius(100) )
+				.toCanvas();
+*/
+			document.body.appendChild( texture );
+
 		</script>
 	</body>
 </html>
