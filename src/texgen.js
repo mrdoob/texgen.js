@@ -198,29 +198,22 @@ TG.Noise = function () {
 
 };
 
-TG.Checkboard = function () {
+TG.CheckerBoard = function () {
 
-	var dx = 32;
-	var dy = 32;
-	var rowShift = 0;
-	
+	var size = [ 32, 32 ];
+	var offset = [ 0, 0 ];
+
 	return new TG.Program( {
-		dx: function ( value ) {
-			dx = value;
+		size: function ( x, y ) {
+			size = [ x, y ];
 			return this;
 		},
-		dy: function ( value ) {
-			dy = value;
-			return this;
-		},
-		rowShift: function ( value ) {
-			rowShift = value;
+		offset: function ( x, y ) {
+			offset = [ x, y ];
 			return this;
 		},
 		getSource: function () {
-
-			return 'var color = ( ( ( y / ' + dy + ' ) & 1 ) ^ ( ( (x + parseInt( y / ' + dy + ' ) * ' + rowShift + ' ) / '+ dx + ' ) & 1 ) ) ? 0 : 1';
-			
+			return 'var color = ( ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' ) / ' + size[ 0 ] + ' ) & 1 ) ) ? 0 : 1';
 		}
 	} );
 }
@@ -231,11 +224,11 @@ TG.Rect = function () {
 	var right = 255;
 	var top = 0;
 	var bottom = 255;
-	
-	
+
+
 	return new TG.Program( {
 		set: function ( newLeft, newTop, newRight, newBottom ) {
-			
+
 			left = newLeft;
 			right = newRight;
 			top = newTop;
@@ -246,7 +239,7 @@ TG.Rect = function () {
 		getSource: function () {
 
 			return 'var color =  ( (x >= '+ left +') && (x <= '+ right +') && (y <= '+ bottom +') && (y >= '+ top +') ) ? 1 : 0;';
-			
+
 		}
 	} );
 }
