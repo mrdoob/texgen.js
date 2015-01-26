@@ -10,6 +10,7 @@ TG.Texture = function ( width, height ) {
 	this.height = height;
 
 	this.array = new Float32Array( width * height * 4 );
+	this.arrayCopy = new Float32Array( width * height * 4 );
 
 	return this;
 
@@ -26,18 +27,20 @@ TG.Texture.prototype = {
 		var color = program.getColor();
 		var source = program.getSource();
 
+		this.arrayCopy.set( this.array );
+
 		var string = [
 			'var x = 0, y = 0;',
-			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
+			'for ( var i = 0, il = dst.length; i < il; i += 4 ) {',
 				'	' + source,
-				color[ 0 ] !== 0 ? '	array[ i + 0 ] ' + operation + '= color * ' + color[ 0 ] + ';' : '',
-				color[ 1 ] !== 0 ? '	array[ i + 1 ] ' + operation + '= color * ' + color[ 1 ] + ';' : '',
-				color[ 2 ] !== 0 ? '	array[ i + 2 ] ' + operation + '= color * ' + color[ 2 ] + ';' : '',
+				color[ 0 ] !== 0 ? '	dst[ i + 0 ] ' + operation + '= color * ' + color[ 0 ] + ';' : '',
+				color[ 1 ] !== 0 ? '	dst[ i + 1 ] ' + operation + '= color * ' + color[ 1 ] + ';' : '',
+				color[ 2 ] !== 0 ? '	dst[ i + 2 ] ' + operation + '= color * ' + color[ 2 ] + ';' : '',
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
 
-		new Function( 'array, width, height', string )( this.array, this.width, this.height );
+		new Function( 'dst, src, width, height', string )( this.array, this.arrayCopy, this.width, this.height );
 
 		return this;
 
