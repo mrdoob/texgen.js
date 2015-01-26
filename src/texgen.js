@@ -220,25 +220,21 @@ TG.CheckerBoard = function () {
 
 TG.Rect = function () {
 
-	var left = 0;
-	var right = 255;
-	var top = 0;
-	var bottom = 255;
-
+	var position = [ 0, 0 ];
+	var size = [ 32, 32 ];
 
 	return new TG.Program( {
-		set: function ( newLeft, newTop, newRight, newBottom ) {
-
-			left = newLeft;
-			right = newRight;
-			top = newTop;
-			bottom = newBottom;
-
+		position: function ( x, y ) {
+			position = [ x, y ];
+			return this;
+		},
+		size: function ( x, y ) {
+			size = [ x, y ];
 			return this;
 		},
 		getSource: function () {
 
-			return 'var color =  ( (x >= '+ left +') && (x <= '+ right +') && (y <= '+ bottom +') && (y >= '+ top +') ) ? 1 : 0;';
+			return 'var color =  ( (x >= '+ position[ 0 ] +') && (x <= '+ ( position[ 0 ] + size[ 0 ] ) +') && (y <= '+ ( position[ 1 ] + size[ 1 ] ) +') && (y >= '+ position[ 1 ] +') ) ? 1 : 0;';
 
 		}
 	} );
