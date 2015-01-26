@@ -213,7 +213,7 @@ TG.CheckerBoard = function () {
 			return this;
 		},
 		getSource: function () {
-			return 'var color = ( ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' ) / ' + size[ 0 ] + ' ) & 1 ) ) ? 0 : 1';
+			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
 		}
 	} );
 }
@@ -234,7 +234,7 @@ TG.Rect = function () {
 		},
 		getSource: function () {
 
-			return 'var color =  ( (x >= '+ position[ 0 ] +') && (x <= '+ ( position[ 0 ] + size[ 0 ] ) +') && (y <= '+ ( position[ 1 ] + size[ 1 ] ) +') && (y >= '+ position[ 1 ] +') ) ? 1 : 0;';
+			return 'var color = ( x >= ' + position[ 0 ] + ' && x <= ' + ( position[ 0 ] + size[ 0 ] ) + ' && y <= ' + ( position[ 1 ] + size[ 1 ] ) + ' && y >= ' + position[ 1 ] + ' ) ? 1 : 0;';
 
 		}
 	} );
