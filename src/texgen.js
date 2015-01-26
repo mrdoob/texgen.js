@@ -39,7 +39,7 @@ TG.Texture.prototype = {
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
-
+		
 		new Function( 'dst, src, width, height', string )( this.array, this.arrayCopy, this.width, this.height );
 
 		return this;
@@ -228,7 +228,7 @@ TG.CheckerBoard = function () {
 		getSource: function () {
 
 			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
-			
+
 		}
 	} );
 
@@ -314,6 +314,31 @@ TG.Flare = function () {
 	} );
 
 };
+
+TG.SineDistort = function () {
+
+	var numSines = [20,10];
+	var offset = [0,0];
+	var amplitude = [10,10];
+
+	return new TG.Program( {
+		position: function ( x, y ) {
+			position = [ x, y ];
+			return this;
+		},
+		size: function ( x, y ) {
+			size = [ x, y ];
+			return this;
+		},
+		getSource: function () {
+			return [
+				'var sx = Math.sin('+numSines[ 0 ]/100+' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
+				'var sy = Math.sin('+numSines[ 1 ]/100+' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
+				'var color = src[ parseInt(sy) * width * 4 + parseInt(sx) * 4 ];'
+				].join( '\n' );
+		}
+	} );
+}
 
 
 // Utils

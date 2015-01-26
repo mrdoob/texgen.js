@@ -177,6 +177,7 @@
 			
 			var texture = new TG.Texture( 256, 256 )
 				.add( new TG.CheckerBoard().rowShift(10) )
+				.pass( new TG.SineDistort())
 				.toCanvas();
 
 			document.body.appendChild( texture );
