@@ -197,3 +197,30 @@ TG.Noise = function () {
 	} );
 
 };
+
+TG.Checkboard = function () {
+
+	var dx = 32;
+	var dy = 32;
+	var rowShift = 0;
+	
+	return new TG.Program( {
+		dx: function ( value ) {
+			dx = value;
+			return this;
+		},
+		dy: function ( value ) {
+			dy = value;
+			return this;
+		},
+		rowShift: function ( value ) {
+			rowShift = value;
+			return this;
+		},
+		getSource: function () {
+
+			return 'var color = ( ( ( y / ' + dy + ' ) & 1 ) ^ ( ( (x + parseInt( y / ' + dy + ' ) * ' + rowShift + ' ) / '+ dx + ' ) & 1 ) ) ? 0 : 1';
+			
+		}
+	} );
+}
