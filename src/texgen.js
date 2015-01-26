@@ -289,7 +289,7 @@ TG.Flare = function () {
 					source += 'color *= 1-TG.Utils.smoothStep(1-.01, 1+.02, d);'
 					break;
 				case 1:
-					source += 'var color = d'+ Array( degree ).join( '*d' ) + ';';
+					source += 'var color = Math.pow(d, ' + degree + ');';
 					source += 'color *= 1-TG.Utils.smoothStep(1-.01, 1+.02, d);'
 					break;
 				case 2:
