@@ -172,6 +172,15 @@
 
 			document.body.appendChild( texture );
 
+
+			//
+			
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.CheckerBoard().rowShift(10) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
 		</script>
 	</body>
 </html>
