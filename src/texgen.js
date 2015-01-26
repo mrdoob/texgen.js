@@ -66,19 +66,14 @@ TG.Texture.prototype = {
 		return this.pass( program, '/' );
 
 	},
-
-	toCanvas: function () {
+  
+  toImageData: function(context) {
 
 		var width = this.width;
 		var height = this.height;
 
 		var array = this.array;
 
-		var canvas = document.createElement( 'canvas' );
-		canvas.width = width;
-		canvas.height = height;
-
-		var context = canvas.getContext( '2d' );
 		var imagedata = context.createImageData( width, height );
 		var data = imagedata.data;
 
@@ -90,6 +85,19 @@ TG.Texture.prototype = {
 			data[ i + 3 ] = 255;
 
 		}
+
+    return imagedata;
+
+  },
+
+	toCanvas: function () {
+
+		var canvas = document.createElement( 'canvas' );
+		canvas.width = this.width;
+		canvas.height = this.height;
+
+		var context = canvas.getContext( '2d' );
+		var imagedata = this.toImageData(context);
 
 		context.putImageData( imagedata, 0, 0 );
 
