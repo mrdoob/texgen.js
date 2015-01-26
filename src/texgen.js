@@ -67,29 +67,34 @@ TG.Texture.prototype = {
 
 	},
 
-	toCanvas: function () {
-
-		var width = this.width;
-		var height = this.height;
+	toImageData: function ( context ) {
 
 		var array = this.array;
 
-		var canvas = document.createElement( 'canvas' );
-		canvas.width = width;
-		canvas.height = height;
-
-		var context = canvas.getContext( '2d' );
-		var imagedata = context.createImageData( width, height );
+		var imagedata = context.createImageData( this.width, this.height );
 		var data = imagedata.data;
 
 		for ( var i = 0, il = array.length; i < il; i += 4 ) {
 
-			data[ i     ] = array[ i     ] * 255;
+			data[ i		 ] = array[ i		 ] * 255;
 			data[ i + 1 ] = array[ i + 1 ] * 255;
 			data[ i + 2 ] = array[ i + 2 ] * 255;
 			data[ i + 3 ] = 255;
 
 		}
+
+		return imagedata;
+
+	},
+
+	toCanvas: function () {
+
+		var canvas = document.createElement( 'canvas' );
+		canvas.width = this.width;
+		canvas.height = this.height;
+
+		var context = canvas.getContext( '2d' );
+		var imagedata = this.toImageData( context );
 
 		context.putImageData( imagedata, 0, 0 );
 
@@ -198,55 +203,45 @@ TG.Noise = function () {
 
 };
 
-TG.Checkboard = function () {
+TG.CheckerBoard = function () {
 
-	var dx = 32;
-	var dy = 32;
-	var rowShift = 0;
-	
+	var size = [ 32, 32 ];
+	var offset = [ 0, 0 ];
+
 	return new TG.Program( {
-		dx: function ( value ) {
-			dx = value;
+		size: function ( x, y ) {
+			size = [ x, y ];
 			return this;
 		},
-		dy: function ( value ) {
-			dy = value;
-			return this;
-		},
-		rowShift: function ( value ) {
-			rowShift = value;
+		offset: function ( x, y ) {
+			offset = [ x, y ];
 			return this;
 		},
 		getSource: function () {
-
-			return 'var color = ( ( ( y / ' + dy + ' ) & 1 ) ^ ( ( (x + parseInt( y / ' + dy + ' ) * ' + rowShift + ' ) / '+ dx + ' ) & 1 ) ) ? 0 : 1';
-			
+			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
 		}
 	} );
-}
+
+};
 
 TG.Rect = function () {
 
-	var left = 0;
-	var right = 255;
-	var top = 0;
-	var bottom = 255;
-	
-	
-	return new TG.Program( {
-		set: function ( newLeft, newTop, newRight, newBottom ) {
-			
-			left = newLeft;
-			right = newRight;
-			top = newTop;
-			bottom = newBottom;
+	var position = [ 0, 0 ];
+	var size = [ 32, 32 ];
 
+	return new TG.Program( {
+		position: function ( x, y ) {
+			position = [ x, y ];
+			return this;
+		},
+		size: function ( x, y ) {
+			size = [ x, y ];
 			return this;
 		},
 		getSource: function () {
 
-			return 'var color =  ( (x >= '+ left +') && (x <= '+ right +') && (y <= '+ bottom +') && (y >= '+ top +') ) ? 1 : 0;';
-			
+			return 'var color = ( x >= ' + position[ 0 ] + ' && x <= ' + ( position[ 0 ] + size[ 0 ] ) + ' && y <= ' + ( position[ 1 ] + size[ 1 ] ) + ' && y >= ' + position[ 1 ] + ' ) ? 1 : 0;';
+
 		}
 	} );
 }
