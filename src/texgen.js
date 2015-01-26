@@ -224,3 +224,29 @@ TG.Checkboard = function () {
 		}
 	} );
 }
+
+TG.Rect = function () {
+
+	var left = 0;
+	var right = 255;
+	var top = 0;
+	var bottom = 255;
+	
+	
+	return new TG.Program( {
+		set: function ( newLeft, newTop, newRight, newBottom ) {
+			
+			left = newLeft;
+			right = newRight;
+			top = newTop;
+			bottom = newBottom;
+
+			return this;
+		},
+		getSource: function () {
+
+			return 'var color =  ( (x >= '+ left +') && (x <= '+ right +') && (y <= '+ bottom +') && (y >= '+ top +') ) ? 1 : 0;';
+			
+		}
+	} );
+}
