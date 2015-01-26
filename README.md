@@ -1,6 +1,10 @@
 # texgen.js
 Procedural Texture Generator
 
+![examples](https://raw.githubusercontent.com/mrdoob/texgen.js/master/files/samples.png)
+
+### Usage
+
 ```javascript
 var texture = new TG.Texture( 256, 256 )
     .add( new TG.XOR().color( 1, 0.5, 0.7 ) )
