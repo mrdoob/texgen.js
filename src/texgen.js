@@ -66,29 +66,26 @@ TG.Texture.prototype = {
 		return this.pass( program, '/' );
 
 	},
-  
-  toImageData: function(context) {
 
-		var width = this.width;
-		var height = this.height;
+	toImageData: function ( context ) {
 
 		var array = this.array;
 
-		var imagedata = context.createImageData( width, height );
+		var imagedata = context.createImageData( this.width, this.height );
 		var data = imagedata.data;
 
 		for ( var i = 0, il = array.length; i < il; i += 4 ) {
 
-			data[ i     ] = array[ i     ] * 255;
+			data[ i		 ] = array[ i		 ] * 255;
 			data[ i + 1 ] = array[ i + 1 ] * 255;
 			data[ i + 2 ] = array[ i + 2 ] * 255;
 			data[ i + 3 ] = 255;
 
 		}
 
-    return imagedata;
+		return imagedata;
 
-  },
+	},
 
 	toCanvas: function () {
 
@@ -97,7 +94,7 @@ TG.Texture.prototype = {
 		canvas.height = this.height;
 
 		var context = canvas.getContext( '2d' );
-		var imagedata = this.toImageData(context);
+		var imagedata = this.toImageData( context );
 
 		context.putImageData( imagedata, 0, 0 );
 
@@ -224,7 +221,8 @@ TG.CheckerBoard = function () {
 			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
 		}
 	} );
-}
+
+};
 
 TG.Rect = function () {
 
@@ -246,4 +244,5 @@ TG.Rect = function () {
 
 		}
 	} );
-}
+
+};
