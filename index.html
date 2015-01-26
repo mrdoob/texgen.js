@@ -14,7 +14,8 @@
 		</style>
 	</head>
 	<body>
-		<script src="build/texgen.min.js"></script>
+		<!--<script src="build/texgen.min.js"></script> -->
+		<script src="src/texgen.js"></script>
 		<script>
 
 			var texture = new TG.Texture( 256, 256 )
@@ -119,6 +120,22 @@
 				.add( new TG.Noise().color( 0.1, 0, 0 ) )
 				.add( new TG.Noise().color( 0, 0.1, 0 ) )
 				.add( new TG.Noise().color( 0, 0, 0.1 ) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
+			//
+
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Checkboard() )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
+			//
+
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.Rect().set( 50, 20, 200, 150 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
