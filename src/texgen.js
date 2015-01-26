@@ -317,23 +317,27 @@ TG.Flare = function () {
 
 TG.SineDistort = function () {
 
-	var numSines = [20,10];
+	var sines = [1,1];
 	var offset = [0,0];
-	var amplitude = [10,10];
+	var amplitude = [0,0];
 
 	return new TG.Program( {
-		position: function ( x, y ) {
-			position = [ x, y ];
+		sines: function ( x, y ) {
+			sines = [ x, y ];
 			return this;
 		},
-		size: function ( x, y ) {
-			size = [ x, y ];
+		offset: function ( x, y ) {
+			offset = [ x, y ];
+			return this;
+		},
+		amplitude: function ( x, y ) {
+			amplitude = [ x, y ];
 			return this;
 		},
 		getSource: function () {
 			return [
-				'var sx = Math.sin('+numSines[ 0 ]/100+' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
-				'var sy = Math.sin('+numSines[ 1 ]/100+' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
+				'var sx = Math.sin('+sines[ 0 ]/100+' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
+				'var sy = Math.sin('+sines[ 1 ]/100+' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
 				'var color = src[ parseInt(sy) * width * 4 + parseInt(sx) * 4 ];'
 				].join( '\n' );
 		}
