@@ -128,6 +128,9 @@
 
 			var texture = new TG.Texture( 256, 256 )
 				.add( new TG.CheckerBoard() )
+				.add( new TG.CheckerBoard().size( 2, 2 ).color( 0.5, 0, 0 ) )
+				.add( new TG.CheckerBoard().size( 8, 8 ).color( 1, 0.5, 0.5 ) )
+				.sub( new TG.CheckerBoard().offset( 16, 16 ).color( 0.5, 0.5, 0 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -135,7 +138,9 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-				.add( new TG.Rect().position( 50, 20 ).size( 150, 130 ) )
+				.add( new TG.Rect().position( 50, 20 ).size( 150, 130 ).color( 1, 0.25, 0.25 ) )
+				.add( new TG.Rect().position( 20, 65 ).size( 210, 130 ).color( 0.25, 1, 0.25 ) )
+				.add( new TG.Rect().position( 50, 110 ).size( 150, 130 ).color( 0.25, 0.25, 1 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
