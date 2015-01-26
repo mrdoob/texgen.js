@@ -39,7 +39,7 @@ TG.Texture.prototype = {
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
-
+		
 		new Function( 'dst, src, width, height', string )( this.array, this.arrayCopy, this.width, this.height );
 
 		return this;
@@ -210,10 +210,15 @@ TG.CheckerBoard = function () {
 
 	var size = [ 32, 32 ];
 	var offset = [ 0, 0 ];
+	var rowShift = 0;
 
 	return new TG.Program( {
 		size: function ( x, y ) {
 			size = [ x, y ];
+			return this;
+		},
+		rowShift: function ( value ) {
+			rowShift = value;
 			return this;
 		},
 		offset: function ( x, y ) {
@@ -221,7 +226,9 @@ TG.CheckerBoard = function () {
 			return this;
 		},
 		getSource: function () {
-			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
+
+			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
+
 		}
 	} );
 
@@ -247,5 +254,112 @@ TG.Rect = function () {
 
 		}
 	} );
+}
 
+TG.Flare = function () {
+
+	var type = 0;
+	var radius = [ 128, 128 ];
+	var position = [ 128, 128 ];
+	var alpha = 1;
+	var gamma = 1;
+	var degree = 1;
+
+	return new TG.Program( {
+		radius: function ( radiusX, radiusY ) {
+						
+			if ( typeof radiusY === 'undefined')
+				radiusY = radiusX;
+
+			radius = [ radiusX, radiusY ];
+
+			return this;
+		},
+		position: function(x,y) {
+			position = [ x, y ];
+			return this;
+		},
+		type: function ( value ) {
+			type = value;
+			return this;
+		},
+		degree: function ( value ) {
+			degree = value;
+			return this;
+		},
+		getSource: function () {
+			
+			var source = 'var dx = ' + position[ 0 ] + ' - x, dy = ' + position[ 1 ] + ' - y; ';
+			source += 'var d = Math.sqrt( dx * dx / ' + radius[ 0 ]*radius[ 0 ] + ' + dy * dy / ' + radius[ 1 ]*radius[ 1 ] +');';
+
+			switch (type) {
+				
+				case 0:
+					source += 'var color = (1-d);'
+					source += 'color *= 1-TG.Utils.smoothStep(1-.01, 1+.02, d);'
+					break;
+				case 1:
+					source += 'var color = Math.pow(d, ' + degree + ');';
+					source += 'color *= 1-TG.Utils.smoothStep(1-.01, 1+.02, d);'
+					break;
+				case 2:
+					source += 'var color = 1-Math.abs(d-0.9)/0.1;'
+					source += 'if (color < 0) color = 0;'
+					source += 'color = color'+ Array( degree ).join( '*color' ) + ';'
+					break;
+			}
+
+			return source;
+		}
+	} );
+
+};
+
+TG.SineDistort = function () {
+
+	var sines = [1,1];
+	var offset = [0,0];
+	var amplitude = [0,0];
+
+	return new TG.Program( {
+		sines: function ( x, y ) {
+			sines = [ x, y ];
+			return this;
+		},
+		offset: function ( x, y ) {
+			offset = [ x, y ];
+			return this;
+		},
+		amplitude: function ( x, y ) {
+			amplitude = [ x, y ];
+			return this;
+		},
+		getSource: function () {
+			return [
+				'var sx = Math.sin('+sines[ 0 ]/100+' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
+				'var sy = Math.sin('+sines[ 1 ]/100+' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
+				'var color = src[ parseInt(sy) * width * 4 + parseInt(sx) * 4 ];'
+				].join( '\n' );
+		}
+	} );
+}
+
+
+// Utils
+TG.Utils = {};
+
+TG.Utils.smoothStep = function ( edge0, edge1, x )
+{
+    // Scale, bias and saturate x to 0..1 range
+    x = TG.Utils.clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 ); 
+    
+	// Evaluate polynomial
+    return x * x * ( 3 - 2 * x );
+}
+
+
+TG.Utils.clamp = function( value, min, max ) {
+
+  return Math.min( Math.max( value, min ), max );
+  
 };
