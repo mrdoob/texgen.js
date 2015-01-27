@@ -257,6 +257,37 @@ TG.Rect = function () {
 
 };
 
+TG.Circle = function () {
+
+	var position = [ 0, 0 ];
+	var radius = 50;
+	var delta = 1;
+
+	return new TG.Program( {
+		delta: function ( value ) {
+			delta = value;
+			return this;
+		},
+		position: function ( x, y ) {
+			position = [ x, y ];
+			return this;
+		},
+		radius: function ( value ) {
+			radius = value;
+			return this;
+		},
+		getSource: function () {
+			return [
+				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
+				'var color = TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
+			].join('\n');
+		}
+	} );
+
+};
+
+// Filters
+
 TG.SineDistort = function () {
 
 	var sines = [ 4, 4 ];
@@ -321,35 +352,6 @@ TG.Twirl = function () {
 				'var color = TG.Utils.getPixelBilinear(src, xpos, ypos, 0, width);'
 
 				].join( '\n' );
-		}
-	} );
-}
-
-TG.Circle = function () {
-
-	var position = [ 0, 0 ];
-	var radius = 50;
-	var delta = 1;
-
-	return new TG.Program( {
-		delta: function ( value ) {
-			delta = value;
-			return this;
-		},
-		position: function ( x, y ) {
-			position = [ x, y ];
-			return this;
-		},
-		radius: function ( value ) {
-			radius = value;
-			return this;
-		},
-		getSource: function () {
-
-			return [
-				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
-				'var color = TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
-			].join('\n');
 		}
 	} );
 
