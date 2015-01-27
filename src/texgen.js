@@ -285,3 +285,56 @@ TG.SineDistort = function () {
 		}
 	} );
 }
+
+TG.Circle = function () {
+
+	var position = [ 0, 0 ];
+	var radius = 50;
+	var delta = 1;
+
+	return new TG.Program( {
+		delta: function ( value ) {
+			delta = value;
+			return this;
+		},
+		position: function ( x, y ) {
+			position = [ x, y ];
+			return this;
+		},
+		radius: function ( value ) {
+			radius = value;
+			return this;
+		},
+		getSource: function () {
+		
+			return [
+    			'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
+            	'var color = TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
+			].join('\n');
+		}
+	} );
+
+};
+
+// Utils
+TG.Utils = {};
+
+TG.Utils.smoothStep = function ( edge0, edge1, x )
+{
+    // Scale, bias and saturate x to 0..1 range
+    x = TG.Utils.clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 ); 
+    
+	// Evaluate polynomial
+    return x * x * ( 3 - 2 * x );
+}
+
+TG.Utils.distance = function( x0, y0, x1, y1 ) {
+
+	return Math.sqrt( ( x1 - x0 ) * ( x1 - x0 ) + ( y1 - y0 ) * ( y1 - y0 ) );
+}
+
+TG.Utils.clamp = function( value, min, max ) {
+
+  return Math.min( Math.max( value, min ), max );
+  
+};
