@@ -356,37 +356,38 @@ TG.Circle = function () {
 };
 
 // Utils
-TG.Utils = {};
+TG.Utils = {
 
+	smoothStep: function ( edge0, edge1, x ) {
 
-TG.Utils.smoothStep = function ( edge0, edge1, x )
-{
-	// Scale, bias and saturate x to 0..1 range
-	x = TG.Utils.clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 );
+		// Scale, bias and saturate x to 0..1 range
+		x = TG.Utils.clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 );
 
-	// Evaluate polynomial
-	return x * x * ( 3 - 2 * x );
-}
+		// Evaluate polynomial
+		return x * x * ( 3 - 2 * x );
 
-TG.Utils.distance = function( x0, y0, x1, y1 ) {
+	},
 
-	var dx = x1 - x0, dy = y1 - y0;
-	return Math.sqrt( dx * dx + dy * dy );
-}
+	distance: function( x0, y0, x1, y1 ) {
 
-TG.Utils.clamp = function( value, min, max ) {
+		var dx = x1 - x0, dy = y1 - y0;
+		return Math.sqrt( dx * dx + dy * dy );
 
-	return Math.min( Math.max( value, min ), max );
+	},
 
-};
+	clamp: function( value, min, max ) {
 
-TG.Utils.getPixelNearest = function( pixels, x, y, offset, width ) {
+		return Math.min( Math.max( value, min ), max );
 
-	return pixels[ offset + Math.round( y ) * width * 4 + Math.round( x ) * 4 ];
+	},
 
-}
+	getPixelNearest: function( pixels, x, y, offset, width ) {
 
-TG.Utils.getPixelBilinear = function( pixels, x, y, offset, width ) {
+		return pixels[ offset + Math.round( y ) * width * 4 + Math.round( x ) * 4 ];
+
+	},
+
+	getPixelBilinear: function( pixels, x, y, offset, width ) {
 
 		var percentX = x - ( x ^ 0 );
 		var percentX1 = 1.0 - percentX;
@@ -402,4 +403,6 @@ TG.Utils.getPixelBilinear = function( pixels, x, y, offset, width ) {
 
 		return top * percentY + bottom * ( 1.0 - percentY );
 
-}
+	}
+
+};
