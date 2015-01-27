@@ -378,24 +378,26 @@ TG.Utils.clamp = function( value, min, max ) {
   
 };
 
-TG.Utils.getPixelNearest = function(pixels, x, y, offset, width) {
+TG.Utils.getPixelNearest = function( pixels, x, y, offset, width ) {
     
-    return pixels[offset + Math.round(y) * width * 4 + Math.round(x) * 4];
+    return pixels[ offset + Math.round( y ) * width * 4 + Math.round( x ) * 4 ];
 
 }
 
-TG.Utils.getPixelBilinear = function(pixels, x, y, offset, width) {
-    var percentX = x - (x ^ 0);
+TG.Utils.getPixelBilinear = function( pixels, x, y, offset, width ) {
+
+    var percentX = x - ( x ^ 0 );
     var percentX1 = 1.0 - percentX;
-    var percentY = y - (y ^ 0);
-    var fx4 = (x ^ 0) * 4;
+    var percentY = y - ( y ^ 0 );
+    var fx4 = ( x ^ 0 ) * 4;
     var cx4 = fx4 + 4;
-    var fy4 = (y ^ 0) * 4;
-    var cy4wo = (fy4 + 4) * width + offset;
+    var fy4 = ( y ^ 0 ) * 4;
+    var cy4wo = ( fy4 + 4 ) * width + offset;
     var fy4wo = fy4 * width + offset;
 
-    var top = pixels[cy4wo + fx4] * percentX1 + pixels[cy4wo + cx4] * percentX;
-    var bottom = pixels[fy4wo + fx4] * percentX1 + pixels[fy4wo + cx4] * percentX;
+    var top = pixels[ cy4wo + fx4 ] * percentX1 + pixels[ cy4wo + cx4 ] * percentX;
+    var bottom = pixels[ fy4wo + fx4 ] * percentX1 + pixels[ fy4wo + cx4 ] * percentX;
 
-    return top * percentY + bottom * (1.0 - percentY);
+    return top * percentY + bottom * ( 1.0 - percentY );
+    
 }
