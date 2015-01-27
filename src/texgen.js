@@ -259,9 +259,9 @@ TG.Rect = function () {
 
 TG.SineDistort = function () {
 
-	var sines = [ 1, 1 ];
+	var sines = [ 4, 4 ];
 	var offset = [ 0, 0 ];
-	var amplitude = [ 0, 0 ];
+	var amplitude = [ 16, 16 ];
 
 	return new TG.Program( {
 		sines: function ( x, y ) {
