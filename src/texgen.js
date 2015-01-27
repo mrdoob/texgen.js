@@ -210,6 +210,7 @@ TG.CheckerBoard = function () {
 
 	var size = [ 32, 32 ];
 	var offset = [ 0, 0 ];
+	var rowShift = 0;
 
 	return new TG.Program( {
 		size: function ( x, y ) {
@@ -220,8 +221,14 @@ TG.CheckerBoard = function () {
 			offset = [ x, y ];
 			return this;
 		},
+		rowShift: function ( value ) {
+			rowShift = value;
+			return this;
+		},
 		getSource: function () {
-			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
+
+			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
+
 		}
 	} );
 
