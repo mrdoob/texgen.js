@@ -210,6 +210,7 @@ TG.CheckerBoard = function () {
 
 	var size = [ 32, 32 ];
 	var offset = [ 0, 0 ];
+	var rowShift = 0;
 
 	return new TG.Program( {
 		size: function ( x, y ) {
@@ -220,8 +221,14 @@ TG.CheckerBoard = function () {
 			offset = [ x, y ];
 			return this;
 		},
+		rowShift: function ( value ) {
+			rowShift = value;
+			return this;
+		},
 		getSource: function () {
-			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
+
+			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
+
 		}
 	} );
 
@@ -277,4 +284,120 @@ TG.SineDistort = function () {
 				].join( '\n' );
 		}
 	} );
+}
+
+TG.Twirl = function () {
+
+	var strength = 0;
+	var radius = 120;
+	var position = [ 128, 128 ];
+
+	return new TG.Program( {
+		strength: function ( value ) {
+			strength = value / 100.0;
+			return this;
+		},
+		radius: function ( value ) {
+			radius = value;
+			return this;
+		},
+		position: function ( x, y ) {
+			position = [ x, y ];
+			return this;
+		},
+		getSource: function () {
+
+			return [
+    			'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
+
+				// no distortion if outside of whirl radius.
+				'dist = dist > '+ radius +' ? 0 : ('+ radius +' - dist) * (' + radius + ' - dist) / ' + radius + ';',
+
+				'var angle = 2.0 * Math.PI * (dist / (' + radius + ' / ' + strength + '));',
+				'var xpos = (((x -  ' + position[ 0 ] + ') * Math.cos(angle)) - ((y -  ' + position[ 0 ] + ') * Math.sin(angle)) +  ' + position[ 0 ] + '+0.5);',
+				'var ypos = (((y -  ' + position[ 1 ] + ') * Math.cos(angle)) + ((x -  ' + position[ 1 ] + ') * Math.sin(angle)) +  ' + position[ 1 ] + '+0.5);',
+
+				'var color = TG.Utils.getPixelBilinear(src, xpos, ypos, 0, width);'
+
+				].join( '\n' );
+		}
+	} );
+}
+
+TG.Circle = function () {
+
+	var position = [ 0, 0 ];
+	var radius = 50;
+	var delta = 1;
+
+	return new TG.Program( {
+		delta: function ( value ) {
+			delta = value;
+			return this;
+		},
+		position: function ( x, y ) {
+			position = [ x, y ];
+			return this;
+		},
+		radius: function ( value ) {
+			radius = value;
+			return this;
+		},
+		getSource: function () {
+		
+			return [
+    			'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
+            	'var color = TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
+			].join('\n');
+		}
+	} );
+
+};
+
+// Utils
+TG.Utils = {};
+
+
+TG.Utils.smoothStep = function ( edge0, edge1, x )
+{
+    // Scale, bias and saturate x to 0..1 range
+    x = TG.Utils.clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 ); 
+    
+	// Evaluate polynomial
+    return x * x * ( 3 - 2 * x );
+}
+
+TG.Utils.distance = function( x0, y0, x1, y1 ) {
+
+	return Math.sqrt( ( x1 - x0 ) * ( x1 - x0 ) + ( y1 - y0 ) * ( y1 - y0 ) );
+}
+
+TG.Utils.clamp = function( value, min, max ) {
+
+  return Math.min( Math.max( value, min ), max );
+  
+};
+
+TG.Utils.getPixelNearest = function( pixels, x, y, offset, width ) {
+    
+    return pixels[ offset + Math.round( y ) * width * 4 + Math.round( x ) * 4 ];
+
+}
+
+TG.Utils.getPixelBilinear = function( pixels, x, y, offset, width ) {
+
+    var percentX = x - ( x ^ 0 );
+    var percentX1 = 1.0 - percentX;
+    var percentY = y - ( y ^ 0 );
+    var fx4 = ( x ^ 0 ) * 4;
+    var cx4 = fx4 + 4;
+    var fy4 = ( y ^ 0 ) * 4;
+    var cy4wo = ( fy4 + 4 ) * width + offset;
+    var fy4wo = fy4 * width + offset;
+
+    var top = pixels[ cy4wo + fx4 ] * percentX1 + pixels[ cy4wo + cx4 ] * percentX;
+    var bottom = pixels[ fy4wo + fx4 ] * percentX1 + pixels[ fy4wo + cx4 ] * percentX;
+
+    return top * percentY + bottom * ( 1.0 - percentY );
+    
 }
