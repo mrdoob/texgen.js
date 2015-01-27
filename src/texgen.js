@@ -339,7 +339,7 @@ TG.Twirl = function () {
 
 				// no distortion if outside of whirl radius.
 
-				'dist = dist > '+ radius +' ? 0 : ('+ radius +' - dist) * (' + radius + ' - dist) / ' + radius + ';',
+				'dist = dist > '+ radius +' ? 0 : Math.pow('+ radius +' - dist, 2) / ' + radius + ';',
 
 				'var angle = 2.0 * Math.PI * (dist / (' + radius + ' / ' + strength + '));',
 				'var xpos = (((x - ' + position[ 0 ] + ') * Math.cos(angle)) - ((y - ' + position[ 0 ] + ') * Math.sin(angle)) + ' + position[ 0 ] + ' + 0.5);',
