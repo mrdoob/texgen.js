@@ -249,3 +249,32 @@ TG.Rect = function () {
 	} );
 
 };
+
+TG.SineDistort = function () {
+
+	var sines = [ 1, 1 ];
+	var offset = [ 0, 0 ];
+	var amplitude = [ 0, 0 ];
+
+	return new TG.Program( {
+		sines: function ( x, y ) {
+			sines = [ x, y ];
+			return this;
+		},
+		offset: function ( x, y ) {
+			offset = [ x, y ];
+			return this;
+		},
+		amplitude: function ( x, y ) {
+			amplitude = [ x, y ];
+			return this;
+		},
+		getSource: function () {
+			return [
+				'var sx = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
+				'var sy = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
+				'var color = src[ parseInt( sy ) * width * 4 + parseInt( sx ) * 4 ];'
+				].join( '\n' );
+		}
+	} );
+}
