@@ -280,7 +280,7 @@ TG.SineDistort = function () {
 			return [
 				'var sx = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
 				'var sy = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
-				'var color = src[ parseInt( sy ) * width * 4 + parseInt( sx ) * 4 ];'
+				'var color = TG.Utils.getPixelBilinear(src, sx, sy, 0, width);'
 				].join( '\n' );
 		}
 	} );
