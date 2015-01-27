@@ -226,9 +226,7 @@ TG.CheckerBoard = function () {
 			return this;
 		},
 		getSource: function () {
-
 			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
-
 		}
 	} );
 
@@ -249,9 +247,7 @@ TG.Rect = function () {
 			return this;
 		},
 		getSource: function () {
-
 			return 'var color = ( x >= ' + position[ 0 ] + ' && x <= ' + ( position[ 0 ] + size[ 0 ] ) + ' && y <= ' + ( position[ 1 ] + size[ 1 ] ) + ' && y >= ' + position[ 1 ] + ' ) ? 1 : 0;';
-
 		}
 	} );
 
@@ -312,10 +308,11 @@ TG.SineDistort = function () {
 				'var sx = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
 				'var sy = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
 				'var color = TG.Utils.getPixelBilinear(src, sx, sy, 0, width);'
-				].join( '\n' );
+			].join( '\n' );
 		}
 	} );
-}
+
+};
 
 TG.Twirl = function () {
 
@@ -337,7 +334,6 @@ TG.Twirl = function () {
 			return this;
 		},
 		getSource: function () {
-
 			return [
 				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
 
@@ -351,13 +347,12 @@ TG.Twirl = function () {
 
 				'var color = TG.Utils.getPixelBilinear(src, xpos, ypos, 0, width);'
 
-				].join( '\n' );
+			].join( '\n' );
 		}
 	} );
 
 };
 
-// Utils
 TG.Utils = {
 
 	smoothStep: function ( edge0, edge1, x ) {
