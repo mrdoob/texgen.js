@@ -539,28 +539,20 @@ TG.Buffer.prototype = {
 
 	getPixelNearest: function ( x, y ) {
 
-			if ( y > this.height ) y -= this.height;
-			if ( y < 0 ) y += this.height;
-			if ( x > this.width ) x -= this.width;
-			if ( x < 0 ) x += this.width;
+		if ( y > this.height ) y -= this.height;
+		if ( y < 0 ) y += this.height;
+		if ( x > this.width ) x -= this.width;
+		if ( x < 0 ) x += this.width;
 
-			var array = this.array;
-			var color = this.color.array;
-			var offset = Math.round( y ) * this.width * 4 + Math.round( x ) * 4;
+		var array = this.array;
+		var color = this.color.array;
+		var offset = Math.round( y ) * this.width * 4 + Math.round( x ) * 4;
 
-			color[ 0 ] = array[ offset     ];
-			color[ 1 ] = array[ offset + 1 ];
-			color[ 2 ] = array[ offset + 2 ];
+		color[ 0 ] = array[ offset     ];
+		color[ 1 ] = array[ offset + 1 ];
+		color[ 2 ] = array[ offset + 2 ];
 
-			return this.color;
-
-	},
-
-	setPixel: function ( x, y, color ) {
-
-		var offset = Math.round( y ) * width * 4 + Math.round( x ) * 4;
-
-		this.array.set( color, offset );
+		return this.color;
 
 	}
 
