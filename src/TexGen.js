@@ -357,6 +357,49 @@ TG.Twirl = function () {
 
 };
 
+TG.Transform = function () {
+
+    var offset = [ 0, 0 ];
+    var angle = 0;
+    var zoom = 1;
+
+    return new TG.Program( {
+        
+        offset: function ( x, y ) {
+            
+            offset = [ x, y ];
+            return this;
+        },
+        angle: function ( value ) {
+            
+            angle = TG.Utils.deg2rad( value );
+            return this;
+        },
+        zoom: function ( value ) {
+            
+            zoom = value;
+            return this;
+        },
+        getSource: function () {
+            return [
+
+				'var x2 = x - width / 2;',
+				'var y2 = y - height / 2;',
+
+				's = x2 * (' + ( Math.cos( angle ) / zoom ) + ') + y2 * -(' + ( Math.sin( angle ) / zoom ) + ');',
+				't = x2 * (' + ( Math.sin( angle ) / zoom ) + ') + y2 * (  ' + ( Math.cos( angle ) / zoom ) + ');',
+
+				's += ' + offset[ 0 ] + ' + width /2;',
+				't += ' + offset[ 1 ] + ' + height /2;',
+
+	            'var color = TG.Utils.getPixelBilinear(src, s, t, 0, width, height);'
+                
+            ].join( '\n' );
+        }
+    } );
+
+};
+
 TG.Pixellate = function () {
 
 	var pixelSize = [ 1, 1 ];
@@ -439,6 +482,11 @@ TG.Utils = {
 
 		return top * percentY + bottom * ( 1.0 - percentY );
 
-	}
+	},
 
+	deg2rad: function ( deg ) {
+
+		return deg * Math.PI / 180;
+
+	}
 };
