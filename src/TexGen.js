@@ -445,8 +445,8 @@ TG.Pixelate = function () {
 				'var s = ' + size[ 0 ] + ' * Math.floor(x/' + size[ 0 ] + ');',
 				'var t = ' + size[ 1 ] + ' * Math.floor(y/' + size[ 1 ] + ');',
 
-				'var value = TG.Utils.getPixelNearest( src.array, s, t, 0, width, height );',
-				'color.setRGB( value, value, value );'
+				'var value = src.getPixelNearest( s, t );',
+				'color.set( value );'
 			].join( '\n' );
 		}
 	} );
@@ -517,12 +517,13 @@ TG.Color.prototype = {
 
 // Buffer
 
-TG.Buffer = function ( width, height) {
+TG.Buffer = function ( width, height ) {
 
 	this.width = width;
 	this.height = height;
 
 	this.array = new Float32Array( width * height * 4 );
+	this.color = new TG.Color();
 
 };
 
@@ -536,26 +537,24 @@ TG.Buffer.prototype = {
 
 	},
 
-	getPixelNearest: ( function () {
+	getPixelNearest: function ( x, y ) {
 
-		var color = new TG.Color();
+			if ( y > this.height ) y -= this.height;
+			if ( y < 0 ) y += this.height;
+			if ( x > this.width ) x -= this.width;
+			if ( x < 0 ) x += this.width;
 
-		return function () {
+			var array = this.array;
+			var color = this.color.array;
+			var offset = Math.round( y ) * this.width * 4 + Math.round( x ) * 4;
 
-			if ( y > height ) y -= height;
-			if ( y < 0 ) y += height;
-			if ( x > width ) x -= width;
-			if ( x < 0 ) x += width;
+			color[ 0 ] = array[ offset     ];
+			color[ 1 ] = array[ offset + 1 ];
+			color[ 2 ] = array[ offset + 2 ];
 
-			var offset = Math.round( y ) * width * 4 + Math.round( x ) * 4;
+			return this.color;
 
-			color.set( this.array, offset );
-
-			return color;
-
-		};
-
-	} )(),
+	},
 
 	setPixel: function ( x, y, color ) {
 
@@ -591,17 +590,6 @@ TG.Utils = {
 	clamp: function( value, min, max ) {
 
 		return Math.min( Math.max( value, min ), max );
-
-	},
-
-	getPixelNearest: function( pixels, x, y, offset, width, height ) {
-
-		if ( y > height ) y -= height;
-		if ( y < 0 ) y += height;
-		if ( x > width ) x -= width;
-		if ( x < 0 ) x += width;
-
-		return pixels[ offset + Math.round( y ) * width * 4 + Math.round( x ) * 4 ];
 
 	},
 
