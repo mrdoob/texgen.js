@@ -422,8 +422,9 @@ TG.Transform = function () {
 
 						's += ' + offset[ 0 ] + ' + width /2;',
 						't += ' + offset[ 1 ] + ' + height /2;',
-						'var value = TG.Utils.getPixelBilinear( src.array, s, t, 0, width, height );',
-						'color.setRGB( value, value, value );'
+
+						'color.set( src.getPixelNearest( s, t ) );',
+						
 					].join( '\n' );
 				}
 		} );
