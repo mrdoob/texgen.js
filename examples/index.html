@@ -6,7 +6,8 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
 			body {
-				margin: 4px;
+				margin: 
+				px;
 			}
 			canvas {
 				margin-right: 4px;
@@ -179,6 +180,15 @@
 			.toCanvas();
 
 			document.body.appendChild( texture );
+
+			//
+
+            var texture = new TG.Texture( 256, 256 )
+				.add( new TG.CheckerBoard() )
+				.pass( new TG.Transform().offset( 10, 20 ).angle( 23 ).scale( 2,0.5 ) )
+            .toCanvas();
+
+            document.body.appendChild( texture );
 
 		</script>
 	</body>

@@ -357,6 +357,54 @@ TG.Twirl = function () {
 
 };
 
+TG.Transform = function () {
+
+    var offset = [ 0, 0 ];
+    var angle = 0;
+    var scale = [ 1, 1 ];
+
+    return new TG.Program( {
+        
+        offset: function ( x, y ) {
+            
+            offset = [ x, y ];
+            return this;
+        },
+        angle: function ( value ) {
+            
+            angle = TG.Utils.deg2rad( value );
+            return this;
+        },
+        scale: function ( x, y ) {
+            
+			if ( y === undefined ) y = x;
+
+            if ( x <= 0 ) x = 1;
+            if ( y <= 0 ) y = 1;
+            
+            scale = [ x, y ];
+
+            return this;
+        },
+        getSource: function () {
+            return [
+            	
+            	'var x2 = x - width / 2;',
+				'var y2 = y - height / 2;',
+
+				's = x2 * (' + ( Math.cos( angle ) / scale[ 0 ] ) + ') + y2 * -(' + ( Math.sin( angle ) / scale[ 0 ] ) + ');',
+				't = x2 * (' + ( Math.sin( angle ) / scale[ 1 ] ) + ') + y2 * (  ' + ( Math.cos( angle ) / scale[ 1 ] ) + ');',
+
+				's += ' + offset[ 0 ] + ' + width /2;',
+				't += ' + offset[ 1 ] + ' + height /2;',
+	            'var color = TG.Utils.getPixelBilinear(src, s, t, 0, width, height);'
+                
+            ].join( '\n' );
+        }
+    } );
+
+};
+
 TG.Pixellate = function () {
 
 	var pixelSize = [ 1, 1 ];
@@ -439,6 +487,11 @@ TG.Utils = {
 
 		return top * percentY + bottom * ( 1.0 - percentY );
 
-	}
+	},
 
+	deg2rad: function ( deg ) {
+
+		return deg * Math.PI / 180;
+
+	}
 };
