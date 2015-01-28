@@ -19,7 +19,7 @@ TG.Texture.prototype = {
 
 	set: function ( program, operation ) {
 
-		if ( operation === undefined ) operation = '';
+		if ( operation === undefined ) operation = function( x, y ) { return y; };
 
 		var modulate = program.getColor();
 		var source = program.getSource();
@@ -32,52 +32,64 @@ TG.Texture.prototype = {
 			'var width = dst.width, height = dst.height;',
 			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
 				'	' + source,
-				'	array[ i + 0 ] ' + operation + '= color.array[ 0 ] * ' + modulate[ 0 ] + ';',
-				'	array[ i + 1 ] ' + operation + '= color.array[ 1 ] * ' + modulate[ 1 ] + ';',
-				'	array[ i + 2 ] ' + operation + '= color.array[ 2 ] * ' + modulate[ 2 ] + ';',
+				'	array[ i + 0 ] = operation( array[ i + 0 ], color.array[ 0 ] * ' + modulate[ 0 ] + ');',
+				'	array[ i + 1 ] = operation( array[ i + 1 ], color.array[ 1 ] * ' + modulate[ 1 ] + ');',
+				'	array[ i + 2 ] = operation( array[ i + 2 ], color.array[ 2 ] * ' + modulate[ 2 ] + ');',
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
 
-		new Function( 'dst, src, color', string )( this.buffer, this.bufferCopy, this.color );
+		new Function( 'operation, dst, src, color', string )( operation, this.buffer, this.bufferCopy, this.color );
 
 		return this;
 
 	},
 
+	min: function ( program ) {
+
+		return this.set( program, function( x, y ) { return Math.min( x, y ); } );
+
+	},
+
+	max: function ( program ) {
+
+		return this.set( program, function( x, y ) { return Math.max( x, y ); } );
+
+	},
+
 	add: function ( program ) {
 
-		return this.set( program, '+' );
+		return this.set( program, function( x, y ) { return x + y; } );
 
 	},
 
 	sub: function ( program ) {
 
-		return this.set( program, '-' );
+		return this.set( program, function( x, y ) { return x - y; } );
 
 	},
 
 	mul: function ( program ) {
 
-		return this.set( program, '*' );
+		return this.set( program, function( x, y ) { return x * y; } );
 
 	},
 
 	div: function ( program ) {
 
-		return this.set( program, '/' );
+		return this.set( program, function( x, y ) { return x / y; } );
 
 	},
 
 	and: function ( program ) {
 
-		return this.set( program, '&' );
+		return this.set( program, function( x, y ) { return x & y; } );
 
 	},
 
 	xor: function ( program ) {
 
-		return this.set( program, '^' );
+		return this.set( program, function( x, y ) { return x ^ y; } );
 
 	},
 
