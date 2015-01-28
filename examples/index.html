@@ -171,6 +171,15 @@
 
 			document.body.appendChild( texture );
 
+			//
+
+			var texture = new TG.Texture( 256, 256 )
+			.add( new TG.Circle().position( 128, 128 ).radius( 64 ).delta( 60 ) )
+			.pass( new TG.Pixellate().pixelSize( 8, 8 ) )
+			.toCanvas();
+
+			document.body.appendChild( texture );
+
 		</script>
 	</body>
 </html>

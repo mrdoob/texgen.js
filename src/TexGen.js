@@ -353,6 +353,31 @@ TG.Twirl = function () {
 
 };
 
+TG.Pixellate = function () {
+
+	var pixelSize = [ 1, 1 ];
+
+	return new TG.Program( {
+		pixelSize: function ( width, height ) {
+			
+			if ( height === undefined ) height = width;
+			pixelSize = [ width, height ];
+			return this;
+		},
+		getSource: function () {
+			return [
+				
+    			'var s = ' + pixelSize[ 0 ] + ' * Math.floor(x/' + pixelSize[ 0 ] + ');',
+				'var t = ' + pixelSize[ 1 ] + ' * Math.floor(y/' + pixelSize[ 1 ] + ');',
+
+				'var color = TG.Utils.getPixelNearest(src, s, t, 0, width);'
+				
+			].join( '\n' );
+		}
+	} );
+
+};
+
 TG.Utils = {
 
 	smoothStep: function ( edge0, edge1, x ) {
