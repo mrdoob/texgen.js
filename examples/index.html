@@ -149,7 +149,7 @@
 
 			var texture = new TG.Texture( 256, 256 )
 				.add( new TG.CheckerBoard().size( 32, 32 ).color( 0.5, 0, 0 ) )
-				.pass( new TG.SineDistort() )
+				.set( new TG.SineDistort() )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -158,7 +158,7 @@
 
 			var texture = new TG.Texture( 256, 256 )
 			.add( new TG.CheckerBoard().size( 32, 32 ).color( 0.5, 0, 0 ) )
-			.pass( new TG.Twirl().radius( 128 ).strength ( 75 ) )
+			.set( new TG.Twirl().radius( 128 ).strength ( 75 ) )
 			.toCanvas();
 
 			document.body.appendChild( texture );
@@ -175,7 +175,7 @@
 
 			var texture = new TG.Texture( 256, 256 )
 			.add( new TG.Circle().position( 128, 128 ).radius( 64 ).delta( 60 ) )
-			.pass( new TG.Pixelate().size( 8, 8 ) )
+			.set( new TG.Pixelate().size( 8, 8 ) )
 			.toCanvas();
 
 			document.body.appendChild( texture );
@@ -184,7 +184,7 @@
 
 			var texture = new TG.Texture( 256, 256 )
 				.add( new TG.CheckerBoard() )
-				.pass( new TG.Transform().offset( 10, 20 ).angle( 23 ).scale( 2, 0.5 ) )
+				.set( new TG.Transform().offset( 10, 20 ).angle( 23 ).scale( 2, 0.5 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );

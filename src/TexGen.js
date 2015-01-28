@@ -17,7 +17,7 @@ TG.Texture.prototype = {
 
 	constructor: TG.Texture,
 
-	pass: function ( program, operation ) {
+	set: function ( program, operation ) {
 
 		if ( operation === undefined ) operation = '';
 
@@ -47,40 +47,39 @@ TG.Texture.prototype = {
 
 	add: function ( program ) {
 
-		return this.pass( program, '+' );
+		return this.set( program, '+' );
 
 	},
 
 	sub: function ( program ) {
 
-		return this.pass( program, '-' );
+		return this.set( program, '-' );
 
 	},
 
 	mul: function ( program ) {
 
-		return this.pass( program, '*' );
+		return this.set( program, '*' );
 
 	},
 
 	div: function ( program ) {
 
-		return this.pass( program, '/' );
+		return this.set( program, '/' );
 
 	},
 
 	and: function ( program ) {
 
-		return this.pass( program, '&' );
+		return this.set( program, '&' );
 
 	},
 
 	xor: function ( program ) {
 
-		return this.pass( program, '^' );
+		return this.set( program, '^' );
 
 	},
-
 
 	toImageData: function ( context ) {
 
