@@ -308,9 +308,11 @@ TG.Circle = function () {
 		},
 		getSource: function () {
 			return [
+				
 				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
-				'var value = TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
+				'var value = 1 - TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
 				'color.setRGB( value, value, value );'
+
 			].join('\n');
 		}
 	} );
@@ -424,7 +426,7 @@ TG.Transform = function () {
 						't += ' + offset[ 1 ] + ' + height /2;',
 
 						'color.set( src.getPixelNearest( s, t ) );',
-						
+
 					].join( '\n' );
 				}
 		} );
@@ -445,8 +447,8 @@ TG.Pixelate = function () {
 				'var s = ' + size[ 0 ] + ' * Math.floor(x/' + size[ 0 ] + ');',
 				'var t = ' + size[ 1 ] + ' * Math.floor(y/' + size[ 1 ] + ');',
 
-				'var value = src.getPixelNearest( s, t );',
-				'color.set( value );'
+				'color.set( src.getPixelNearest( s, t ) );'
+
 			].join( '\n' );
 		}
 	} );
