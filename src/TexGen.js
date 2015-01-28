@@ -362,6 +362,8 @@ TG.Transform = function () {
     var offset = [ 0, 0 ];
     var angle = 0;
     var zoom = 1;
+    var flipH = false;
+    var flipV = false;
 
     return new TG.Program( {
         
@@ -377,13 +379,26 @@ TG.Transform = function () {
         },
         zoom: function ( value ) {
             
+            if ( value <= 0 ) value = 1;
             zoom = value;
+
             return this;
+        },
+        flipH: function ( value ) {
+
+        	flipH = value;
+        	return this;
+        },
+        flipV: function ( value ) {
+
+        	flipV = value;
+        	return this;
+        	
         },
         getSource: function () {
             return [
-
-				'var x2 = x - width / 2;',
+            	
+            	'var x2 = x - width / 2;',
 				'var y2 = y - height / 2;',
 
 				's = x2 * (' + ( Math.cos( angle ) / zoom ) + ') + y2 * -(' + ( Math.sin( angle ) / zoom ) + ');',
@@ -391,8 +406,7 @@ TG.Transform = function () {
 
 				's += ' + offset[ 0 ] + ' + width /2;',
 				't += ' + offset[ 1 ] + ' + height /2;',
-
-	            'var color = TG.Utils.getPixelBilinear(src, s, t, 0, width, height);'
+	            'var color = TG.Utils.getPixelBilinear(src, ' + ( flipH ? '-' : '') + 's, ' + ( flipV ? '-' : '') + 't, 0, width, height);'
                 
             ].join( '\n' );
         }
