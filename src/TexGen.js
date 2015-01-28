@@ -307,7 +307,7 @@ TG.SineDistort = function () {
 			return [
 				'var sx = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
 				'var sy = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
-				'var color = TG.Utils.getPixelBilinear(src, sx, sy, 0, width);'
+				'var color = TG.Utils.getPixelBilinear( src, sx, sy, 0, width, height );'
 			].join( '\n' );
 		}
 	} );
@@ -338,14 +338,18 @@ TG.Twirl = function () {
 				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
 
 				// no distortion if outside of whirl radius.
+				'if (dist < '+ radius +') {',
+					'dist = Math.pow('+ radius +' - dist, 2) / ' + radius + ';',
 
-				'dist = dist > '+ radius +' ? 0 : Math.pow('+ radius +' - dist, 2) / ' + radius + ';',
+					'var angle = 2.0 * Math.PI * (dist / (' + radius + ' / ' + strength + '));',
+					'xpos = (((x - ' + position[ 0 ] + ') * Math.cos(angle)) - ((y - ' + position[ 0 ] + ') * Math.sin(angle)) + ' + position[ 0 ] + ' + 0.5);',
+					'ypos = (((y - ' + position[ 1 ] + ') * Math.cos(angle)) + ((x - ' + position[ 1 ] + ') * Math.sin(angle)) + ' + position[ 1 ] + ' + 0.5);',
+				'} else {',
+					'xpos = x;',
+					'ypos = y;',
+				'}',
 
-				'var angle = 2.0 * Math.PI * (dist / (' + radius + ' / ' + strength + '));',
-				'var xpos = (((x - ' + position[ 0 ] + ') * Math.cos(angle)) - ((y - ' + position[ 0 ] + ') * Math.sin(angle)) + ' + position[ 0 ] + ' + 0.5);',
-				'var ypos = (((y - ' + position[ 1 ] + ') * Math.cos(angle)) + ((x - ' + position[ 1 ] + ') * Math.sin(angle)) + ' + position[ 1 ] + ' + 0.5);',
-
-				'var color = TG.Utils.getPixelBilinear(src, xpos, ypos, 0, width);'
+				'var color = TG.Utils.getPixelBilinear( src, xpos, ypos, 0, width, height );'
 
 			].join( '\n' );
 		}
@@ -370,7 +374,7 @@ TG.Pixellate = function () {
     			'var s = ' + pixelSize[ 0 ] + ' * Math.floor(x/' + pixelSize[ 0 ] + ');',
 				'var t = ' + pixelSize[ 1 ] + ' * Math.floor(y/' + pixelSize[ 1 ] + ');',
 
-				'var color = TG.Utils.getPixelNearest(src, s, t, 0, width);'
+				'var color = TG.Utils.getPixelNearest( src, s, t, 0, width, height );'
 				
 			].join( '\n' );
 		}
@@ -403,13 +407,23 @@ TG.Utils = {
 
 	},
 
-	getPixelNearest: function( pixels, x, y, offset, width ) {
+	getPixelNearest: function( pixels, x, y, offset, width, height ) {
+
+        if ( y > height ) y -= height;
+        if ( y < 0 ) y += height;
+        if ( x > width ) x -= width;
+        if ( x < 0 ) x += width;
 
 		return pixels[ offset + Math.round( y ) * width * 4 + Math.round( x ) * 4 ];
 
 	},
 
-	getPixelBilinear: function( pixels, x, y, offset, width ) {
+	getPixelBilinear: function( pixels, x, y, offset, width, height ) {
+
+        if ( y > height ) y -= height;
+        if ( y < 0 ) y += height;
+        if ( x > width ) x -= width;
+        if ( x < 0 ) x += width;
 
 		var percentX = x - ( x ^ 0 );
 		var percentX1 = 1.0 - percentX;
