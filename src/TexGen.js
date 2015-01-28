@@ -395,19 +395,17 @@ TG.Transform = function () {
 
 TG.Pixelate = function () {
 
-	var pixelSize = [ 1, 1 ];
+	var size = [ 1, 1 ];
 
 	return new TG.Program( {
-		pixelSize: function ( width, height ) {
-
-			if ( height === undefined ) height = width;
-			pixelSize = [ width, height ];
+		size: function ( x, y ) {
+			size = [ x, y ];
 			return this;
 		},
 		getSource: function () {
 			return [
-				'var s = ' + pixelSize[ 0 ] + ' * Math.floor(x/' + pixelSize[ 0 ] + ');',
-				'var t = ' + pixelSize[ 1 ] + ' * Math.floor(y/' + pixelSize[ 1 ] + ');',
+				'var s = ' + size[ 0 ] + ' * Math.floor(x/' + size[ 0 ] + ');',
+				'var t = ' + size[ 1 ] + ' * Math.floor(y/' + size[ 1 ] + ');',
 
 				'var color = TG.Utils.getPixelNearest( src, s, t, 0, width, height );'
 			].join( '\n' );
