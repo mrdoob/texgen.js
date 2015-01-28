@@ -69,6 +69,19 @@ TG.Texture.prototype = {
 
 	},
 
+	and: function ( program ) {
+
+		return this.pass( program, '&' );
+
+	},
+
+	xor: function ( program ) {
+
+		return this.pass( program, '^' );
+
+	},
+
+
 	toImageData: function ( context ) {
 
 		var array = this.buffer.array;
