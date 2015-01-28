@@ -6,13 +6,10 @@ var TG = {};
 
 TG.Texture = function ( width, height ) {
 
-	this.width = width;
-	this.height = height;
+	this.color = new TG.Color();
 
-	this.array = new Float32Array( width * height * 4 );
-	this.arrayCopy = new Float32Array( width * height * 4 );
-
-	return this;
+	this.buffer = new TG.Buffer( width, height );
+	this.bufferCopy = new TG.Buffer( width, height );
 
 };
 
@@ -24,23 +21,25 @@ TG.Texture.prototype = {
 
 		if ( operation === undefined ) operation = '';
 
-		var color = program.getColor();
+		var modulate = program.getColor();
 		var source = program.getSource();
 
-		this.arrayCopy.set( this.array );
+		this.bufferCopy.copy( this.buffer );
 
 		var string = [
 			'var x = 0, y = 0;',
-			'for ( var i = 0, il = dst.length; i < il; i += 4 ) {',
+			'var array = dst.array;',
+			'var width = dst.width, height = dst.height;',
+			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
 				'	' + source,
-				color[ 0 ] !== 0 ? '	dst[ i + 0 ] ' + operation + '= color * ' + color[ 0 ] + ';' : '',
-				color[ 1 ] !== 0 ? '	dst[ i + 1 ] ' + operation + '= color * ' + color[ 1 ] + ';' : '',
-				color[ 2 ] !== 0 ? '	dst[ i + 2 ] ' + operation + '= color * ' + color[ 2 ] + ';' : '',
+				'	array[ i + 0 ] ' + operation + '= color.array[ 0 ] * ' + modulate[ 0 ] + ';',
+				'	array[ i + 1 ] ' + operation + '= color.array[ 1 ] * ' + modulate[ 1 ] + ';',
+				'	array[ i + 2 ] ' + operation + '= color.array[ 2 ] * ' + modulate[ 2 ] + ';',
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
 
-		new Function( 'dst, src, width, height', string )( this.array, this.arrayCopy, this.width, this.height );
+		new Function( 'dst, src, color', string )( this.buffer, this.bufferCopy, this.color );
 
 		return this;
 
@@ -72,9 +71,9 @@ TG.Texture.prototype = {
 
 	toImageData: function ( context ) {
 
-		var array = this.array;
+		var array = this.buffer.array;
 
-		var imagedata = context.createImageData( this.width, this.height );
+		var imagedata = context.createImageData( this.buffer.width, this.buffer.height );
 		var data = imagedata.data;
 
 		for ( var i = 0, il = array.length; i < il; i += 4 ) {
@@ -93,8 +92,8 @@ TG.Texture.prototype = {
 	toCanvas: function () {
 
 		var canvas = document.createElement( 'canvas' );
-		canvas.width = this.width;
-		canvas.height = this.height;
+		canvas.width = this.buffer.width;
+		canvas.height = this.buffer.height;
 
 		var context = canvas.getContext( '2d' );
 		var imagedata = this.toImageData( context );
@@ -106,6 +105,8 @@ TG.Texture.prototype = {
 	}
 
 };
+
+//
 
 TG.Program = function ( object ) {
 
@@ -128,7 +129,7 @@ TG.Number = function () {
 
 	return new TG.Program( {
 		getSource: function () {
-			return 'var color = 1;';
+			return 'color.setRGB( 1, 1, 1 );';
 		}
 	} );
 
@@ -149,7 +150,10 @@ TG.SinX = function () {
 			return this;
 		},
 		getSource: function () {
-			return 'var color = Math.sin( ( x + ' + offset + ' ) * ' + frequency + ' );';
+			return [
+				'var value = Math.sin( ( x + ' + offset + ' ) * ' + frequency + ' );',
+				'color.setRGB( value, value, value );'
+			].join('\n');
 		}
 	} );
 
@@ -170,7 +174,10 @@ TG.SinY = function () {
 			return this;
 		},
 		getSource: function () {
-			return 'var color = Math.sin( ( y + ' + offset + ' ) * ' + frequency + ' );';
+			return [
+				'var value = Math.sin( ( y + ' + offset + ' ) * ' + frequency + ' );',
+				'color.setRGB( value, value, value );'
+			].join('\n');
 		}
 	} );
 
@@ -180,7 +187,10 @@ TG.OR = function () {
 
 	return new TG.Program( {
 		getSource: function () {
-			return 'var color = ( x | y ) / width;';
+			return [
+				'var value = ( x | y ) / width;',
+				'color.setRGB( value, value, value );'
+			].join('\n');
 		}
 	} );
 
@@ -190,7 +200,10 @@ TG.XOR = function () {
 
 	return new TG.Program( {
 		getSource: function () {
-			return 'var color = ( x ^ y ) / width;';
+			return [
+				'var value = ( x ^ y ) / width;',
+				'color.setRGB( value, value, value );'
+			].join('\n');
 		}
 	} );
 
@@ -200,7 +213,10 @@ TG.Noise = function () {
 
 	return new TG.Program( {
 		getSource: function () {
-			return 'var color = Math.random();';
+			return [
+				'var value = Math.random();',
+				'color.setRGB( value, value, value );'
+			].join('\n');
 		}
 	} );
 
@@ -226,7 +242,10 @@ TG.CheckerBoard = function () {
 			return this;
 		},
 		getSource: function () {
-			return 'var color = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1';
+			return [
+				'var value = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1',
+				'color.setRGB( value, value, value );'
+			].join('\n');
 		}
 	} );
 
@@ -247,7 +266,10 @@ TG.Rect = function () {
 			return this;
 		},
 		getSource: function () {
-			return 'var color = ( x >= ' + position[ 0 ] + ' && x <= ' + ( position[ 0 ] + size[ 0 ] ) + ' && y <= ' + ( position[ 1 ] + size[ 1 ] ) + ' && y >= ' + position[ 1 ] + ' ) ? 1 : 0;';
+			return [
+				'var value = ( x >= ' + position[ 0 ] + ' && x <= ' + ( position[ 0 ] + size[ 0 ] ) + ' && y <= ' + ( position[ 1 ] + size[ 1 ] ) + ' && y >= ' + position[ 1 ] + ' ) ? 1 : 0;',
+				'color.setRGB( value, value, value );'
+			].join('\n');
 		}
 	} );
 
@@ -275,7 +297,8 @@ TG.Circle = function () {
 		getSource: function () {
 			return [
 				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
-				'var color = TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
+				'var value = TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
+				'color.setRGB( value, value, value );'
 			].join('\n');
 		}
 	} );
@@ -307,7 +330,8 @@ TG.SineDistort = function () {
 			return [
 				'var sx = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
 				'var sy = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
-				'var color = TG.Utils.getPixelBilinear( src, sx, sy, 0, width, height );'
+				'var value = TG.Utils.getPixelBilinear( src.array, sx, sy, 0, width, height );',
+				'color.setRGB( value, value, value );'
 			].join( '\n' );
 		}
 	} );
@@ -349,7 +373,8 @@ TG.Twirl = function () {
 					'ypos = y;',
 				'}',
 
-				'var color = TG.Utils.getPixelBilinear( src, xpos, ypos, 0, width, height );'
+				'var value = TG.Utils.getPixelBilinear( src.array, xpos, ypos, 0, width, height );',
+				'color.setRGB( value, value, value );'
 			].join( '\n' );
 		}
 	} );
@@ -386,7 +411,8 @@ TG.Transform = function () {
 
 						's += ' + offset[ 0 ] + ' + width /2;',
 						't += ' + offset[ 1 ] + ' + height /2;',
-						'var color = TG.Utils.getPixelBilinear(src, s, t, 0, width, height);'
+						'var value = TG.Utils.getPixelBilinear( src.array, s, t, 0, width, height );',
+						'color.setRGB( value, value, value );'
 					].join( '\n' );
 				}
 		} );
@@ -407,12 +433,129 @@ TG.Pixelate = function () {
 				'var s = ' + size[ 0 ] + ' * Math.floor(x/' + size[ 0 ] + ');',
 				'var t = ' + size[ 1 ] + ' * Math.floor(y/' + size[ 1 ] + ');',
 
-				'var color = TG.Utils.getPixelNearest( src, s, t, 0, width, height );'
+				'var value = TG.Utils.getPixelNearest( src.array, s, t, 0, width, height );',
+				'color.setRGB( value, value, value );'
 			].join( '\n' );
 		}
 	} );
 
 };
+
+// Color
+
+TG.Color = function () {
+
+	this.array = new Float32Array( 4 );
+
+};
+
+TG.Color.prototype = {
+
+	constructor: TG.Color,
+
+	set: function ( color ) {
+
+		this.array[ 0 ] = color.array[ 0 ];
+		this.array[ 1 ] = color.array[ 1 ];
+		this.array[ 2 ] = color.array[ 2 ];
+
+	},
+
+	setRGB: function ( r, g, b ) {
+
+		this.array[ 0 ] = r;
+		this.array[ 1 ] = g;
+		this.array[ 2 ] = b;
+
+	},
+
+	add: function ( color ) {
+
+		this.array[ 0 ] += color.array[ 0 ];
+		this.array[ 1 ] += color.array[ 1 ];
+		this.array[ 2 ] += color.array[ 2 ];
+
+	},
+
+	sub: function ( color ) {
+
+		this.array[ 0 ] -= color.array[ 0 ];
+		this.array[ 1 ] -= color.array[ 1 ];
+		this.array[ 2 ] -= color.array[ 2 ];
+
+	},
+
+	mul: function ( color ) {
+
+		this.array[ 0 ] *= color.array[ 0 ];
+		this.array[ 1 ] *= color.array[ 1 ];
+		this.array[ 2 ] *= color.array[ 2 ];
+
+	},
+
+	div: function ( color ) {
+
+		this.array[ 0 ] /= color.array[ 0 ];
+		this.array[ 1 ] /= color.array[ 1 ];
+		this.array[ 2 ] /= color.array[ 2 ];
+
+	}
+
+};
+
+// Buffer
+
+TG.Buffer = function ( width, height) {
+
+	this.width = width;
+	this.height = height;
+
+	this.array = new Float32Array( width * height * 4 );
+
+};
+
+TG.Buffer.prototype = {
+
+	constructor: TG.Buffer,
+
+	copy: function ( buffer ) {
+
+		this.array.set( buffer.array );
+
+	},
+
+	getPixelNearest: ( function () {
+
+		var color = new TG.Color();
+
+		return function () {
+
+			if ( y > height ) y -= height;
+			if ( y < 0 ) y += height;
+			if ( x > width ) x -= width;
+			if ( x < 0 ) x += width;
+
+			var offset = Math.round( y ) * width * 4 + Math.round( x ) * 4;
+
+			color.set( this.array, offset );
+
+			return color;
+
+		};
+
+	} )(),
+
+	setPixel: function ( x, y, color ) {
+
+		var offset = Math.round( y ) * width * 4 + Math.round( x ) * 4;
+
+		this.array.set( color, offset );
+
+	}
+
+};
+
+//
 
 TG.Utils = {
 
