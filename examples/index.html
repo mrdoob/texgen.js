@@ -185,7 +185,7 @@
 
             var texture = new TG.Texture( 256, 256 )
 				.add( new TG.CheckerBoard() )
-				.pass( new TG.Transform().offset( 10, 20 ).angle( 23 ).zoom( 1.2 ) )
+				.pass( new TG.Transform().offset( 10, 20 ).angle( 23 ).scale( 2,0.5 ) )
             .toCanvas();
 
             document.body.appendChild( texture );
