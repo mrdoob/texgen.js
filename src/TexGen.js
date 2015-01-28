@@ -308,9 +308,11 @@ TG.Circle = function () {
 		},
 		getSource: function () {
 			return [
+				
 				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
-				'var value = TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
+				'var value = 1 - TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
 				'color.setRGB( value, value, value );'
+
 			].join('\n');
 		}
 	} );
@@ -340,10 +342,9 @@ TG.SineDistort = function () {
 		},
 		getSource: function () {
 			return [
-				'var sx = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
-				'var sy = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
-				'var value = TG.Utils.getPixelBilinear( src.array, sx, sy, 0, width, height );',
-				'color.setRGB( value, value, value );'
+				'var s = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
+				'var t = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
+				'color.set( src.getPixelNearest( s, t ) );',
 			].join( '\n' );
 		}
 	} );
@@ -378,15 +379,15 @@ TG.Twirl = function () {
 					'dist = Math.pow('+ radius +' - dist, 2) / ' + radius + ';',
 
 					'var angle = 2.0 * Math.PI * (dist / (' + radius + ' / ' + strength + '));',
-					'xpos = (((x - ' + position[ 0 ] + ') * Math.cos(angle)) - ((y - ' + position[ 0 ] + ') * Math.sin(angle)) + ' + position[ 0 ] + ' + 0.5);',
-					'ypos = (((y - ' + position[ 1 ] + ') * Math.cos(angle)) + ((x - ' + position[ 1 ] + ') * Math.sin(angle)) + ' + position[ 1 ] + ' + 0.5);',
+					's = (((x - ' + position[ 0 ] + ') * Math.cos(angle)) - ((y - ' + position[ 0 ] + ') * Math.sin(angle)) + ' + position[ 0 ] + ' + 0.5);',
+					't = (((y - ' + position[ 1 ] + ') * Math.cos(angle)) + ((x - ' + position[ 1 ] + ') * Math.sin(angle)) + ' + position[ 1 ] + ' + 0.5);',
 				'} else {',
-					'xpos = x;',
-					'ypos = y;',
+					's = x;',
+					't = y;',
 				'}',
 
-				'var value = TG.Utils.getPixelBilinear( src.array, xpos, ypos, 0, width, height );',
-				'color.setRGB( value, value, value );'
+				'color.set( src.getPixelNearest( s, t ) );',
+
 			].join( '\n' );
 		}
 	} );
@@ -423,8 +424,9 @@ TG.Transform = function () {
 
 						's += ' + offset[ 0 ] + ' + width /2;',
 						't += ' + offset[ 1 ] + ' + height /2;',
-						'var value = TG.Utils.getPixelBilinear( src.array, s, t, 0, width, height );',
-						'color.setRGB( value, value, value );'
+
+						'color.set( src.getPixelNearest( s, t ) );',
+
 					].join( '\n' );
 				}
 		} );
@@ -445,8 +447,8 @@ TG.Pixelate = function () {
 				'var s = ' + size[ 0 ] + ' * Math.floor(x/' + size[ 0 ] + ');',
 				'var t = ' + size[ 1 ] + ' * Math.floor(y/' + size[ 1 ] + ');',
 
-				'var value = src.getPixelNearest( s, t );',
-				'color.set( value );'
+				'color.set( src.getPixelNearest( s, t ) );'
+
 			].join( '\n' );
 		}
 	} );

@@ -172,7 +172,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.Circle().position( 128, 128 ).radius( 64 ).delta( 60 ) )
+			.add( new TG.Circle().position( 128, 128 ).radius( 64 ).delta( 60 ).color( 1, 0.25, 0.25 ) )
 			.set( new TG.Pixelate().size( 8, 8 ) )
 			.toCanvas();
 
@@ -181,7 +181,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-				.add( new TG.CheckerBoard() )
+				.add( new TG.CheckerBoard().color( 1, 1, 0 ) )
 				.set( new TG.Transform().offset( 10, 20 ).angle( 23 ).scale( 2, 0.5 ) )
 				.toCanvas();
 
