@@ -344,7 +344,7 @@ TG.SineDistort = function () {
 			return [
 				'var s = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
 				'var t = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
-				'color.set( src.getPixelNearest( s, t ) );',
+				'color.set( src.getPixelBilinear( s, t ) );',
 			].join( '\n' );
 		}
 	} );
@@ -386,7 +386,7 @@ TG.Twirl = function () {
 					't = y;',
 				'}',
 
-				'color.set( src.getPixelNearest( s, t ) );',
+				'color.set( src.getPixelBilinear( s, t ) );',
 
 			].join( '\n' );
 		}
@@ -425,7 +425,7 @@ TG.Transform = function () {
 						's += ' + offset[ 0 ] + ' + width /2;',
 						't += ' + offset[ 1 ] + ' + height /2;',
 
-						'color.set( src.getPixelNearest( s, t ) );',
+						'color.set( src.getPixelBilinear( s, t ) );',
 
 					].join( '\n' );
 				}
@@ -473,6 +473,8 @@ TG.Color.prototype = {
 		this.array[ 1 ] = color.array[ 1 ];
 		this.array[ 2 ] = color.array[ 2 ];
 
+		return this;
+
 	},
 
 	setRGB: function ( r, g, b ) {
@@ -481,6 +483,18 @@ TG.Color.prototype = {
 		this.array[ 1 ] = g;
 		this.array[ 2 ] = b;
 
+		return this;
+	},
+
+	clamp: function () {
+
+		for ( var i = 0; i < 4; i++ ) {
+			
+			if ( this.array[ i ] > 1 ) this.array[ i ] = 1;
+			if ( this.array[ i ] < 0 ) this.array[ i ] = 0;
+		}
+
+		return this;
 	},
 
 	add: function ( color ) {
@@ -489,6 +503,7 @@ TG.Color.prototype = {
 		this.array[ 1 ] += color.array[ 1 ];
 		this.array[ 2 ] += color.array[ 2 ];
 
+		return this;
 	},
 
 	sub: function ( color ) {
@@ -497,6 +512,7 @@ TG.Color.prototype = {
 		this.array[ 1 ] -= color.array[ 1 ];
 		this.array[ 2 ] -= color.array[ 2 ];
 
+		return this;
 	},
 
 	mul: function ( color ) {
@@ -505,6 +521,7 @@ TG.Color.prototype = {
 		this.array[ 1 ] *= color.array[ 1 ];
 		this.array[ 2 ] *= color.array[ 2 ];
 
+		return this;
 	},
 
 	div: function ( color ) {
@@ -513,6 +530,16 @@ TG.Color.prototype = {
 		this.array[ 1 ] /= color.array[ 1 ];
 		this.array[ 2 ] /= color.array[ 2 ];
 
+		return this;
+	},
+
+	mulScalar: function ( scalar ) {
+
+		this.array[ 0 ] *= scalar;
+		this.array[ 1 ] *= scalar;
+		this.array[ 2 ] *= scalar;
+
+		return this;
 	}
 
 };
@@ -556,7 +583,62 @@ TG.Buffer.prototype = {
 
 		return this.color;
 
-	}
+	},
+
+	getPixelBilinear: function ( x, y )
+	{	
+
+		if ( y > this.height ) y -= this.height;
+		if ( y < 0 ) y += this.height;
+		if ( x > this.width ) x -= this.width;
+		if ( x < 0 ) x += this.width;
+	
+		var px = Math.floor( x );
+		var py = Math.floor( y );
+		var p0 = px + py * this.width;
+
+		var array = this.array;
+		var color = this.color.array;
+
+		// Calculate the weights for each pixel
+		var fx = x - px;
+		var fy = y - py;
+		var fx1 = 1 - fx;
+		var fy1 = 1 - fy;
+	  
+		var w1 = fx1 * fy1;
+		var w2 = fx  * fy1;
+		var w3 = fx1 * fy ;
+		var w4 = fx  * fy ;
+
+		var p1 = p0 * 4; 							// 0 + 0 * w
+		var p2 = ( 1 + p0 ) * 4; 					// 1 + 0 * w
+		var p3 = ( 1 * this.width + p0 ) * 4; 		// 0 + 1 * w
+		var p4 = ( 1 + 1 * this.width + p0 ) * 4; 	// 1 + 1 * w	 
+		
+		// Calculate the weighted sum of pixels (for each color channel)
+		color[ 0 ] = array[ p1 + 0 ] * w1 + array[ p2 + 0 ] * w2 + array[ p3 + 0 ] * w3 + array[ p4 + 0 ] * w4;
+		color[ 1 ] = array[ p1 + 1 ] * w1 + array[ p2 + 1 ] * w2 + array[ p3 + 1 ] * w3 + array[ p4 + 1 ] * w4;
+		color[ 2 ] = array[ p1 + 2 ] * w1 + array[ p2 + 2 ] * w2 + array[ p3 + 2 ] * w3 + array[ p4 + 2 ] * w4;
+		color[ 3 ] = array[ p1 + 3 ] * w1 + array[ p2 + 3 ] * w2 + array[ p3 + 3 ] * w3 + array[ p4 + 3 ] * w4;
+	
+		return this.color;
+	},
+
+	getPixelOffset: function ( offset ) {
+
+		var array = this.array;
+		var color = this.color.array;
+		
+		offset = parseInt( offset * 4 );		
+		
+		color[ 0 ] = array[ offset     ];
+		color[ 1 ] = array[ offset + 1 ];
+		color[ 2 ] = array[ offset + 2 ];
+		color[ 3 ] = array[ offset + 3 ];
+		
+		return this.color;
+	},
 
 };
 
@@ -584,29 +666,6 @@ TG.Utils = {
 	clamp: function( value, min, max ) {
 
 		return Math.min( Math.max( value, min ), max );
-
-	},
-
-	getPixelBilinear: function( pixels, x, y, offset, width, height ) {
-
-		if ( y > height ) y -= height;
-		if ( y < 0 ) y += height;
-		if ( x > width ) x -= width;
-		if ( x < 0 ) x += width;
-
-		var percentX = x - ( x ^ 0 );
-		var percentX1 = 1.0 - percentX;
-		var percentY = y - ( y ^ 0 );
-		var fx4 = ( x ^ 0 ) * 4;
-		var cx4 = fx4 + 4;
-		var fy4 = ( y ^ 0 ) * 4;
-		var cy4wo = ( fy4 + 4 ) * width + offset;
-		var fy4wo = fy4 * width + offset;
-
-		var top = pixels[ cy4wo + fx4 ] * percentX1 + pixels[ cy4wo + cx4 ] * percentX;
-		var bottom = pixels[ fy4wo + fx4 ] * percentX1 + pixels[ fy4wo + cx4 ] * percentX;
-
-		return top * percentY + bottom * ( 1.0 - percentY );
 
 	},
 
