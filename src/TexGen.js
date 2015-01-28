@@ -360,52 +360,34 @@ TG.Transform = function () {
 
 		var offset = [ 0, 0 ];
 		var angle = 0;
-		var zoom = 1;
-		var flipH = false;
-		var flipV = false;
+		var scale = [ 1, 1 ];
 
 		return new TG.Program( {
-
 				offset: function ( x, y ) {
-
-						offset = [ x, y ];
-						return this;
+					offset = [ x, y ];
+					return this;
 				},
 				angle: function ( value ) {
-
-						angle = TG.Utils.deg2rad( value );
-						return this;
-				},
-				zoom: function ( value ) {
-
-						if ( value <= 0 ) value = 1;
-						zoom = value;
-
-						return this;
-				},
-				flipH: function ( value ) {
-
-					flipH = value;
+					angle = TG.Utils.deg2rad( value );
 					return this;
 				},
-				flipV: function ( value ) {
-
-					flipV = value;
+				scale: function ( x, y ) {
+					if ( x === 0 || y === 0 ) return;
+					scale = [ x, y ];
 					return this;
-
 				},
 				getSource: function () {
-						return [
-							'var x2 = x - width / 2;',
-							'var y2 = y - height / 2;',
+					return [
+						'var x2 = x - width / 2;',
+						'var y2 = y - height / 2;',
 
-							's = x2 * (' + ( Math.cos( angle ) / zoom ) + ') + y2 * -(' + ( Math.sin( angle ) / zoom ) + ');',
-							't = x2 * (' + ( Math.sin( angle ) / zoom ) + ') + y2 * (	' + ( Math.cos( angle ) / zoom ) + ');',
+						'var s = x2 * (' + ( Math.cos( angle ) / scale[ 0 ] ) + ') + y2 * -(' + ( Math.sin( angle ) / scale[ 0 ] ) + ');',
+						'var t = x2 * (' + ( Math.sin( angle ) / scale[ 1 ] ) + ') + y2 * (	' + ( Math.cos( angle ) / scale[ 1 ] ) + ');',
 
-							's += ' + offset[ 0 ] + ' + width /2;',
-							't += ' + offset[ 1 ] + ' + height /2;',
-							'var color = TG.Utils.getPixelBilinear(src, ' + ( flipH ? '-' : '') + 's, ' + ( flipV ? '-' : '') + 't, 0, width, height);'
-						].join( '\n' );
+						's += ' + offset[ 0 ] + ' + width /2;',
+						't += ' + offset[ 1 ] + ' + height /2;',
+						'var color = TG.Utils.getPixelBilinear(src, s, t, 0, width, height);'
+					].join( '\n' );
 				}
 		} );
 
@@ -424,12 +406,10 @@ TG.Pixelate = function () {
 		},
 		getSource: function () {
 			return [
-
 				'var s = ' + pixelSize[ 0 ] + ' * Math.floor(x/' + pixelSize[ 0 ] + ');',
 				'var t = ' + pixelSize[ 1 ] + ' * Math.floor(y/' + pixelSize[ 1 ] + ');',
 
 				'var color = TG.Utils.getPixelNearest( src, s, t, 0, width, height );'
-
 			].join( '\n' );
 		}
 	} );
