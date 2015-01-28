@@ -340,10 +340,9 @@ TG.SineDistort = function () {
 		},
 		getSource: function () {
 			return [
-				'var sx = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
-				'var sy = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
-				'var value = TG.Utils.getPixelBilinear( src.array, sx, sy, 0, width, height );',
-				'color.setRGB( value, value, value );'
+				'var s = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
+				'var t = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
+				'color.set( src.getPixelNearest( s, t ) );',
 			].join( '\n' );
 		}
 	} );
