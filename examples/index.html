@@ -6,8 +6,7 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
 			body {
-				margin: 
-				px;
+				margin: 4px;
 			}
 			canvas {
 				margin-right: 4px;
@@ -176,19 +175,19 @@
 
 			var texture = new TG.Texture( 256, 256 )
 			.add( new TG.Circle().position( 128, 128 ).radius( 64 ).delta( 60 ) )
-			.pass( new TG.Pixellate().pixelSize( 8, 8 ) )
+			.pass( new TG.Pixelate().pixelSize( 8, 8 ) )
 			.toCanvas();
 
 			document.body.appendChild( texture );
 
 			//
 
-            var texture = new TG.Texture( 256, 256 )
+			var texture = new TG.Texture( 256, 256 )
 				.add( new TG.CheckerBoard() )
 				.pass( new TG.Transform().offset( 10, 20 ).angle( 23 ).zoom( 1.2 ) )
-            .toCanvas();
+				.toCanvas();
 
-            document.body.appendChild( texture );
+			document.body.appendChild( texture );
 
 		</script>
 	</body>

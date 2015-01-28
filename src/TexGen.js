@@ -350,7 +350,6 @@ TG.Twirl = function () {
 				'}',
 
 				'var color = TG.Utils.getPixelBilinear( src, xpos, ypos, 0, width, height );'
-
 			].join( '\n' );
 		}
 	} );
@@ -359,80 +358,78 @@ TG.Twirl = function () {
 
 TG.Transform = function () {
 
-    var offset = [ 0, 0 ];
-    var angle = 0;
-    var zoom = 1;
-    var flipH = false;
-    var flipV = false;
+		var offset = [ 0, 0 ];
+		var angle = 0;
+		var zoom = 1;
+		var flipH = false;
+		var flipV = false;
 
-    return new TG.Program( {
-        
-        offset: function ( x, y ) {
-            
-            offset = [ x, y ];
-            return this;
-        },
-        angle: function ( value ) {
-            
-            angle = TG.Utils.deg2rad( value );
-            return this;
-        },
-        zoom: function ( value ) {
-            
-            if ( value <= 0 ) value = 1;
-            zoom = value;
+		return new TG.Program( {
 
-            return this;
-        },
-        flipH: function ( value ) {
+				offset: function ( x, y ) {
 
-        	flipH = value;
-        	return this;
-        },
-        flipV: function ( value ) {
+						offset = [ x, y ];
+						return this;
+				},
+				angle: function ( value ) {
 
-        	flipV = value;
-        	return this;
-        	
-        },
-        getSource: function () {
-            return [
-            	
-            	'var x2 = x - width / 2;',
-				'var y2 = y - height / 2;',
+						angle = TG.Utils.deg2rad( value );
+						return this;
+				},
+				zoom: function ( value ) {
 
-				's = x2 * (' + ( Math.cos( angle ) / zoom ) + ') + y2 * -(' + ( Math.sin( angle ) / zoom ) + ');',
-				't = x2 * (' + ( Math.sin( angle ) / zoom ) + ') + y2 * (  ' + ( Math.cos( angle ) / zoom ) + ');',
+						if ( value <= 0 ) value = 1;
+						zoom = value;
 
-				's += ' + offset[ 0 ] + ' + width /2;',
-				't += ' + offset[ 1 ] + ' + height /2;',
-	            'var color = TG.Utils.getPixelBilinear(src, ' + ( flipH ? '-' : '') + 's, ' + ( flipV ? '-' : '') + 't, 0, width, height);'
-                
-            ].join( '\n' );
-        }
-    } );
+						return this;
+				},
+				flipH: function ( value ) {
+
+					flipH = value;
+					return this;
+				},
+				flipV: function ( value ) {
+
+					flipV = value;
+					return this;
+
+				},
+				getSource: function () {
+						return [
+							'var x2 = x - width / 2;',
+							'var y2 = y - height / 2;',
+
+							's = x2 * (' + ( Math.cos( angle ) / zoom ) + ') + y2 * -(' + ( Math.sin( angle ) / zoom ) + ');',
+							't = x2 * (' + ( Math.sin( angle ) / zoom ) + ') + y2 * (	' + ( Math.cos( angle ) / zoom ) + ');',
+
+							's += ' + offset[ 0 ] + ' + width /2;',
+							't += ' + offset[ 1 ] + ' + height /2;',
+							'var color = TG.Utils.getPixelBilinear(src, ' + ( flipH ? '-' : '') + 's, ' + ( flipV ? '-' : '') + 't, 0, width, height);'
+						].join( '\n' );
+				}
+		} );
 
 };
 
-TG.Pixellate = function () {
+TG.Pixelate = function () {
 
 	var pixelSize = [ 1, 1 ];
 
 	return new TG.Program( {
 		pixelSize: function ( width, height ) {
-			
+
 			if ( height === undefined ) height = width;
 			pixelSize = [ width, height ];
 			return this;
 		},
 		getSource: function () {
 			return [
-				
-    			'var s = ' + pixelSize[ 0 ] + ' * Math.floor(x/' + pixelSize[ 0 ] + ');',
+
+				'var s = ' + pixelSize[ 0 ] + ' * Math.floor(x/' + pixelSize[ 0 ] + ');',
 				'var t = ' + pixelSize[ 1 ] + ' * Math.floor(y/' + pixelSize[ 1 ] + ');',
 
 				'var color = TG.Utils.getPixelNearest( src, s, t, 0, width, height );'
-				
+
 			].join( '\n' );
 		}
 	} );
@@ -466,10 +463,10 @@ TG.Utils = {
 
 	getPixelNearest: function( pixels, x, y, offset, width, height ) {
 
-        if ( y > height ) y -= height;
-        if ( y < 0 ) y += height;
-        if ( x > width ) x -= width;
-        if ( x < 0 ) x += width;
+		if ( y > height ) y -= height;
+		if ( y < 0 ) y += height;
+		if ( x > width ) x -= width;
+		if ( x < 0 ) x += width;
 
 		return pixels[ offset + Math.round( y ) * width * 4 + Math.round( x ) * 4 ];
 
@@ -477,10 +474,10 @@ TG.Utils = {
 
 	getPixelBilinear: function( pixels, x, y, offset, width, height ) {
 
-        if ( y > height ) y -= height;
-        if ( y < 0 ) y += height;
-        if ( x > width ) x -= width;
-        if ( x < 0 ) x += width;
+		if ( y > height ) y -= height;
+		if ( y < 0 ) y += height;
+		if ( x > width ) x -= width;
+		if ( x < 0 ) x += width;
 
 		var percentX = x - ( x ^ 0 );
 		var percentX1 = 1.0 - percentX;
@@ -503,4 +500,5 @@ TG.Utils = {
 		return deg * Math.PI / 180;
 
 	}
+
 };
