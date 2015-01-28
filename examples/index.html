@@ -189,6 +189,16 @@
 
 			document.body.appendChild( texture );
 
+			//
+
+			var texture = new TG.Texture( 256, 256 )
+				.add( new TG.CheckerBoard() )
+				.and( new TG.Circle().position( 128, 128 ).radius( 80 ) )
+				.xor( new TG.Circle().position( 128, 128 ).radius( 64 ) )
+				.toCanvas();
+
+			document.body.appendChild( texture );
+
 		</script>
 	</body>
 </html>
