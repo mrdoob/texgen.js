@@ -633,8 +633,7 @@ TG.Buffer.prototype = {
 		if ( p3 < 0 ) p3 += len;
 		if ( p4 >= len ) p4 -= len;
 		if ( p4 < 0 ) p4 += len;
-	
-		
+
 		// Calculate the weighted sum of pixels (for each color channel)
 		color[ 0 ] = array[ p1 + 0 ] * w1 + array[ p2 + 0 ] * w2 + array[ p3 + 0 ] * w3 + array[ p4 + 0 ] * w4;
 		color[ 1 ] = array[ p1 + 1 ] * w1 + array[ p2 + 1 ] * w2 + array[ p3 + 1 ] * w3 + array[ p4 + 1 ] * w4;
