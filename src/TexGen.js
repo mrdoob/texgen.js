@@ -19,7 +19,7 @@ TG.Texture.prototype = {
 
 	set: function ( program, operation ) {
 
-		if ( operation === undefined ) operation = '';
+		if ( operation === undefined ) operation = function( x, y ) { return y; };
 
 		var modulate = program.getColor();
 		var source = program.getSource();
@@ -32,52 +32,64 @@ TG.Texture.prototype = {
 			'var width = dst.width, height = dst.height;',
 			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
 				'	' + source,
-				'	array[ i + 0 ] ' + operation + '= color.array[ 0 ] * ' + modulate[ 0 ] + ';',
-				'	array[ i + 1 ] ' + operation + '= color.array[ 1 ] * ' + modulate[ 1 ] + ';',
-				'	array[ i + 2 ] ' + operation + '= color.array[ 2 ] * ' + modulate[ 2 ] + ';',
+				'	array[ i + 0 ] = operation( array[ i + 0 ], color.array[ 0 ] * ' + modulate[ 0 ] + ');',
+				'	array[ i + 1 ] = operation( array[ i + 1 ], color.array[ 1 ] * ' + modulate[ 1 ] + ');',
+				'	array[ i + 2 ] = operation( array[ i + 2 ], color.array[ 2 ] * ' + modulate[ 2 ] + ');',
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
 
-		new Function( 'dst, src, color', string )( this.buffer, this.bufferCopy, this.color );
+		new Function( 'operation, dst, src, color', string )( operation, this.buffer, this.bufferCopy, this.color );
 
 		return this;
 
 	},
 
+	min: function ( program ) {
+
+		return this.set( program, function( x, y ) { return Math.min( x, y ); } );
+
+	},
+
+	max: function ( program ) {
+
+		return this.set( program, function( x, y ) { return Math.max( x, y ); } );
+
+	},
+
 	add: function ( program ) {
 
-		return this.set( program, '+' );
+		return this.set( program, function( x, y ) { return x + y; } );
 
 	},
 
 	sub: function ( program ) {
 
-		return this.set( program, '-' );
+		return this.set( program, function( x, y ) { return x - y; } );
 
 	},
 
 	mul: function ( program ) {
 
-		return this.set( program, '*' );
+		return this.set( program, function( x, y ) { return x * y; } );
 
 	},
 
 	div: function ( program ) {
 
-		return this.set( program, '/' );
+		return this.set( program, function( x, y ) { return x / y; } );
 
 	},
 
 	and: function ( program ) {
 
-		return this.set( program, '&' );
+		return this.set( program, function( x, y ) { return x & y; } );
 
 	},
 
 	xor: function ( program ) {
 
-		return this.set( program, '^' );
+		return this.set( program, function( x, y ) { return x ^ y; } );
 
 	},
 
@@ -568,9 +580,9 @@ TG.Buffer.prototype = {
 
 	getPixelNearest: function ( x, y ) {
 
-		if ( y > this.height ) y -= this.height;
+		if ( y >= this.height ) y -= this.height;
 		if ( y < 0 ) y += this.height;
-		if ( x > this.width ) x -= this.width;
+		if ( x >= this.width ) x -= this.width;
 		if ( x < 0 ) x += this.width;
 
 		var array = this.array;
@@ -588,11 +600,6 @@ TG.Buffer.prototype = {
 	getPixelBilinear: function ( x, y )
 	{	
 
-		if ( y > this.height ) y -= this.height;
-		if ( y < 0 ) y += this.height;
-		if ( x > this.width ) x -= this.width;
-		if ( x < 0 ) x += this.width;
-	
 		var px = Math.floor( x );
 		var py = Math.floor( y );
 		var p0 = px + py * this.width;
@@ -615,7 +622,18 @@ TG.Buffer.prototype = {
 		var p2 = ( 1 + p0 ) * 4; 					// 1 + 0 * w
 		var p3 = ( 1 * this.width + p0 ) * 4; 		// 0 + 1 * w
 		var p4 = ( 1 + 1 * this.width + p0 ) * 4; 	// 1 + 1 * w	 
-		
+
+		var len = this.width * this.height * 4;
+
+		if ( p1 >= len ) p1 -= len;
+		if ( p1 < 0 ) p1 += len;
+		if ( p2 >= len ) p2 -= len;
+		if ( p2 < 0 ) p2 += len;
+		if ( p3 >= len ) p3 -= len;
+		if ( p3 < 0 ) p3 += len;
+		if ( p4 >= len ) p4 -= len;
+		if ( p4 < 0 ) p4 += len;
+
 		// Calculate the weighted sum of pixels (for each color channel)
 		color[ 0 ] = array[ p1 + 0 ] * w1 + array[ p2 + 0 ] * w2 + array[ p3 + 0 ] * w3 + array[ p4 + 0 ] * w4;
 		color[ 1 ] = array[ p1 + 1 ] * w1 + array[ p2 + 1 ] * w2 + array[ p3 + 1 ] * w3 + array[ p4 + 1 ] * w4;
