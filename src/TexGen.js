@@ -41,14 +41,14 @@ TG.Texture.prototype = {
 			'var width = dst.width, height = dst.height;',
 			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
 				'	' + program.getSource(),
-				'	array[ i     ] = operation( array[ i     ], color[ 0 ] * tint[ 0 ] );',
-				'	array[ i + 1 ] = operation( array[ i + 1 ], color[ 1 ] * tint[ 1 ] );',
-				'	array[ i + 2 ] = operation( array[ i + 2 ], color[ 2 ] * tint[ 2 ] );',
+				'	array[ i     ] = op( array[ i     ], color[ 0 ] * tint[ 0 ] );',
+				'	array[ i + 1 ] = op( array[ i + 1 ], color[ 1 ] * tint[ 1 ] );',
+				'	array[ i + 2 ] = op( array[ i + 2 ], color[ 2 ] * tint[ 2 ] );',
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
 
-		new Function( 'operation, dst, src, color, params, tint', string )( operation, this.buffer, this.bufferCopy, this.color, program.getParams(), program.getTint() );
+		new Function( 'op, dst, src, color, params, tint', string )( operation, this.buffer, this.bufferCopy, this.color, program.getParams(), program.getTint() );
 
 		return this;
 
