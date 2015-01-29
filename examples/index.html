@@ -195,6 +195,15 @@
 				.xor( new TG.Circle().position( 128, 128 ).radius( 64 ) )
 				.toCanvas();
 
+
+			//
+
+			var texture = new TG.Texture( 256, 256 )
+			.add( new TG.CheckerBoard().size( 16,16 ) )
+			.set( new TG.Twirl().radius( 128 ).strength ( 75 ) )
+			.min( new TG.Circle().position( 128, 128 ).radius( 128 ).delta( 128 ) )
+			.toCanvas();
+
 			document.body.appendChild( texture );
 
 		</script>
