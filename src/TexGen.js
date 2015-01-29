@@ -2,7 +2,19 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-var TG = {};
+var TG = {
+	OP: {
+		SET: function( x, y ) { return y; },
+		ADD: function( x, y ) { return x + y; },
+		SUB: function( x, y ) { return x - y; },
+		MUL: function( x, y ) { return x * y; },
+		DIV: function( x, y ) { return x / y; },
+		AND: function( x, y ) { return x & y; },
+		XOR: function( x, y ) { return x ^ y; },
+		MIN: function( x, y ) { return Math.min( x, y ); },
+		MAX: function( x, y ) { return Math.max( x, y ); }
+	}
+};
 
 TG.Texture = function ( width, height ) {
 
@@ -19,7 +31,7 @@ TG.Texture.prototype = {
 
 	set: function ( program, operation ) {
 
-		if ( operation === undefined ) operation = function( x, y ) { return y; };
+		if ( operation === undefined ) operation = TG.OP.SET;
 
 		var modulate = program.getColor();
 		var source = program.getSource();
@@ -45,51 +57,51 @@ TG.Texture.prototype = {
 
 	},
 
-	min: function ( program ) {
-
-		return this.set( program, function( x, y ) { return Math.min( x, y ); } );
-
-	},
-
-	max: function ( program ) {
-
-		return this.set( program, function( x, y ) { return Math.max( x, y ); } );
-
-	},
-
 	add: function ( program ) {
 
-		return this.set( program, function( x, y ) { return x + y; } );
+		return this.set( program, TG.OP.ADD );
 
 	},
 
 	sub: function ( program ) {
 
-		return this.set( program, function( x, y ) { return x - y; } );
+		return this.set( program, TG.OP.SUB );
 
 	},
 
 	mul: function ( program ) {
 
-		return this.set( program, function( x, y ) { return x * y; } );
+		return this.set( program, TG.OP.MUL );
 
 	},
 
 	div: function ( program ) {
 
-		return this.set( program, function( x, y ) { return x / y; } );
+		return this.set( program, TG.OP.DIV );
 
 	},
 
 	and: function ( program ) {
 
-		return this.set( program, function( x, y ) { return x & y; } );
+		return this.set( program, TG.OP.AND );
 
 	},
 
 	xor: function ( program ) {
 
-		return this.set( program, function( x, y ) { return x ^ y; } );
+		return this.set( program, TG.OP.XOR );
+
+	},
+
+	min: function ( program ) {
+
+		return this.set( program, TG.OP.MIN );
+
+	},
+
+	max: function ( program ) {
+
+		return this.set( program, TG.OP.MAX );
 
 	},
 
