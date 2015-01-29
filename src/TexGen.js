@@ -661,6 +661,8 @@ TG.GradientInterpolator.prototype = {
 
 	getColorAt: function ( pos ) {
 
+		if (pos > 1) pos = 1;
+
 		for (var i = 0; this.points[ i + 1 ].pos < pos; i++ );
    		
    		var p1 = this.points[ i ];
@@ -705,12 +707,47 @@ TG.GradientInterpolator.prototype = {
 
 };
 
-TG.Gradient = function () {
+TG.RadialGradient = function () {
 
 	var params = {
 		interpolation: TG.ColorInterpolator.LINEAR,
 		gradient: new TG.GradientInterpolator(),
-		type: 0, // 0: lineal, 1: radial
+		radius: 255,
+	};
+
+	return new TG.Program( {
+		
+		interpolation: function ( value ) {
+			params.interpolation = value;
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		point: function ( position, color ) {
+			params.gradient.addPoint( position, color );
+			return this;
+		},
+		getSourcePreLoop: function() {
+			return 'var gradient = new TG.GradientInterpolator().set( '+ JSON.stringify( params.gradient.points ) +').interpolation(' + params.interpolation + ');';
+		},
+		getSource: function () {
+			return [
+				
+				'var dist = TG.Utils.distance( x, y, width / 2, height / 2 );',
+				'color = gradient.getColorAt( dist / params.radius );',
+
+			].join('\n');
+		}
+	} );
+
+};
+
+TG.LinearGradient = function () {
+
+	var params = {
+		interpolation: TG.ColorInterpolator.LINEAR,
+		gradient: new TG.GradientInterpolator(),
 	};
 
 	return new TG.Program( {
