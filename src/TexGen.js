@@ -580,9 +580,9 @@ TG.Buffer.prototype = {
 
 	getPixelNearest: function ( x, y ) {
 
-		if ( y > this.height ) y -= this.height;
+		if ( y >= this.height ) y -= this.height;
 		if ( y < 0 ) y += this.height;
-		if ( x > this.width ) x -= this.width;
+		if ( x >= this.width ) x -= this.width;
 		if ( x < 0 ) x += this.width;
 
 		var array = this.array;
@@ -600,11 +600,6 @@ TG.Buffer.prototype = {
 	getPixelBilinear: function ( x, y )
 	{	
 
-		if ( y > this.height ) y -= this.height;
-		if ( y < 0 ) y += this.height;
-		if ( x > this.width ) x -= this.width;
-		if ( x < 0 ) x += this.width;
-	
 		var px = Math.floor( x );
 		var py = Math.floor( y );
 		var p0 = px + py * this.width;
@@ -627,6 +622,18 @@ TG.Buffer.prototype = {
 		var p2 = ( 1 + p0 ) * 4; 					// 1 + 0 * w
 		var p3 = ( 1 * this.width + p0 ) * 4; 		// 0 + 1 * w
 		var p4 = ( 1 + 1 * this.width + p0 ) * 4; 	// 1 + 1 * w	 
+
+		var len = this.width * this.height * 4;
+
+		if ( p1 >= len ) p1 -= len;
+		if ( p1 < 0 ) p1 += len;
+		if ( p2 >= len ) p2 -= len;
+		if ( p2 < 0 ) p2 += len;
+		if ( p3 >= len ) p3 -= len;
+		if ( p3 < 0 ) p3 += len;
+		if ( p4 >= len ) p4 -= len;
+		if ( p4 < 0 ) p4 += len;
+	
 		
 		// Calculate the weighted sum of pixels (for each color channel)
 		color[ 0 ] = array[ p1 + 0 ] * w1 + array[ p2 + 0 ] * w2 + array[ p3 + 0 ] * w3 + array[ p4 + 0 ] * w4;
