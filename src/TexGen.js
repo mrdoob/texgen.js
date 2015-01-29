@@ -676,7 +676,7 @@ TG.GradientInterpolator.prototype = {
 		}
 		else if ( this.interp == TG.GradientInterpolation.LINEAR ) {
 
-   			return mixColors( p1.color, p2.color, delta );
+   			return TG.Utils.mixColors( p1.color, p2.color, delta );
 
 		}
 		else if ( this.interp == TG.GradientInterpolation.SPLINE ) {
@@ -705,37 +705,28 @@ TG.GradientInterpolator.prototype = {
 
 };
 
-var mixColors = function( c1, c2, delta ) {
-	
-	return [
-		c1[ 0 ] * ( 1 - delta ) + c2[ 0 ] * delta,
-		c1[ 1 ] * ( 1 - delta ) + c2[ 1 ] * delta,
-		c1[ 2 ] * ( 1 - delta ) + c2[ 2 ] * delta,
-		c1[ 3 ] * ( 1 - delta ) + c2[ 3 ] * delta,
-	];
-}
-
 TG.Gradient = function () {
 
-	var interpolation = TG.GradientInterpolation.LINEAR;
-	var gradient = new TG.GradientInterpolator();
+	var params = {
+		interpolation: TG.GradientInterpolation.LINEAR,
+		gradient: new TG.GradientInterpolator()
+	};
 
 	return new TG.Program( {
 		
-		size: function ( x, y ) {
-			size = [ x, y ];
-			return this;
-		},
 		interpolation: function ( value ) {
-			interpolation = value;
+			params.interpolation = value;
 			return this;
 		},
-		addPoint: function ( position, color ) {
-			gradient.addPoint( position, color );
+		getParams: function () {
+			return params;
+		},
+		point: function ( position, color ) {
+			params.gradient.addPoint( position, color );
 			return this;
 		},
 		getSourcePreLoop: function() {
-			return 'var gradient = new TG.GradientInterpolator().set( '+ JSON.stringify( gradient.points ) +').interpolation(' + interpolation + ');';
+			return 'var gradient = new TG.GradientInterpolator().set( '+ JSON.stringify( params.gradient.points ) +').interpolation(' + params.interpolation + ');';
 		},
 		getSource: function () {
 			return [
@@ -752,7 +743,6 @@ TG.Gradient = function () {
 };
 
 
-
 //
 
 TG.Utils = {
@@ -765,6 +755,16 @@ TG.Utils = {
 		// Evaluate polynomial
 		return x * x * ( 3 - 2 * x );
 
+	},
+
+	mixColors: function( c1, c2, delta ) {
+	
+		return [
+			c1[ 0 ] * ( 1 - delta ) + c2[ 0 ] * delta,
+			c1[ 1 ] * ( 1 - delta ) + c2[ 1 ] * delta,
+			c1[ 2 ] * ( 1 - delta ) + c2[ 2 ] * delta,
+			c1[ 3 ] * ( 1 - delta ) + c2[ 3 ] * delta,
+		];
 	},
 
 	distance: function( x0, y0, x1, y1 ) {

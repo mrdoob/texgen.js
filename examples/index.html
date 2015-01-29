@@ -209,7 +209,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.Gradient().interpolation( 0 ).addPoint( 0, [1,1,0,0] ).addPoint( 0.25, [0.2,0,0.5,1]).addPoint( 0.5, [0.5,0.2,0.5,1]).addPoint( 1, [1,0,1,1]) )
+			.add( new TG.Gradient().interpolation( 0 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
 			.toCanvas();
 
 			document.body.appendChild( texture );
@@ -217,7 +217,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.Gradient().interpolation( 1 ).addPoint( 0, [1,1,0,0] ).addPoint( 0.25, [0.2,0,0.5,1]).addPoint( 0.5, [0.5,0.2,0.5,1]).addPoint( 1, [1,0,1,1]) )
+			.add( new TG.Gradient().interpolation( 1 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
 			.toCanvas();
 
 			document.body.appendChild( texture );
@@ -225,7 +225,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.Gradient().interpolation( 2 ).addPoint( 0, [1,1,0,0] ).addPoint( 0.25, [0.2,0,0.5,1]).addPoint( 0.5, [0.5,0.2,0.5,1]).addPoint( 1, [1,0,1,1]) )
+			.add( new TG.Gradient().interpolation( 2 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
 			.toCanvas();
 
 			document.body.appendChild( texture );
