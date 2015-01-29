@@ -732,12 +732,7 @@ TG.Gradient = function () {
 		getSource: function () {
 			return [
 				
-				//'var color = gradient.getColorAt( x / width );',
-				'var color = gradient.getColorAt( Math.cos(x) / width );',
-
-				'color[ 0 ] = color[ 0 ];',
-				'color[ 1 ] = color[ 1 ];',
-				'color[ 2 ] = color[ 2 ];'
+				'color = gradient.getColorAt( x / width );',
 
 			].join('\n');
 		}
