@@ -18,7 +18,7 @@ var TG = {
 
 TG.Texture = function ( width, height ) {
 
-	this.color = new TG.Color();
+	this.color = new Float32Array( 4 );
 
 	this.buffer = new TG.Buffer( width, height );
 	this.bufferCopy = new TG.Buffer( width, height );
@@ -44,9 +44,9 @@ TG.Texture.prototype = {
 			'var width = dst.width, height = dst.height;',
 			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
 				'	' + source,
-				'	array[ i + 0 ] = operation( array[ i + 0 ], color.array[ 0 ] * ' + modulate[ 0 ] + ');',
-				'	array[ i + 1 ] = operation( array[ i + 1 ], color.array[ 1 ] * ' + modulate[ 1 ] + ');',
-				'	array[ i + 2 ] = operation( array[ i + 2 ], color.array[ 2 ] * ' + modulate[ 2 ] + ');',
+				'	array[ i + 0 ] = operation( array[ i + 0 ], color[ 0 ] * ' + modulate[ 0 ] + ');',
+				'	array[ i + 1 ] = operation( array[ i + 1 ], color[ 1 ] * ' + modulate[ 1 ] + ');',
+				'	array[ i + 2 ] = operation( array[ i + 2 ], color[ 2 ] * ' + modulate[ 2 ] + ');',
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
@@ -165,7 +165,11 @@ TG.Number = function () {
 
 	return new TG.Program( {
 		getSource: function () {
-			return 'color.setRGB( 1, 1, 1 );';
+			return [
+				'color[ 0 ] = 1;',
+				'color[ 1 ] = 1;',
+				'color[ 2 ] = 1;'
+			].join('\n');
 		}
 	} );
 
@@ -188,7 +192,9 @@ TG.SinX = function () {
 		getSource: function () {
 			return [
 				'var value = Math.sin( ( x + ' + offset + ' ) * ' + frequency + ' );',
-				'color.setRGB( value, value, value );'
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
 			].join('\n');
 		}
 	} );
@@ -212,7 +218,9 @@ TG.SinY = function () {
 		getSource: function () {
 			return [
 				'var value = Math.sin( ( y + ' + offset + ' ) * ' + frequency + ' );',
-				'color.setRGB( value, value, value );'
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
 			].join('\n');
 		}
 	} );
@@ -225,7 +233,9 @@ TG.OR = function () {
 		getSource: function () {
 			return [
 				'var value = ( x | y ) / width;',
-				'color.setRGB( value, value, value );'
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
 			].join('\n');
 		}
 	} );
@@ -238,7 +248,9 @@ TG.XOR = function () {
 		getSource: function () {
 			return [
 				'var value = ( x ^ y ) / width;',
-				'color.setRGB( value, value, value );'
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
 			].join('\n');
 		}
 	} );
@@ -251,7 +263,9 @@ TG.Noise = function () {
 		getSource: function () {
 			return [
 				'var value = Math.random();',
-				'color.setRGB( value, value, value );'
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
 			].join('\n');
 		}
 	} );
@@ -280,7 +294,9 @@ TG.CheckerBoard = function () {
 		getSource: function () {
 			return [
 				'var value = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1',
-				'color.setRGB( value, value, value );'
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
 			].join('\n');
 		}
 	} );
@@ -304,7 +320,9 @@ TG.Rect = function () {
 		getSource: function () {
 			return [
 				'var value = ( x >= ' + position[ 0 ] + ' && x <= ' + ( position[ 0 ] + size[ 0 ] ) + ' && y <= ' + ( position[ 1 ] + size[ 1 ] ) + ' && y >= ' + position[ 1 ] + ' ) ? 1 : 0;',
-				'color.setRGB( value, value, value );'
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
 			].join('\n');
 		}
 	} );
@@ -332,11 +350,11 @@ TG.Circle = function () {
 		},
 		getSource: function () {
 			return [
-				
 				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
 				'var value = 1 - TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
-				'color.setRGB( value, value, value );'
-
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
 			].join('\n');
 		}
 	} );
@@ -411,7 +429,6 @@ TG.Twirl = function () {
 				'}',
 
 				'color.set( src.getPixelBilinear( s, t ) );',
-
 			].join( '\n' );
 		}
 	} );
@@ -450,7 +467,6 @@ TG.Transform = function () {
 						't += ' + offset[ 1 ] + ' + height /2;',
 
 						'color.set( src.getPixelBilinear( s, t ) );',
-
 					].join( '\n' );
 				}
 		} );
@@ -472,99 +488,9 @@ TG.Pixelate = function () {
 				'var t = ' + size[ 1 ] + ' * Math.floor(y/' + size[ 1 ] + ');',
 
 				'color.set( src.getPixelNearest( s, t ) );'
-
 			].join( '\n' );
 		}
 	} );
-
-};
-
-// Color
-
-TG.Color = function () {
-
-	this.array = new Float32Array( 4 );
-
-};
-
-TG.Color.prototype = {
-
-	constructor: TG.Color,
-
-	set: function ( color ) {
-
-		this.array[ 0 ] = color.array[ 0 ];
-		this.array[ 1 ] = color.array[ 1 ];
-		this.array[ 2 ] = color.array[ 2 ];
-
-		return this;
-
-	},
-
-	setRGB: function ( r, g, b ) {
-
-		this.array[ 0 ] = r;
-		this.array[ 1 ] = g;
-		this.array[ 2 ] = b;
-
-		return this;
-	},
-
-	clamp: function () {
-
-		for ( var i = 0; i < 4; i++ ) {
-			
-			if ( this.array[ i ] > 1 ) this.array[ i ] = 1;
-			if ( this.array[ i ] < 0 ) this.array[ i ] = 0;
-		}
-
-		return this;
-	},
-
-	add: function ( color ) {
-
-		this.array[ 0 ] += color.array[ 0 ];
-		this.array[ 1 ] += color.array[ 1 ];
-		this.array[ 2 ] += color.array[ 2 ];
-
-		return this;
-	},
-
-	sub: function ( color ) {
-
-		this.array[ 0 ] -= color.array[ 0 ];
-		this.array[ 1 ] -= color.array[ 1 ];
-		this.array[ 2 ] -= color.array[ 2 ];
-
-		return this;
-	},
-
-	mul: function ( color ) {
-
-		this.array[ 0 ] *= color.array[ 0 ];
-		this.array[ 1 ] *= color.array[ 1 ];
-		this.array[ 2 ] *= color.array[ 2 ];
-
-		return this;
-	},
-
-	div: function ( color ) {
-
-		this.array[ 0 ] /= color.array[ 0 ];
-		this.array[ 1 ] /= color.array[ 1 ];
-		this.array[ 2 ] /= color.array[ 2 ];
-
-		return this;
-	},
-
-	mulScalar: function ( scalar ) {
-
-		this.array[ 0 ] *= scalar;
-		this.array[ 1 ] *= scalar;
-		this.array[ 2 ] *= scalar;
-
-		return this;
-	}
 
 };
 
@@ -576,7 +502,7 @@ TG.Buffer = function ( width, height ) {
 	this.height = height;
 
 	this.array = new Float32Array( width * height * 4 );
-	this.color = new TG.Color();
+	this.color = new Float32Array( 4 );
 
 };
 
@@ -598,7 +524,7 @@ TG.Buffer.prototype = {
 		if ( x < 0 ) x += this.width;
 
 		var array = this.array;
-		var color = this.color.array;
+		var color = this.color;
 		var offset = Math.round( y ) * this.width * 4 + Math.round( x ) * 4;
 
 		color[ 0 ] = array[ offset     ];
@@ -609,22 +535,21 @@ TG.Buffer.prototype = {
 
 	},
 
-	getPixelBilinear: function ( x, y )
-	{	
+	getPixelBilinear: function ( x, y ) {
 
 		var px = Math.floor( x );
 		var py = Math.floor( y );
 		var p0 = px + py * this.width;
 
 		var array = this.array;
-		var color = this.color.array;
+		var color = this.color;
 
 		// Calculate the weights for each pixel
 		var fx = x - px;
 		var fy = y - py;
 		var fx1 = 1 - fx;
 		var fy1 = 1 - fy;
-	  
+
 		var w1 = fx1 * fy1;
 		var w2 = fx  * fy1;
 		var w3 = fx1 * fy ;
@@ -633,7 +558,7 @@ TG.Buffer.prototype = {
 		var p1 = p0 * 4; 							// 0 + 0 * w
 		var p2 = ( 1 + p0 ) * 4; 					// 1 + 0 * w
 		var p3 = ( 1 * this.width + p0 ) * 4; 		// 0 + 1 * w
-		var p4 = ( 1 + 1 * this.width + p0 ) * 4; 	// 1 + 1 * w	 
+		var p4 = ( 1 + 1 * this.width + p0 ) * 4; 	// 1 + 1 * w
 
 		var len = this.width * this.height * 4;
 
@@ -651,22 +576,22 @@ TG.Buffer.prototype = {
 		color[ 1 ] = array[ p1 + 1 ] * w1 + array[ p2 + 1 ] * w2 + array[ p3 + 1 ] * w3 + array[ p4 + 1 ] * w4;
 		color[ 2 ] = array[ p1 + 2 ] * w1 + array[ p2 + 2 ] * w2 + array[ p3 + 2 ] * w3 + array[ p4 + 2 ] * w4;
 		color[ 3 ] = array[ p1 + 3 ] * w1 + array[ p2 + 3 ] * w2 + array[ p3 + 3 ] * w3 + array[ p4 + 3 ] * w4;
-	
+
 		return this.color;
 	},
 
 	getPixelOffset: function ( offset ) {
 
 		var array = this.array;
-		var color = this.color.array;
-		
-		offset = parseInt( offset * 4 );		
-		
+		var color = this.color;
+
+		offset = parseInt( offset * 4 );
+
 		color[ 0 ] = array[ offset     ];
 		color[ 1 ] = array[ offset + 1 ];
 		color[ 2 ] = array[ offset + 2 ];
 		color[ 3 ] = array[ offset + 3 ];
-		
+
 		return this.color;
 	},
 
