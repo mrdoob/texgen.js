@@ -234,7 +234,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.RadialGradient().interpolation( 0 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
+			.add( new TG.RadialGradient().center( 0, 0 ).radius( 512 ).interpolation( 0 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
 			.toCanvas();
 
 			document.body.appendChild( texture );
@@ -242,7 +242,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.RadialGradient().interpolation( 1 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
+			.add( new TG.RadialGradient().center( 128, 128 ).radius( 64 ).interpolation( 1 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
 			.toCanvas();
 
 			document.body.appendChild( texture );
@@ -250,7 +250,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.RadialGradient().interpolation( 2 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
+			.add( new TG.RadialGradient().center( 128, 0 ).radius( 200 ).interpolation( 2 ).point( 0, [1,1,0,0] ).point( 0.25, [0.2,0,0.5,1]).point( 0.5, [0.5,0.2,0.5,1]).point( 1, [1,0,1,1]) )
 			.toCanvas();
 
 			document.body.appendChild( texture );

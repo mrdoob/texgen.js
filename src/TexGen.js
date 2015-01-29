@@ -713,12 +713,21 @@ TG.RadialGradient = function () {
 		interpolation: TG.ColorInterpolator.LINEAR,
 		gradient: new TG.GradientInterpolator(),
 		radius: 255,
+		center: [ 128, 128 ],
 	};
 
 	return new TG.Program( {
-		
+
+		radius: function ( value ) {
+			params.radius = value;
+			return this;
+		},
 		interpolation: function ( value ) {
 			params.interpolation = value;
+			return this;
+		},
+		center: function ( x, y ) {
+			params.center = [ x, y ];
 			return this;
 		},
 		getParams: function () {
@@ -734,7 +743,7 @@ TG.RadialGradient = function () {
 		getSource: function () {
 			return [
 				
-				'var dist = TG.Utils.distance( x, y, width / 2, height / 2 );',
+				'var dist = TG.Utils.distance( x, y, params.center[ 0 ], params.center[ 1 ] );',
 				'color = gradient.getColorAt( dist / params.radius );',
 
 			].join('\n');
