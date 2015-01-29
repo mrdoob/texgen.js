@@ -19,12 +19,12 @@
 		<script>
 
 			var texture = new TG.Texture( 256, 256 )
-				.add( new TG.XOR().color( 1, 0.5, 0.7 ) )
-				.add( new TG.SinX().frequency( 0.004 ).color( 0.25, 0, 0 ) )
-				.sub( new TG.SinY().frequency( 0.004 ).color( 0.25, 0, 0 ) )
-				.add( new TG.SinX().frequency( 0.0065 ).color( 0.1, 0.5, 0.2 ) )
-				.add( new TG.SinY().frequency( 0.0065 ).color( 0, 0.4, 0.5 ) )
-				.add( new TG.Noise().color( 0.1, 0.1, 0.2 ) )
+				.add( new TG.XOR().tint( 1, 0.5, 0.7 ) )
+				.add( new TG.SinX().frequency( 0.004 ).tint( 0.25, 0, 0 ) )
+				.sub( new TG.SinY().frequency( 0.004 ).tint( 0.25, 0, 0 ) )
+				.add( new TG.SinX().frequency( 0.0065 ).tint( 0.1, 0.5, 0.2 ) )
+				.add( new TG.SinY().frequency( 0.0065 ).tint( 0, 0.4, 0.5 ) )
+				.add( new TG.Noise().tint( 0.1, 0.1, 0.2 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -32,14 +32,14 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-				.add( new TG.SinX().offset( - 16 ).frequency( 0.03 ).color( 0.1, 0.25, 0.5 ) )
-				.add( new TG.SinY().offset( - 16 ).frequency( 0.03 ).color( 0.1, 0.25, 0.5 ) )
-				.add( new TG.Number().color( 0.75, 0.5, 0.5 ) )
-				.add( new TG.SinX().frequency( 0.03 ).color( 0.2, 0.2, 0.2 ) )
-				.add( new TG.SinY().frequency( 0.03 ).color( 0.2, 0.2, 0.2 ) )
-				.add( new TG.Noise().color( 0.1, 0, 0 ) )
-				.add( new TG.Noise().color( 0, 0.1, 0 ) )
-				.add( new TG.Noise().color( 0, 0, 0.1 ) )
+				.add( new TG.SinX().offset( - 16 ).frequency( 0.03 ).tint( 0.1, 0.25, 0.5 ) )
+				.add( new TG.SinY().offset( - 16 ).frequency( 0.03 ).tint( 0.1, 0.25, 0.5 ) )
+				.add( new TG.Number().tint( 0.75, 0.5, 0.5 ) )
+				.add( new TG.SinX().frequency( 0.03 ).tint( 0.2, 0.2, 0.2 ) )
+				.add( new TG.SinY().frequency( 0.03 ).tint( 0.2, 0.2, 0.2 ) )
+				.add( new TG.Noise().tint( 0.1, 0, 0 ) )
+				.add( new TG.Noise().tint( 0, 0.1, 0 ) )
+				.add( new TG.Noise().tint( 0, 0, 0.1 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -53,7 +53,7 @@
 				.mul( new TG.SinY().frequency( 0.1 ) )
 				.mul( new TG.SinY().frequency( 0.05 ) )
 				.mul( new TG.SinY().frequency( 0.025 ) )
-				.add( new TG.SinX().frequency( 0.004 ).color( -0.25, 0.1, 0.6 ) )
+				.add( new TG.SinX().frequency( 0.004 ).tint( -0.25, 0.1, 0.6 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -62,11 +62,11 @@
 
 			var texture = new TG.Texture( 256, 256 )
 				.add( new TG.XOR() )
-				.mul( new TG.OR().color( 0.5, 0.8, 0.5 ) )
+				.mul( new TG.OR().tint( 0.5, 0.8, 0.5 ) )
 				.mul( new TG.SinX().frequency( 0.0312 ) )
 				.div( new TG.SinY().frequency( 0.0312 ) )
-				.add( new TG.SinX().frequency( 0.004 ).color( 0.5, 0, 0 ) )
-				.add( new TG.Noise().color( 0.1, 0.1, 0.2 ) )
+				.add( new TG.SinX().frequency( 0.004 ).tint( 0.5, 0, 0 ) )
+				.add( new TG.Noise().tint( 0.1, 0.1, 0.2 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -78,7 +78,7 @@
 				.mul( new TG.SinY().frequency( 0.0075 ) )
 				.add( new TG.SinX().frequency( 0.0225 ) )
 				.mul( new TG.SinY().frequency( 0.015 ) )
-				.add( new TG.Noise().color( 0.1, 0.1, 0.3 ) )
+				.add( new TG.Noise().tint( 0.1, 0.1, 0.3 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -90,8 +90,8 @@
 				.mul( new TG.SinX().frequency( 0.08 ) )
 				.add( new TG.SinY().frequency( 0.05 ) )
 				.mul( new TG.SinY().frequency( 0.08 ) )
-				.div( new TG.Number().color( 1, 2, 1 ) )
-				.add( new TG.SinX().frequency( 0.003 ).color( 0.5, 0, 0 ) )
+				.div( new TG.Number().tint( 1, 2, 1 ) )
+				.add( new TG.SinX().frequency( 0.003 ).tint( 0.5, 0, 0 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -101,9 +101,9 @@
 			var texture = new TG.Texture( 256, 256 )
 				.add( new TG.SinX().frequency( 0.066 ) )
 				.add( new TG.SinY().frequency( 0.066 ) )
-				.mul( new TG.SinX().offset( 32 ).frequency( 0.044 ).color( 2, 2, 2 ) )
-				.mul( new TG.SinY().offset( 16 ).frequency( 0.044 ).color( 2, 2, 2 ) )
-				.sub( new TG.Number().color( 0.5, 2, 4 ) )
+				.mul( new TG.SinX().offset( 32 ).frequency( 0.044 ).tint( 2, 2, 2 ) )
+				.mul( new TG.SinY().offset( 16 ).frequency( 0.044 ).tint( 2, 2, 2 ) )
+				.sub( new TG.Number().tint( 0.5, 2, 4 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -114,10 +114,10 @@
 				.add( new TG.SinX().frequency( 0.004 ) )
 				.mul( new TG.SinY().frequency( 0.004 ) )
 				.mul( new TG.SinY().offset( 32 ).frequency( 0.02 ) )
-				.div( new TG.SinX().frequency( 0.02 ).color( 8, 5, 4 ) )
-				.add( new TG.Noise().color( 0.1, 0, 0 ) )
-				.add( new TG.Noise().color( 0, 0.1, 0 ) )
-				.add( new TG.Noise().color( 0, 0, 0.1 ) )
+				.div( new TG.SinX().frequency( 0.02 ).tint( 8, 5, 4 ) )
+				.add( new TG.Noise().tint( 0.1, 0, 0 ) )
+				.add( new TG.Noise().tint( 0, 0.1, 0 ) )
+				.add( new TG.Noise().tint( 0, 0, 0.1 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -126,9 +126,9 @@
 
 			var texture = new TG.Texture( 256, 256 )
 				.add( new TG.CheckerBoard() )
-				.add( new TG.CheckerBoard().size( 2, 2 ).color( 0.5, 0, 0 ) )
-				.add( new TG.CheckerBoard().size( 8, 8 ).color( 1, 0.5, 0.5 ) )
-				.sub( new TG.CheckerBoard().offset( 16, 16 ).color( 0.5, 0.5, 0 ) )
+				.add( new TG.CheckerBoard().size( 2, 2 ).tint( 0.5, 0, 0 ) )
+				.add( new TG.CheckerBoard().size( 8, 8 ).tint( 1, 0.5, 0.5 ) )
+				.sub( new TG.CheckerBoard().offset( 16, 16 ).tint( 0.5, 0.5, 0 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -136,9 +136,9 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-				.add( new TG.Rect().position( 50, 20 ).size( 150, 130 ).color( 1, 0.25, 0.25 ) )
-				.add( new TG.Rect().position( 20, 65 ).size( 210, 130 ).color( 0.25, 1, 0.25 ) )
-				.add( new TG.Rect().position( 50, 110 ).size( 150, 130 ).color( 0.25, 0.25, 1 ) )
+				.add( new TG.Rect().position( 50, 20 ).size( 150, 130 ).tint( 1, 0.25, 0.25 ) )
+				.add( new TG.Rect().position( 20, 65 ).size( 210, 130 ).tint( 0.25, 1, 0.25 ) )
+				.add( new TG.Rect().position( 50, 110 ).size( 150, 130 ).tint( 0.25, 0.25, 1 ) )
 				.toCanvas();
 
 			document.body.appendChild( texture );
@@ -146,7 +146,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-				.add( new TG.CheckerBoard().size( 32, 32 ).color( 0.5, 0, 0 ) )
+				.add( new TG.CheckerBoard().size( 32, 32 ).tint( 0.5, 0, 0 ) )
 				.set( new TG.SineDistort() )
 				.toCanvas();
 
@@ -155,7 +155,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.CheckerBoard().size( 32, 32 ).color( 0.5, 0, 0 ) )
+			.add( new TG.CheckerBoard().size( 32, 32 ).tint( 0.5, 0, 0 ) )
 			.set( new TG.Twirl().radius( 128 ).strength ( 75 ) )
 			.toCanvas();
 
@@ -172,7 +172,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-			.add( new TG.Circle().position( 128, 128 ).radius( 64 ).delta( 60 ).color( 1, 0.25, 0.25 ) )
+			.add( new TG.Circle().position( 128, 128 ).radius( 64 ).delta( 60 ).tint( 1, 0.25, 0.25 ) )
 			.set( new TG.Pixelate().size( 8, 8 ) )
 			.toCanvas();
 
@@ -181,7 +181,7 @@
 			//
 
 			var texture = new TG.Texture( 256, 256 )
-				.add( new TG.CheckerBoard().color( 1, 1, 0 ) )
+				.add( new TG.CheckerBoard().tint( 1, 1, 0 ) )
 				.set( new TG.Transform().offset( 10, 20 ).angle( 23 ).scale( 2, 0.5 ) )
 				.toCanvas();
 

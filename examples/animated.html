@@ -34,8 +34,8 @@
 					.mul( new TG.SinX().frequency( 0.08-i/2000 ) )
 					.add( new TG.SinY().frequency( 0.05-i/1000 ) )
 					.mul( new TG.SinY().frequency( 0.08+i/2000 ) )
-					.div( new TG.Number().color( 1, 2, 1 ) )
-					.add( new TG.SinX().frequency( 0.003 ).color( 0.5, 0, 0 ) )
+					.div( new TG.Number().tint( 1, 2, 1 ) )
+					.add( new TG.SinX().frequency( 0.003 ).tint( 0.5, 0, 0 ) )
 					.toImageData(context);
 
 				context.putImageData( texture, 0, 0 );
@@ -45,9 +45,9 @@
 				var texture = new TG.Texture( size, size )
 					.add( new TG.SinX().frequency( 0.066 + 0.05*Math.sin(i/100) ) )
 					.add( new TG.SinY().frequency( 0.066 + 0.05*Math.sin(i/100) ) )
-					.mul( new TG.SinX().offset( 32 ).frequency( 0.044 + 0.09*Math.sin(i/100) ).color( 2, 2, 2 ) )
-					.mul( new TG.SinY().offset( 16 ).frequency( 0.044 + 0.09*Math.sin(i/100) ).color( 2, 2, 2 ) )
-					.sub( new TG.Number().color( 0.5, 2, 4 ) )
+					.mul( new TG.SinX().offset( 32 ).frequency( 0.044 + 0.09*Math.sin(i/100) ).tint( 2, 2, 2 ) )
+					.mul( new TG.SinY().offset( 16 ).frequency( 0.044 + 0.09*Math.sin(i/100) ).tint( 2, 2, 2 ) )
+					.sub( new TG.Number().tint( 0.5, 2, 4 ) )
 					.toImageData(context);
 
 				context.putImageData( texture, size, 0 );
@@ -59,11 +59,11 @@
 					.mul( new TG.SinY().frequency( 0.004	+ 0.002*Math.sin(i/100)) )
 					.mul( new TG.SinX().offset( 32 ).frequency( 0.04 + 0.02*Math.sin(i/100) ) )
 					.mul( new TG.SinY().offset( 32 ).frequency( 0.04 + 0.02*Math.sin(i/100) ) )
-					.div( new TG.SinX().frequency( 0.02 ).color( 5, 4, 3 ) )
-					.mul( new TG.SinX().frequency( 0.003 ).color( 0.5, 0, 0 ) )
-					.add( new TG.Noise().color( 0.1, 0, 0 ) )
-					.add( new TG.Noise().color( 0, 0.1, 0 ) )
-					.add( new TG.Noise().color( 0, 0, 0.1 ) )
+					.div( new TG.SinX().frequency( 0.02 ).tint( 5, 4, 3 ) )
+					.mul( new TG.SinX().frequency( 0.003 ).tint( 0.5, 0, 0 ) )
+					.add( new TG.Noise().tint( 0.1, 0, 0 ) )
+					.add( new TG.Noise().tint( 0, 0.1, 0 ) )
+					.add( new TG.Noise().tint( 0, 0, 0.1 ) )
 					.toImageData(context);
 
 				context.putImageData( texture, size * 2, 0 );
