@@ -33,25 +33,24 @@ TG.Texture.prototype = {
 
 		if ( operation === undefined ) operation = TG.OP.SET;
 
-		var modulate = program.getColor();
-		var source = program.getSource();
-
 		this.bufferCopy.copy( this.buffer );
+
+		var modulate = program.getColor();
 
 		var string = [
 			'var x = 0, y = 0;',
 			'var array = dst.array;',
 			'var width = dst.width, height = dst.height;',
 			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
-				'	' + source,
-				'	array[ i + 0 ] = operation( array[ i + 0 ], color[ 0 ] * ' + modulate[ 0 ] + ');',
-				'	array[ i + 1 ] = operation( array[ i + 1 ], color[ 1 ] * ' + modulate[ 1 ] + ');',
-				'	array[ i + 2 ] = operation( array[ i + 2 ], color[ 2 ] * ' + modulate[ 2 ] + ');',
+				'	' + program.getSource(),
+				'	array[ i     ] = operation( array[ i     ], color[ 0 ] * modulate[ 0 ] );',
+				'	array[ i + 1 ] = operation( array[ i + 1 ], color[ 1 ] * modulate[ 1 ] );',
+				'	array[ i + 2 ] = operation( array[ i + 2 ], color[ 2 ] * modulate[ 2 ] );',
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
 
-		new Function( 'operation, dst, src, color', string )( operation, this.buffer, this.bufferCopy, this.color );
+		new Function( 'operation, dst, src, color, modulate', string )( operation, this.buffer, this.bufferCopy, this.color, modulate );
 
 		return this;
 
@@ -107,14 +106,15 @@ TG.Texture.prototype = {
 
 	toImageData: function ( context ) {
 
-		var array = this.buffer.array;
+		var buffer = this.buffer;
+		var array = buffer.array;
 
-		var imagedata = context.createImageData( this.buffer.width, this.buffer.height );
+		var imagedata = context.createImageData( buffer.width, buffer.height );
 		var data = imagedata.data;
 
 		for ( var i = 0, il = array.length; i < il; i += 4 ) {
 
-			data[ i		 ] = array[ i		 ] * 255;
+			data[ i     ] = array[ i     ] * 255;
 			data[ i + 1 ] = array[ i + 1 ] * 255;
 			data[ i + 2 ] = array[ i + 2 ] * 255;
 			data[ i + 3 ] = 255;
@@ -146,10 +146,12 @@ TG.Texture.prototype = {
 
 TG.Program = function ( object ) {
 
-	var color = [ 1, 1, 1 ];
+	var color = new Float32Array( [ 1, 1, 1 ] );
 
 	object.color = function ( r, g, b ) {
-		color = [ r, g, b ];
+		color[ 0 ] = r;
+		color[ 1 ] = g;
+		color[ 2 ] = b;
 		return this;
 	};
 
