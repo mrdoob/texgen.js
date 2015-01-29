@@ -35,8 +35,6 @@ TG.Texture.prototype = {
 
 		this.bufferCopy.copy( this.buffer );
 
-		var tint = program.getTint();
-
 		var string = [
 			'var x = 0, y = 0;',
 			'var array = dst.array;',
@@ -50,7 +48,7 @@ TG.Texture.prototype = {
 			'}'
 		].join( '\n' );
 
-		new Function( 'operation, dst, src, color, tint', string )( operation, this.buffer, this.bufferCopy, this.color, tint );
+		new Function( 'operation, dst, src, color, params, tint', string )( operation, this.buffer, this.bufferCopy, this.color, program.getParams(), program.getTint() );
 
 		return this;
 
@@ -134,6 +132,7 @@ TG.Program = function ( object ) {
 TG.Number = function () {
 
 	return new TG.Program( {
+		getParams: function () {},
 		getSource: function () {
 			return [
 				'color[ 0 ] = 1;',
@@ -147,21 +146,26 @@ TG.Number = function () {
 
 TG.SinX = function () {
 
-	var frequency = 1;
-	var offset = 0;
+	var params = {
+		frequency: 1,
+		offset: 0
+	};
 
 	return new TG.Program( {
 		frequency: function ( value ) {
-			frequency = value * Math.PI;
+			params.frequency = value * Math.PI;
 			return this;
 		},
 		offset: function ( value ) {
-			offset = value;
+			params.offset = value;
 			return this;
+		},
+		getParams: function () {
+			return params;
 		},
 		getSource: function () {
 			return [
-				'var value = Math.sin( ( x + ' + offset + ' ) * ' + frequency + ' );',
+				'var value = Math.sin( ( x + params.offset ) * params.frequency );',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
@@ -173,21 +177,26 @@ TG.SinX = function () {
 
 TG.SinY = function () {
 
-	var frequency = 1;
-	var offset = 0;
+	var params = {
+		frequency: 1,
+		offset: 0
+	};
 
 	return new TG.Program( {
 		frequency: function ( value ) {
-			frequency = value * Math.PI;
+			params.frequency = value * Math.PI;
 			return this;
 		},
 		offset: function ( value ) {
-			offset = value;
+			params.offset = value;
 			return this;
+		},
+		getParams: function () {
+			return params;
 		},
 		getSource: function () {
 			return [
-				'var value = Math.sin( ( y + ' + offset + ' ) * ' + frequency + ' );',
+				'var value = Math.sin( ( y + params.offset ) * params.frequency );',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
@@ -200,6 +209,7 @@ TG.SinY = function () {
 TG.OR = function () {
 
 	return new TG.Program( {
+		getParams: function () {},
 		getSource: function () {
 			return [
 				'var value = ( x | y ) / width;',
@@ -215,6 +225,7 @@ TG.OR = function () {
 TG.XOR = function () {
 
 	return new TG.Program( {
+		getParams: function () {},
 		getSource: function () {
 			return [
 				'var value = ( x ^ y ) / width;',
@@ -230,6 +241,7 @@ TG.XOR = function () {
 TG.Noise = function () {
 
 	return new TG.Program( {
+		getParams: function () {},
 		getSource: function () {
 			return [
 				'var value = Math.random();',
@@ -244,26 +256,31 @@ TG.Noise = function () {
 
 TG.CheckerBoard = function () {
 
-	var size = [ 32, 32 ];
-	var offset = [ 0, 0 ];
-	var rowShift = 0;
+	var params = {
+		size: [ 32, 32 ],
+		offset: [ 0, 0 ],
+		rowShift: 0
+	};
 
 	return new TG.Program( {
 		size: function ( x, y ) {
-			size = [ x, y ];
+			params.size = [ x, y ];
 			return this;
 		},
 		offset: function ( x, y ) {
-			offset = [ x, y ];
+			params.offset = [ x, y ];
 			return this;
 		},
 		rowShift: function ( value ) {
-			rowShift = value;
+			params.rowShift = value;
 			return this;
+		},
+		getParams: function () {
+			return params;
 		},
 		getSource: function () {
 			return [
-				'var value = ( ( ( y + ' + offset[ 1 ] + ' ) / ' + size[ 1 ] + ' ) & 1 ) ^ ( ( ( x + ' + offset[ 0 ] + ' + parseInt( y / ' + size[ 1 ] + ' ) * ' + rowShift + ' ) / ' + size[ 0 ] + ' ) & 1 ) ? 0 : 1',
+				'var value = ( ( ( y + params.offset[ 1 ] ) / params.size[ 1 ] ) & 1 ) ^ ( ( ( x + params.offset[ 0 ] + parseInt( y / params.size[ 1 ] ) * params.rowShift ) / params.size[ 0 ] ) & 1 ) ? 0 : 1',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
@@ -275,21 +292,26 @@ TG.CheckerBoard = function () {
 
 TG.Rect = function () {
 
-	var position = [ 0, 0 ];
-	var size = [ 32, 32 ];
+	var params = {
+		position: [ 0, 0 ],
+		size: [ 32, 32 ]
+	};
 
 	return new TG.Program( {
 		position: function ( x, y ) {
-			position = [ x, y ];
+			params.position = [ x, y ];
 			return this;
 		},
 		size: function ( x, y ) {
-			size = [ x, y ];
+			params.size = [ x, y ];
 			return this;
+		},
+		getParams: function () {
+			return params;
 		},
 		getSource: function () {
 			return [
-				'var value = ( x >= ' + position[ 0 ] + ' && x <= ' + ( position[ 0 ] + size[ 0 ] ) + ' && y <= ' + ( position[ 1 ] + size[ 1 ] ) + ' && y >= ' + position[ 1 ] + ' ) ? 1 : 0;',
+				'var value = ( x >= params.position[ 0 ] && x <= ( params.position[ 0 ] + params.size[ 0 ] ) && y <= ( params.position[ 1 ] + params.size[ 1 ] ) && y >= params.position[ 1 ] ) ? 1 : 0;',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
@@ -301,27 +323,32 @@ TG.Rect = function () {
 
 TG.Circle = function () {
 
-	var position = [ 0, 0 ];
-	var radius = 50;
-	var delta = 1;
+	var params = {
+		position: [ 0, 0 ],
+		radius: 50,
+		delta: 1
+	};
 
 	return new TG.Program( {
 		delta: function ( value ) {
-			delta = value;
+			params.delta = value;
 			return this;
 		},
 		position: function ( x, y ) {
-			position = [ x, y ];
+			params.position = [ x, y ];
 			return this;
 		},
 		radius: function ( value ) {
-			radius = value;
+			params.radius = value;
 			return this;
+		},
+		getParams: function () {
+			return params;
 		},
 		getSource: function () {
 			return [
-				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
-				'var value = 1 - TG.Utils.smoothStep( ' + radius + ' - ' + delta + ', ' + radius + ', dist );',
+				'var dist = TG.Utils.distance( x, y, params.position[ 0 ], params.position[ 1 ] );',
+				'var value = 1 - TG.Utils.smoothStep( params.radius - params.delta, params.radius, dist );',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
@@ -335,27 +362,32 @@ TG.Circle = function () {
 
 TG.SineDistort = function () {
 
-	var sines = [ 4, 4 ];
-	var offset = [ 0, 0 ];
-	var amplitude = [ 16, 16 ];
+	var params = {
+		sines: [ 4, 4 ],
+		offset: [ 0, 0 ],
+		amplitude: [ 16, 16 ]
+	};
 
 	return new TG.Program( {
 		sines: function ( x, y ) {
-			sines = [ x, y ];
+			params.sines = [ x, y ];
 			return this;
 		},
 		offset: function ( x, y ) {
-			offset = [ x, y ];
+			params.offset = [ x, y ];
 			return this;
 		},
 		amplitude: function ( x, y ) {
-			amplitude = [ x, y ];
+			params.amplitude = [ x, y ];
 			return this;
+		},
+		getParams: function () {
+			return params;
 		},
 		getSource: function () {
 			return [
-				'var s = Math.sin(' + sines[ 0 ] / 100 + ' * y + ' + offset[ 0 ] + ') * ' + amplitude[ 0 ] + ' + x;',
-				'var t = Math.sin(' + sines[ 1 ] / 100 + ' * x + ' + offset[ 1 ] + ') * ' + amplitude[ 1 ] + ' + y;',
+				'var s = Math.sin( params.sines[ 0 ] / 100 * y + params.offset[ 0 ] ) * params.amplitude[ 0 ] + x;',
+				'var t = Math.sin( params.sines[ 1 ] / 100 * x + params.offset[ 1 ] ) * params.amplitude[ 1 ] + y;',
 				'color.set( src.getPixelBilinear( s, t ) );',
 			].join( '\n' );
 		}
@@ -365,34 +397,39 @@ TG.SineDistort = function () {
 
 TG.Twirl = function () {
 
-	var strength = 0;
-	var radius = 120;
-	var position = [ 128, 128 ];
+	var params = {
+		strength: 0,
+		radius: 120,
+		position: [ 128, 128 ]
+	};
 
 	return new TG.Program( {
 		strength: function ( value ) {
-			strength = value / 100.0;
+			params.strength = value / 100.0;
 			return this;
 		},
 		radius: function ( value ) {
-			radius = value;
+			params.radius = value;
 			return this;
 		},
 		position: function ( x, y ) {
-			position = [ x, y ];
+			params.position = [ x, y ];
 			return this;
+		},
+		getParams: function () {
+			return params;
 		},
 		getSource: function () {
 			return [
-				'var dist = TG.Utils.distance( x, y, ' + position[ 0 ] + ',' + position[ 1 ] + ');',
+				'var dist = TG.Utils.distance( x, y, params.position[ 0 ], params.position[ 1 ] );',
 
 				// no distortion if outside of whirl radius.
-				'if (dist < '+ radius +') {',
-					'dist = Math.pow('+ radius +' - dist, 2) / ' + radius + ';',
+				'if (dist < params.radius) {',
+					'dist = Math.pow(params.radius - dist, 2) / params.radius;',
 
-					'var angle = 2.0 * Math.PI * (dist / (' + radius + ' / ' + strength + '));',
-					's = (((x - ' + position[ 0 ] + ') * Math.cos(angle)) - ((y - ' + position[ 0 ] + ') * Math.sin(angle)) + ' + position[ 0 ] + ' + 0.5);',
-					't = (((y - ' + position[ 1 ] + ') * Math.cos(angle)) + ((x - ' + position[ 1 ] + ') * Math.sin(angle)) + ' + position[ 1 ] + ' + 0.5);',
+					'var angle = 2.0 * Math.PI * (dist / (params.radius / params.strength));',
+					's = (((x - params.position[ 0 ]) * Math.cos(angle)) - ((y - params.position[ 0 ]) * Math.sin(angle)) + params.position[ 0 ] + 0.5);',
+					't = (((y - params.position[ 1 ]) * Math.cos(angle)) + ((x - params.position[ 1 ]) * Math.sin(angle)) + params.position[ 1 ] + 0.5);',
 				'} else {',
 					's = x;',
 					't = y;',
@@ -407,55 +444,65 @@ TG.Twirl = function () {
 
 TG.Transform = function () {
 
-		var offset = [ 0, 0 ];
-		var angle = 0;
-		var scale = [ 1, 1 ];
+	var params = {
+		offset: [ 0, 0 ],
+		angle: 0,
+		scale: [ 1, 1 ]
+	};
 
-		return new TG.Program( {
-				offset: function ( x, y ) {
-					offset = [ x, y ];
-					return this;
-				},
-				angle: function ( value ) {
-					angle = TG.Utils.deg2rad( value );
-					return this;
-				},
-				scale: function ( x, y ) {
-					if ( x === 0 || y === 0 ) return;
-					scale = [ x, y ];
-					return this;
-				},
-				getSource: function () {
-					return [
-						'var x2 = x - width / 2;',
-						'var y2 = y - height / 2;',
+	return new TG.Program( {
+			offset: function ( x, y ) {
+				params.offset = [ x, y ];
+				return this;
+			},
+			angle: function ( value ) {
+				params.angle = TG.Utils.deg2rad( value );
+				return this;
+			},
+			scale: function ( x, y ) {
+				if ( x === 0 || y === 0 ) return;
+				params.scale = [ x, y ];
+				return this;
+			},
+			getParams: function () {
+				return params;
+			},
+			getSource: function () {
+				return [
+					'var x2 = x - width / 2;',
+					'var y2 = y - height / 2;',
 
-						'var s = x2 * (' + ( Math.cos( angle ) / scale[ 0 ] ) + ') + y2 * -(' + ( Math.sin( angle ) / scale[ 0 ] ) + ');',
-						'var t = x2 * (' + ( Math.sin( angle ) / scale[ 1 ] ) + ') + y2 * (	' + ( Math.cos( angle ) / scale[ 1 ] ) + ');',
+					'var s = x2 * ( Math.cos( params.angle ) / params.scale[ 0 ] ) + y2 * -( Math.sin( params.angle ) / params.scale[ 0 ] );',
+					'var t = x2 * ( Math.sin( params.angle ) / params.scale[ 1 ] ) + y2 *  ( Math.cos( params.angle ) / params.scale[ 1 ] );',
 
-						's += ' + offset[ 0 ] + ' + width /2;',
-						't += ' + offset[ 1 ] + ' + height /2;',
+					's += params.offset[ 0 ] + width / 2;',
+					't += params.offset[ 1 ] + height / 2;',
 
-						'color.set( src.getPixelBilinear( s, t ) );',
-					].join( '\n' );
-				}
-		} );
+					'color.set( src.getPixelBilinear( s, t ) );',
+				].join( '\n' );
+			}
+	} );
 
 };
 
 TG.Pixelate = function () {
 
-	var size = [ 1, 1 ];
+	var params = {
+		size: [ 1, 1 ]
+	};
 
 	return new TG.Program( {
 		size: function ( x, y ) {
-			size = [ x, y ];
+			params.size = [ x, y ];
 			return this;
+		},
+		getParams: function () {
+			return params;
 		},
 		getSource: function () {
 			return [
-				'var s = ' + size[ 0 ] + ' * Math.floor(x/' + size[ 0 ] + ');',
-				'var t = ' + size[ 1 ] + ' * Math.floor(y/' + size[ 1 ] + ');',
+				'var s = params.size[ 0 ] * Math.floor(x/params.size[ 0 ]);',
+				'var t = params.size[ 1 ] * Math.floor(y/params.size[ 1 ]);',
 
 				'color.set( src.getPixelNearest( s, t ) );'
 			].join( '\n' );
