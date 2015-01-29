@@ -41,6 +41,7 @@ TG.Texture.prototype = {
 			'var x = 0, y = 0;',
 			'var array = dst.array;',
 			'var width = dst.width, height = dst.height;',
+			program.getSourcePreLoop ? program.getSourcePreLoop() : "",
 			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
 				'	' + program.getSource(),
 				'	array[ i     ] = operation( array[ i     ], color[ 0 ] * tint[ 0 ] );',
@@ -566,6 +567,144 @@ TG.Buffer.prototype = {
 	},
 
 };
+
+// 
+
+TG.GradientInterpolation = {
+	STEP: 0,
+	LINEAR: 1,
+	SPLINE: 2,
+};
+
+// points must be a set pair (point, color):
+// [{ pos0: [r,g,b,a] } , ..., { posN: [r,g,b,a] } ] posX from 0..1
+TG.GradientInterpolator = function( ) {
+
+	this.points = [];
+	this.interp = TG.GradientInterpolation.SPLINE;
+	
+	return this;
+};
+
+TG.GradientInterpolator.prototype = {
+
+	set: function( points ) {
+
+		this.points = points;
+		return this;
+
+	},
+
+	addPoint: function ( position, color ) {
+
+		this.points.push( { pos: position, color: color } );
+		this.points.sort( function( a, b ) {
+			return a.pos - b.pos;
+		});
+		return this;		
+
+	},
+
+	interpolation: function ( value ) {
+
+		this.interp = value;
+		return this;
+		
+	},
+
+	getColorAt: function ( pos ) {
+
+		for (var i = 0; this.points[ i + 1 ].pos < pos; i++ );
+   		
+   		var p1 = this.points[ i ];
+   		var p2 = this.points[ i + 1 ];
+
+		var delta = ( pos - this.points[ i ].pos ) / ( this.points[ i + 1 ].pos - this.points[ i ].pos );
+
+		
+		if ( this.interp == TG.GradientInterpolation.STEP ) {
+
+			return p1.color;
+
+		}
+		else if ( this.interp == TG.GradientInterpolation.LINEAR ) {
+
+   			return mixColors( p1.color, p2.color, delta );
+
+		}
+		else if ( this.interp == TG.GradientInterpolation.SPLINE ) {
+
+			var ar =  2 * p1.color[ 0 ] - 2 * p2.color[ 0 ];
+			var br = -3 * p1.color[ 0 ] + 3 * p2.color[ 0 ];
+			var dr = p1.color[ 0 ];
+
+			var ag =  2 * p1.color[ 1 ] - 2 * p2.color[ 1 ];
+			var bg = -3 * p1.color[ 1 ] + 3 * p2.color[ 1 ];
+			var dg = p1.color[ 1 ];
+
+			var ab =  2 * p1.color[ 2 ] - 2 * p2.color[ 2 ];
+			var bb = -3 * p1.color[ 2 ] + 3 * p2.color[ 2 ];
+			var db = p1.color[ 2 ];
+
+			var delta2 = delta * delta;
+			var delta3 = delta2 * delta;
+
+	         return [ ar * delta3 + br * delta2 + dr,
+	         		  ag * delta3 + bg * delta2 + dg,
+	         		  ab * delta3 + bb * delta2 + db ];
+
+		}
+	}
+
+};
+
+var mixColors = function( c1, c2, delta ) {
+	
+	return [
+		c1[ 0 ] * ( 1 - delta ) + c2[ 0 ] * delta,
+		c1[ 1 ] * ( 1 - delta ) + c2[ 1 ] * delta,
+		c1[ 2 ] * ( 1 - delta ) + c2[ 2 ] * delta,
+		c1[ 3 ] * ( 1 - delta ) + c2[ 3 ] * delta,
+	];
+}
+
+TG.Gradient = function () {
+
+	var interpolation = TG.GradientInterpolation.LINEAR;
+	var gradient = new TG.GradientInterpolator();
+
+	return new TG.Program( {
+		
+		size: function ( x, y ) {
+			size = [ x, y ];
+			return this;
+		},
+		interpolation: function ( value ) {
+			interpolation = value;
+			return this;
+		},
+		addPoint: function ( position, color ) {
+			gradient.addPoint( position, color );
+			return this;
+		},
+		getSourcePreLoop: function() {
+			return 'var gradient = new TG.GradientInterpolator().set( '+ JSON.stringify( gradient.points ) +').interpolation(' + interpolation + ');';
+		},
+		getSource: function () {
+			return [
+				'var color = gradient.getColorAt( x / width );',
+
+				'color[ 0 ] = color[ 0 ];',
+				'color[ 1 ] = color[ 1 ];',
+				'color[ 2 ] = color[ 2 ];'
+
+			].join('\n');
+		}
+	} );
+
+};
+
+
 
 //
 
