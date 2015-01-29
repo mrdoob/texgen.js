@@ -35,7 +35,7 @@ TG.Texture.prototype = {
 
 		this.bufferCopy.copy( this.buffer );
 
-		var modulate = program.getColor();
+		var tint = program.getTint();
 
 		var string = [
 			'var x = 0, y = 0;',
@@ -43,66 +43,34 @@ TG.Texture.prototype = {
 			'var width = dst.width, height = dst.height;',
 			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
 				'	' + program.getSource(),
-				'	array[ i     ] = operation( array[ i     ], color[ 0 ] * modulate[ 0 ] );',
-				'	array[ i + 1 ] = operation( array[ i + 1 ], color[ 1 ] * modulate[ 1 ] );',
-				'	array[ i + 2 ] = operation( array[ i + 2 ], color[ 2 ] * modulate[ 2 ] );',
+				'	array[ i     ] = operation( array[ i     ], color[ 0 ] * tint[ 0 ] );',
+				'	array[ i + 1 ] = operation( array[ i + 1 ], color[ 1 ] * tint[ 1 ] );',
+				'	array[ i + 2 ] = operation( array[ i + 2 ], color[ 2 ] * tint[ 2 ] );',
 				'	if ( ++x === width ) { x = 0; y ++; }',
 			'}'
 		].join( '\n' );
 
-		new Function( 'operation, dst, src, color, modulate', string )( operation, this.buffer, this.bufferCopy, this.color, modulate );
+		new Function( 'operation, dst, src, color, tint', string )( operation, this.buffer, this.bufferCopy, this.color, tint );
 
 		return this;
 
 	},
 
-	add: function ( program ) {
+	add: function ( program ) { return this.set( program, TG.OP.ADD ); },
 
-		return this.set( program, TG.OP.ADD );
+	sub: function ( program ) { return this.set( program, TG.OP.SUB ); },
 
-	},
+	mul: function ( program ) { return this.set( program, TG.OP.MUL ); },
 
-	sub: function ( program ) {
+	div: function ( program ) { return this.set( program, TG.OP.DIV ); },
 
-		return this.set( program, TG.OP.SUB );
+	and: function ( program ) { return this.set( program, TG.OP.AND ); },
 
-	},
+	xor: function ( program ) { return this.set( program, TG.OP.XOR ); },
 
-	mul: function ( program ) {
+	min: function ( program ) { return this.set( program, TG.OP.MIN ); },
 
-		return this.set( program, TG.OP.MUL );
-
-	},
-
-	div: function ( program ) {
-
-		return this.set( program, TG.OP.DIV );
-
-	},
-
-	and: function ( program ) {
-
-		return this.set( program, TG.OP.AND );
-
-	},
-
-	xor: function ( program ) {
-
-		return this.set( program, TG.OP.XOR );
-
-	},
-
-	min: function ( program ) {
-
-		return this.set( program, TG.OP.MIN );
-
-	},
-
-	max: function ( program ) {
-
-		return this.set( program, TG.OP.MAX );
-
-	},
+	max: function ( program ) { return this.set( program, TG.OP.MAX ); },
 
 	toImageData: function ( context ) {
 
@@ -146,17 +114,17 @@ TG.Texture.prototype = {
 
 TG.Program = function ( object ) {
 
-	var color = new Float32Array( [ 1, 1, 1 ] );
+	var tint = new Float32Array( [ 1, 1, 1 ] );
 
-	object.color = function ( r, g, b ) {
-		color[ 0 ] = r;
-		color[ 1 ] = g;
-		color[ 2 ] = b;
+	object.tint = function ( r, g, b ) {
+		tint[ 0 ] = r;
+		tint[ 1 ] = g;
+		tint[ 2 ] = b;
 		return this;
 	};
 
-	object.getColor = function () {
-		return color;
+	object.getTint = function () {
+		return tint;
 	};
 
 	return object;
