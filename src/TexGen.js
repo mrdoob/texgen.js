@@ -617,7 +617,7 @@ TG.Buffer.prototype = {
 
 // 
 
-TG.ColorInterpolator = {
+TG.ColorInterpolatorMethod = {
 	STEP: 0,
 	LINEAR: 1,
 	SPLINE: 2,
@@ -625,15 +625,16 @@ TG.ColorInterpolator = {
 
 // points must be a set pair (point, color):
 // [{ pos0: [r,g,b,a] } , ..., { posN: [r,g,b,a] } ] posX from 0..1
-TG.GradientInterpolator = function( ) {
+TG.ColorInterpolator = function( ) {
 
 	this.points = [];
-	this.interp = TG.ColorInterpolator.SPLINE;
+	this.interpolation = TG.ColorInterpolator.SPLINE;
+	this.repeat = false;
 	
 	return this;
 };
 
-TG.GradientInterpolator.prototype = {
+TG.ColorInterpolator.prototype = {
 
 	set: function( points ) {
 
@@ -652,16 +653,24 @@ TG.GradientInterpolator.prototype = {
 
 	},
 
-	interpolation: function ( value ) {
+	setRepeat: function ( value ) {
 
-		this.interp = value;
+		this.repeat = value;
+		return this;
+
+	},
+
+	setInterpolation: function ( value ) {
+
+		this.interpolation = value;
 		return this;
 		
 	},
 
 	getColorAt: function ( pos ) {
 
-		if (pos > 1) pos = 1;
+		if ( pos > 1 )
+			pos = this.repeat ? pos % 1 : 1;
 
 		for (var i = 0; this.points[ i + 1 ].pos < pos; i++ );
    		
@@ -670,18 +679,17 @@ TG.GradientInterpolator.prototype = {
 
 		var delta = ( pos - this.points[ i ].pos ) / ( this.points[ i + 1 ].pos - this.points[ i ].pos );
 
-		
-		if ( this.interp == TG.ColorInterpolator.STEP ) {
+		if ( this.interpolation == TG.ColorInterpolatorMethod.STEP ) {
 
 			return p1.color;
 
 		}
-		else if ( this.interp == TG.ColorInterpolator.LINEAR ) {
+		else if ( this.interpolation == TG.ColorInterpolatorMethod.LINEAR ) {
 
    			return TG.Utils.mixColors( p1.color, p2.color, delta );
 
 		}
-		else if ( this.interp == TG.ColorInterpolator.SPLINE ) {
+		else if ( this.interpolation == TG.ColorInterpolatorMethod.SPLINE ) {
 
 			var ar =  2 * p1.color[ 0 ] - 2 * p2.color[ 0 ];
 			var br = -3 * p1.color[ 0 ] + 3 * p2.color[ 0 ];
@@ -711,13 +719,17 @@ TG.RadialGradient = function () {
 
 	var params = {
 		interpolation: TG.ColorInterpolator.LINEAR,
-		gradient: new TG.GradientInterpolator(),
+		gradient: new TG.ColorInterpolator(),
 		radius: 255,
+		repeat: false,
 		center: [ 128, 128 ],
 	};
 
 	return new TG.Program( {
-
+		repeat: function ( value ) {
+			params.repeat = value;
+			return this;
+		},
 		radius: function ( value ) {
 			params.radius = value;
 			return this;
@@ -738,7 +750,7 @@ TG.RadialGradient = function () {
 			return this;
 		},
 		getSourcePreLoop: function() {
-			return 'var gradient = new TG.GradientInterpolator().set( '+ JSON.stringify( params.gradient.points ) +').interpolation(' + params.interpolation + ');';
+			return 'var gradient = new TG.ColorInterpolator().set( '+ JSON.stringify( params.gradient.points ) +').setInterpolation(' + params.interpolation + ').setRepeat(' + params.repeat + ');';
 		},
 		getSource: function () {
 			return [
@@ -756,11 +768,15 @@ TG.LinearGradient = function () {
 
 	var params = {
 		interpolation: TG.ColorInterpolator.LINEAR,
-		gradient: new TG.GradientInterpolator(),
+		gradient: new TG.ColorInterpolator(),
+		repeat: false,
 	};
 
 	return new TG.Program( {
-		
+		repeat: function ( value ) {
+			params.repeat = value;
+			return this;
+		},
 		interpolation: function ( value ) {
 			params.interpolation = value;
 			return this;
@@ -773,7 +789,7 @@ TG.LinearGradient = function () {
 			return this;
 		},
 		getSourcePreLoop: function() {
-			return 'var gradient = new TG.GradientInterpolator().set( '+ JSON.stringify( params.gradient.points ) +').interpolation(' + params.interpolation + ');';
+			return 'var gradient = new TG.ColorInterpolator().set( '+ JSON.stringify( params.gradient.points ) +').setInterpolation(' + params.interpolation + ').setRepeat(' + params.repeat + ');';
 		},
 		getSource: function () {
 			return [
