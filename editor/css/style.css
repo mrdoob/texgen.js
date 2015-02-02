@@ -1,0 +1,89 @@
+canvas {
+    background-color: #333;
+    border:1px solid #000;
+    width: 256px;
+    height: 256px;
+    margin: 0 auto;
+/*    display: block;*/
+}
+
+#render {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 550px;
+    padding: 20px;
+}
+
+.option {
+    color: #aaa;
+    font-size:12px;
+}
+
+#sidebar2 {
+    padding-top:10px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    width: 300px;
+    overflow: auto;
+    background-color: #000;
+}
+
+#sidebar {
+    position: absolute;
+    left: 300px;
+    top: 0px;
+    bottom: 0px;
+    width: 250px;
+    overflow: auto;
+}
+
+body {
+    background: #222;
+}
+
+button:active { 
+    background-color: #666;
+}
+
+button {
+    background-color: #333;
+    border: 1px solid #999;
+    color: #999;
+    width: 60px;
+    outline: none;
+    cursor: pointer;
+}
+
+#pluginlist button {
+    width: 145px;
+}
+
+
+b {
+    color: #ff9 !important;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    display:block;
+}
+
+#preview3d {
+    display:inline-block;
+    width: 256px;
+    height: 256px;
+}
+
+.selected {
+    border: 1px solid #ff9;
+}
+
+.src {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    color: #ff9;
+
+}
