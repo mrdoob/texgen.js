@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>texgen.js editor</title>
+	<script src="../src/TexGen.js"></script>
+	<script src="ext/three.min.js"></script>
+	<script src="ext/ui.js"></script>
+    <script src="main.js"></script>
+
+    <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="css/dark.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="css/style.css" media="all" rel="stylesheet" type="text/css" />
+
+	<link href="css/prism.css" rel="stylesheet" />
+	<script src="ext/prism.js"></script>
+
+</head>
+<body onload="init()">
+	<div id = "sidebar">
+	</div>
+	<div id = "sidebar2">
+		<div id="pluginlist">
+			<b>Generators</b>
+			<button onclick="texture.add('XOR')">XOR</button>
+			<button onclick="texture.add('OR')">OR</button>
+			<button onclick="texture.add('SinX')">SinX</button>
+			<button onclick="texture.add('SinY')">SinY</button>
+			<button onclick="texture.add('Noise')">Noise</button>
+			<button onclick="texture.add('Checkerboard')">CheckerBoard</button>
+			<button onclick="texture.add('Rect')">Rect</button>
+			<button onclick="texture.add('Circle')">Circle</button>
+<!--			<button onclick="texture.add('RadialGradient')">Radial gradient</button>
+			<button onclick="texture.add('LinearGradient')">Linear gradient</button>-->
+			<b>Filters</b>
+			<button onclick="texture.add('SineDistort')">SineDistort</button>
+			<button onclick="texture.add('Twirl')">Twirl</button>
+			<button onclick="texture.add('Transform')">Transform</button>
+			<button onclick="texture.add('Pixelate')">Pixelate</button>
+		</div>
+		<ul id="list">
+		</ul>
+	</div>
+	<div id="render" style="margin:0 auto;text-align:center;">
+		<canvas id="preview"></canvas>
+		<div id="preview3d"></div>
+		<div style="margin-top:10px">
+			<!--<button>Texture</button>-->
+			<button id="cube" onclick="showObject(this)" class="selected">Cube</button>
+			<button id="sphere" onclick="showObject(this)">Sphere</button>
+		</div>
+		<pre><code id="code" class="language-javascript"></code></pre>
+
+	</div>
+</body>
+</html>
