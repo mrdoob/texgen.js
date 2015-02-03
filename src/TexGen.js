@@ -4,15 +4,15 @@
 
 var TG = {
 	OP: {
-		SET: function( x, y ) { return y; },
-		ADD: function( x, y ) { return x + y; },
-		SUB: function( x, y ) { return x - y; },
-		MUL: function( x, y ) { return x * y; },
-		DIV: function( x, y ) { return x / y; },
-		AND: function( x, y ) { return x & y; },
-		XOR: function( x, y ) { return x ^ y; },
-		MIN: function( x, y ) { return Math.min( x, y ); },
-		MAX: function( x, y ) { return Math.max( x, y ); }
+		SET: function ( x, y ) { return y; },
+		ADD: function ( x, y ) { return x + y; },
+		SUB: function ( x, y ) { return x - y; },
+		MUL: function ( x, y ) { return x * y; },
+		DIV: function ( x, y ) { return x / y; },
+		AND: function ( x, y ) { return x & y; },
+		XOR: function ( x, y ) { return x ^ y; },
+		MIN: function ( x, y ) { return Math.min( x, y ); },
+		MAX: function ( x, y ) { return Math.max( x, y ); }
 	}
 };
 
@@ -635,7 +635,7 @@ TG.ColorInterpolator = function( ) {
 
 TG.ColorInterpolator.prototype = {
 
-	set: function( points ) {
+	set: function ( points ) {
 
 		this.points = points;
 		return this;
@@ -671,12 +671,14 @@ TG.ColorInterpolator.prototype = {
 		if ( pos > 1 )
 			pos = this.repeat ? pos % 1 : 1;
 
-		for (var i = 0; this.points[ i + 1 ].pos < pos; i++ );
+		var i = 0, points = this.points;
 
-		var p1 = this.points[ i ];
-		var p2 = this.points[ i + 1 ];
+		while ( points[ i + 1 ].pos < pos ) i ++;
 
-		var delta = ( pos - this.points[ i ].pos ) / ( this.points[ i + 1 ].pos - this.points[ i ].pos );
+		var p1 = points[ i ];
+		var p2 = points[ i + 1 ];
+
+		var delta = ( pos - p1.pos ) / ( p2.pos - p1.pos );
 
 		if ( this.interpolation == TG.ColorInterpolatorMethod.STEP ) {
 
