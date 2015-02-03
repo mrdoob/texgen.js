@@ -240,9 +240,9 @@ TGUI.Texture.prototype = {
 
 			var paramString = "";
 			for ( var id in step.params ) {
-		
-				layer.setParamValue( id, step.params[ id ] );
-				
+
+				layer.getParams()[ id ] = step.params[ id ];
+
 				if ( step.params[ id ] instanceof Array )
 					paramString += '.' + id + '( ' + step.params[ id ].join( ', ' ) + ' )';
 				else

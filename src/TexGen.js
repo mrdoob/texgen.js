@@ -163,9 +163,6 @@ TG.SinX = function () {
 		getParams: function () {
 			return params;
 		},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
-		},
 		getSource: function () {
 			return [
 				'var value = Math.sin( ( x + params.offset ) * params.frequency );',
@@ -197,9 +194,6 @@ TG.SinY = function () {
 		getParams: function () {
 			return params;
 		},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
-		},
 		getSource: function () {
 			return [
 				'var value = Math.sin( ( y + params.offset ) * params.frequency );',
@@ -216,9 +210,6 @@ TG.OR = function () {
 
 	return new TG.Program( {
 		getParams: function () {},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
-		},
 		getSource: function () {
 			return [
 				'var value = ( x | y ) / width;',
@@ -235,9 +226,6 @@ TG.XOR = function () {
 
 	return new TG.Program( {
 		getParams: function () {},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
-		},
 		getSource: function () {
 			return [
 				'var value = ( x ^ y ) / width;',
@@ -254,9 +242,6 @@ TG.Noise = function () {
 
 	return new TG.Program( {
 		getParams: function () {},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
-		},
 		getSource: function () {
 			return [
 				'var value = Math.random();',
@@ -293,9 +278,6 @@ TG.CheckerBoard = function () {
 		getParams: function () {
 			return params;
 		},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
-		},
 		getSource: function () {
 			return [
 				'var value = ( ( ( y + params.offset[ 1 ] ) / params.size[ 1 ] ) & 1 ) ^ ( ( ( x + params.offset[ 0 ] + parseInt( y / params.size[ 1 ] ) * params.rowShift ) / params.size[ 0 ] ) & 1 ) ? 0 : 1',
@@ -326,9 +308,6 @@ TG.Rect = function () {
 		},
 		getParams: function () {
 			return params;
-		},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
 		},
 		getSource: function () {
 			return [
@@ -365,9 +344,6 @@ TG.Circle = function () {
 		},
 		getParams: function () {
 			return params;
-		},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
 		},
 		getSource: function () {
 			return [
@@ -408,9 +384,6 @@ TG.SineDistort = function () {
 		getParams: function () {
 			return params;
 		},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
-		},
 		getSource: function () {
 			return [
 				'var s = Math.sin( params.sines[ 0 ] / 100 * y + params.offset[ 0 ] ) * params.amplitude[ 0 ] + x;',
@@ -445,9 +418,6 @@ TG.Twirl = function () {
 		},
 		getParams: function () {
 			return params;
-		},
-		setParamValue: function ( id, value ) {
-			params[ id ] = value;
 		},
 		getSource: function () {
 			return [
@@ -496,9 +466,6 @@ TG.Transform = function () {
 			},
 			getParams: function () {
 				return params;
-			},
-			setParamValue: function ( id, value ) {
-				params[ id ] = value;
 			},
 			getSource: function () {
 				return [
