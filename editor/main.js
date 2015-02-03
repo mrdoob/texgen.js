@@ -198,7 +198,7 @@ function changeOperation( select, id ) {
 }
 
 function generateOperationSelect(id, operation) {
-	
+
 	var html = '<select onchange="changeOperation(this, '+id+')">';
 	for (var i = 0; i < operations.length; i++ ) {
 		if ( operation == operations[ i ] )
@@ -215,7 +215,7 @@ function generateOperationSelect(id, operation) {
 
 
 TGUI.Texture = function() {
-	
+
 	this.steps = [];
 	this.name = "Unknown";
 	this.counter = 0;
@@ -247,7 +247,7 @@ TGUI.Texture.prototype = {
 					paramString += '.' + id + '( ' + step.params[ id ].join( ', ' ) + ' )';
 				else
 					paramString += '.' + id + '( ' + step.params[ id ] + ' )';
-					
+
 			}
 
 			switch( step.operation ) {
@@ -280,7 +280,7 @@ TGUI.Texture.prototype = {
 
 		}
 		code+=";";
-		
+
 		ctx.putImageData( _texture.toImageData( ctx ), 0, 0 );
 
 		cube.material.map.needsUpdate = true;
@@ -289,7 +289,7 @@ TGUI.Texture.prototype = {
 		Prism.highlightAll();
 
 	},
-	
+
 	getStepById: function ( id ) {
 
 		for ( var i = 0; i < this.steps.length; i++ ) {
@@ -313,34 +313,37 @@ TGUI.Texture.prototype = {
 			texture.render();
 
 		}
+		
 	},
 
-	regenerateStepList: function() {
+	regenerateStepList: function () {
 
 		var options = [];
-		
-		for (var i = 0; i < this.steps.length; i++ ) {
-			
+
+		for ( var i = 0; i < this.steps.length; i ++ ) {
+
 			var step = this.steps[ i ];
 			var select = generateOperationSelect( step.id, step.operation );
 			options.push( { value: step.id, html: select + ' (ID=' + step.id + ') ' + step.type +' <button onclick="texture.deleteStep(' + step.id + ')" style="color:#f99;float:right">delete</button>'} );
+
 		}
-		
+
 		stepList.setOptions( options );
 
 		if ( this.steps.length > 0 ) {
-			
+
 			var lastId = this.steps[ this.steps.length - 1 ].id;
 			stepList.setValue( lastId );
 			generatorSelected( lastId );
 
-		}
-		else
-		{
+		} else {
+
 			if ( currentGenerator != null ) {
 				generatorPanels[ currentGenerator.type ].dom.style.display = "none";
 			}
+
 		}
+
 	},
 
 	add: function ( type, operation ) {
@@ -356,7 +359,7 @@ TGUI.Texture.prototype = {
 }
 
 function updateControlParameter( e ) {
-	
+
 	if ( e.srcElement.id.indexOf(".") !== -1 ) {
 
 		var ids = e.srcElement.id.split(".");
@@ -369,6 +372,7 @@ function updateControlParameter( e ) {
 	}
 
 	texture.render();
+
 }
 
 function generatorSelected( id ) {
@@ -389,14 +393,13 @@ function generatorSelected( id ) {
 	for ( var idParam in TGUI.GeneratorDefinitions[ type ].parameters ) {
 
 		param = TGUI.GeneratorDefinitions[ type ].uiparameters[ idParam ];
-		
+
 		if ( param.length > 1 ) {
-		
-			for ( var i = 0; i < param.length; i++ )
+
+			for ( var i = 0; i < param.length; i ++ )
 				param[ i ].setValue( currentGenerator.params[ idParam ][ i ] );
 
-		}
-		else {
+		} else {
 
 			param[ 0 ].setValue( currentGenerator.params[ idParam ] );
 		}
@@ -424,8 +427,8 @@ function init() {
 
 	document.getElementById("sidebar2").appendChild( stepList.dom );
 
-	for ( var definitionId in TGUI.GeneratorDefinitions )
-	{
+	for ( var definitionId in TGUI.GeneratorDefinitions ) {
+
 		var panel = new UI.CollapsiblePanel();
 		panel.setId( definitionId );
 
@@ -440,11 +443,11 @@ function init() {
 		TGUI.GeneratorDefinitions[ definitionId ].uiparameters = {};
 
 		for ( var idParam in parameters ) {
-		
+
 			var param = parameters[ idParam ];
-			
+
 			var row = new UI.Panel();
-			
+
 			TGUI.GeneratorDefinitions[ definitionId ].uiparameters[ idParam ] = [];
 
 			row.setId( definitionId + "." + idParam );
@@ -452,9 +455,9 @@ function init() {
 
 			switch ( param.type ) {
 
-				case "number": 
+				case "number":
 					var c = new UI.Number().setWidth( '50px' ).onChange( updateControlParameter ).setId( idParam );
-					if ( param.step )			
+					if ( param.step )
 						c.step = param.step;
 
 					TGUI.GeneratorDefinitions[ definitionId ].uiparameters[ idParam ].push(c);
@@ -462,7 +465,7 @@ function init() {
 					row.add( c );
 					break;
 
-				case "vec2i": 
+				case "vec2i":
 					var c1 = new UI.Integer().setWidth( '50px' ).onChange( updateControlParameter ).setId( idParam+'.0');
 					var c2 = new UI.Integer().setWidth( '50px' ).onChange( updateControlParameter ).setId( idParam+'.1');
 					TGUI.GeneratorDefinitions[ definitionId ].uiparameters[ idParam ].push(c1);
@@ -470,7 +473,7 @@ function init() {
 					row.add( c1, c2 );
 					break;
 
-				case "vec2f": 
+				case "vec2f":
 					var c1 = new UI.Number().setWidth( '50px' ).onChange( updateControlParameter ).setId( idParam+'.0');
 					var c2 = new UI.Number().setWidth( '50px' ).onChange( updateControlParameter ).setId( idParam+'.1');
 					TGUI.GeneratorDefinitions[ definitionId ].uiparameters[ idParam ].push(c1);
@@ -483,20 +486,25 @@ function init() {
 					TGUI.GeneratorDefinitions[ definitionId ].uiparameters[ idParam ].push(c);
 					row.add( c );
 					break;
-				
+
 				case "color":
 					var c = new UI.Color().setWidth( '50px' );
 					TGUI.GeneratorDefinitions[ definitionId ].uiparameters[ idParam ].push(c);
 					row.add( c );
 					break;
 
-				default: 
+				default:
 					console.error("Unknown param type",param.type);
 			}
+
 			panel.add( row );
+
 		}
+
 		panel.dom.style.display = "none";
+
 	}
+
 	document.getElementById("sidebar").appendChild( container.dom );
 
 }
@@ -506,28 +514,28 @@ var sphere;
 var material;
 
 function init3D() {
-	
+
 	var scene = new THREE.Scene();
-	 
+
 	var container = document.getElementById("preview3d");
 
-	var camera = new THREE.PerspectiveCamera( 75, container.clientWidth / container.clientHeight, 0.1, 1000 );
-	var renderer = new THREE.WebGLRenderer();
+	var camera = new THREE.PerspectiveCamera( 50, container.clientWidth / container.clientHeight, 0.1, 1000 );
+	var renderer = new THREE.WebGLRenderer( { antialias: true } );
 
 	renderer.setSize( container.clientWidth, container.clientHeight );
 	document.getElementById("preview3d").appendChild( renderer.domElement );
 
-	material =  new THREE.MeshBasicMaterial( { 
-		color: 0xffffff, 
+	material =  new THREE.MeshBasicMaterial( {
+		color: 0xffffff,
 		transparent: true,
 		map: new THREE.Texture( document.getElementById("preview") ) } );
-	
-	// Add cube	 
-	var cubeGeometry = new THREE.BoxGeometry(10,10,10);
+
+	// Add cube
+	var cubeGeometry = new THREE.BoxGeometry( 10, 10, 10 );
 	cube = new THREE.Mesh( cubeGeometry, material );
 	scene.add( cube );
 
-	var sphereGeometry = new THREE.SphereGeometry(10,10,10);
+	var sphereGeometry = new THREE.SphereGeometry( 7, 10, 10 );
 	sphere = new THREE.Mesh( sphereGeometry, material );
 	scene.add( sphere );
 	sphere.visible = false;
@@ -535,26 +543,25 @@ function init3D() {
 	scene.add( new THREE.AmbientLight( 0x111111 ) );
 
 	camera.position.z = 20;
- 
-	function renderScene()
-	{
+
+	function renderScene() {
 		requestAnimationFrame( renderScene );
-		 
-		var timer = 0.001 * Date.now();
+
+		var timer = 0.0005 * Date.now();
 
 		cube.rotation.y = timer;
 		sphere.rotation.y = timer;
-		 
+
 		renderer.render(scene, camera);
 	}
-	 
-	renderScene();	
+
+	renderScene();
 }
 
 function showObject( button ) {
 
-	if ( button.id == "cube" )
-	{
+	if ( button.id == "cube" ) {
+
 		cube.visible = true;
 		sphere.visible = false;
 		button.className = "selected";
