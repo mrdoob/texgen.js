@@ -15,7 +15,7 @@ UI.Element.prototype = {
 	setId: function ( id ) {
 
 		this.dom.id = id;
-		
+
 		return this;
 
 	},
@@ -137,7 +137,7 @@ UI.Panel.prototype.add = function () {
 UI.Panel.prototype.remove = function () {
 
 	for ( var i = 0; i < arguments.length; i ++ ) {
-	
+
 		var argument = arguments[ i ];
 
 		if ( argument instanceof UI.Element ) {
@@ -440,10 +440,7 @@ UI.Select = function () {
 
 	var dom = document.createElement( 'select' );
 	dom.className = 'Select';
-	dom.style.width = '64px';
-	dom.style.height = '16px';
-	dom.style.border = '0px';
-	dom.style.padding = '0px';
+	dom.style.padding = '2px';
 
 	this.dom = dom;
 
@@ -797,8 +794,8 @@ UI.Number = function ( number ) {
 	var distance = 0;
 	var onMouseDownValue = 0;
 
-	var pointer = new THREE.Vector2();
-	var prevPointer = new THREE.Vector2();
+	var pointer = [ 0, 0 ];
+	var prevPointer = [ 0, 0 ];
 
 	var onMouseDown = function ( event ) {
 
@@ -808,7 +805,7 @@ UI.Number = function ( number ) {
 
 		onMouseDownValue = parseFloat( dom.value );
 
-		prevPointer.set( event.clientX, event.clientY );
+		prevPointer = [ event.clientX, event.clientY ];
 
 		document.addEventListener( 'mousemove', onMouseMove, false );
 		document.addEventListener( 'mouseup', onMouseUp, false );
@@ -819,9 +816,9 @@ UI.Number = function ( number ) {
 
 		var currentValue = dom.value;
 
-		pointer.set( event.clientX, event.clientY );
+		pointer = [ event.clientX, event.clientY ];
 
-		distance += ( pointer.x - prevPointer.x ) - ( pointer.y - prevPointer.y );
+		distance += ( pointer[ 0 ] - prevPointer[ 0 ] ) - ( pointer[ 1 ] - prevPointer[ 1 ] );
 
 		var number = onMouseDownValue + ( distance / ( event.shiftKey ? 5 : 50 ) ) * scope.step;
 
@@ -829,7 +826,7 @@ UI.Number = function ( number ) {
 
 		if ( currentValue !== dom.value ) dom.dispatchEvent( changeEvent );
 
-		prevPointer.set( event.clientX, event.clientY );
+		prevPointer = [ event.clientX, event.clientY ];
 
 	};
 
@@ -961,8 +958,8 @@ UI.Integer = function ( number ) {
 	var distance = 0;
 	var onMouseDownValue = 0;
 
-	var pointer = new THREE.Vector2();
-	var prevPointer = new THREE.Vector2();
+	var pointer = [ 0, 0 ];
+	var prevPointer = [ 0, 0 ];
 
 	var onMouseDown = function ( event ) {
 
@@ -972,7 +969,7 @@ UI.Integer = function ( number ) {
 
 		onMouseDownValue = parseFloat( dom.value );
 
-		prevPointer.set( event.clientX, event.clientY );
+		prevPointer = [ event.clientX, event.clientY ];
 
 		document.addEventListener( 'mousemove', onMouseMove, false );
 		document.addEventListener( 'mouseup', onMouseUp, false );
@@ -983,9 +980,9 @@ UI.Integer = function ( number ) {
 
 		var currentValue = dom.value;
 
-		pointer.set( event.clientX, event.clientY );
+		pointer = [ event.clientX, event.clientY ];
 
-		distance += ( pointer.x - prevPointer.x ) - ( pointer.y - prevPointer.y );
+		distance += ( pointer[ 0 ] - prevPointer[ 0 ] ) - ( pointer[ 1 ] - prevPointer[ 1 ] );
 
 		var number = onMouseDownValue + ( distance / ( event.shiftKey ? 5 : 50 ) ) * scope.step;
 
@@ -993,7 +990,7 @@ UI.Integer = function ( number ) {
 
 		if ( currentValue !== dom.value ) dom.dispatchEvent( changeEvent );
 
-		prevPointer.set( event.clientX, event.clientY );
+		prevPointer = [ event.clientX, event.clientY ];
 
 	};
 
@@ -1158,7 +1155,7 @@ UI.Button.prototype.setLabel = function ( value ) {
 UI.Dialog = function ( value ) {
 
 	var scope = this;
-	
+
 	var dom = document.createElement( 'dialog' );
 
 	if ( dom.showModal === undefined ) {
