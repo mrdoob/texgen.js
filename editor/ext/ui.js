@@ -708,8 +708,6 @@ UI.Color = function () {
 
 	var dom = document.createElement( 'input' );
 	dom.className = 'Color';
-	dom.style.width = '64px';
-	dom.style.height = '16px';
 	dom.style.border = '0px';
 	dom.style.padding = '0px';
 	dom.style.backgroundColor = 'transparent';
