@@ -241,15 +241,12 @@ TG.XOR = function () {
 TG.Noise = function () {
 
 	var params = {
-		x: Date.now(),
-		y: 123456789,
-		z: 123123123,
-		w: 876453513
+		seed: Date.now()
 	};
 
 	return new TG.Program( {
 		seed: function ( value ) {
-			params.x = value;
+			params.seed = Math.abs( value );
 			return this;
 		},
 		getParams: function () {
@@ -257,10 +254,8 @@ TG.Noise = function () {
 		},
 		getSource: function () {
 			return [
-				'var t = params.x ^ ( params.x << 11 );',
-				'params.x = params.y; params.y = params.z; params.z = params.w;',
-				'params.w = params.w ^ ( params.w >> 19 ) ^ ( t ^ ( t >> 8 ) );',
-				'var value = params.w / 2147483647',
+				'params.seed = ( ( params.seed * 48271 ) + 777777 ) % 4294967296;',
+				'var value = params.seed / 4294967296',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
