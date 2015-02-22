@@ -246,7 +246,7 @@ TG.Noise = function () {
 
 	return new TG.Program( {
 		seed: function ( value ) {
-			params.seed = Math.abs( value );
+			params.seed = value;
 			return this;
 		},
 		getParams: function () {
@@ -255,7 +255,7 @@ TG.Noise = function () {
 		getSource: function () {
 			return [
 				'params.seed = ( ( params.seed * 48271 ) + 777777 ) % 4294967296;',
-				'var value = params.seed / 4294967296',
+				'var value = Math.abs( params.seed / 4294967296 )',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
