@@ -91,9 +91,9 @@ TG.Texture.prototype = {
 
 	},
 
-	toCanvas: function () {
+	toCanvas: function ( canvas ) {
 
-		var canvas = document.createElement( 'canvas' );
+		if ( canvas === undefined ) canvas = document.createElement( 'canvas' );
 		canvas.width = this.buffer.width;
 		canvas.height = this.buffer.height;
 
