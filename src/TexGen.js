@@ -254,11 +254,111 @@ TG.Noise = function () {
 		},
 		getSource: function () {
 			return [
-				'params.seed = ( ( params.seed * 48271 ) + 777777 ) % 4294967296;',
-				'var value = Math.abs( params.seed / 4294967296 )',
+				'var value = TG.Utils.hashRNG( params.seed, x, y );',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
+			].join('\n');
+		}
+	} );
+
+};
+
+TG.FractalNoise = function () {
+
+	var params = {
+		interpolator: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.STEP ),
+		seed: Date.now(),
+		baseFrequency: 0.03125,
+		amplitude: 0.4,
+		persistence: 0.72,
+		octaves: 4,
+		step: 4
+	};
+
+	return new TG.Program( {
+		seed: function ( value ) {
+			params.seed = value;
+			return this;
+		},
+		baseFrequency: function ( value ) {
+			params.baseFrequency = 1 / value;
+			return this;
+		},
+		amplitude: function ( value ) {
+			params.amplitude = value;
+			return this;
+		},
+		persistence: function ( value ) {
+			params.persistence = value;
+			return this;
+		},
+		octaves: function ( value ) {
+			params.octaves = Math.max( 1, value );
+			return this;
+		},
+		step: function ( value ) {
+			params.step = Math.max( 1, value );
+			return this;
+		},
+		interpolation: function ( value ) {
+			params.interpolator.setInterpolation( value );
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'var value = 0;',
+				'var amp = params.amplitude;',
+				'var freq = params.baseFrequency;',
+				'var x1, y1, dx, dy;',
+				'var v1, v2, v3, v4;',
+				'var i1, i2;',
+
+				'for ( var j = 1; j <= params.octaves; j++ ) {',
+					'x1 = Math.floor( x * freq ), y1 = Math.floor( y * freq );',
+
+					'if ( params.interpolator.interpolation == TG.ColorInterpolatorMethod.STEP ) {',
+						'value += TG.Utils.hashRNG( params.seed * j, x1, y1 ) * amp;',
+					'} else {',
+						'dx = ( x * freq ) - x1, dy = ( y * freq ) - y1;',
+
+						'v1 = TG.Utils.hashRNG( params.seed * j, x1    , y1     );',
+						'v2 = TG.Utils.hashRNG( params.seed * j, x1 + 1, y1     );',
+						'v3 = TG.Utils.hashRNG( params.seed * j, x1    , y1 + 1 );',
+						'v4 = TG.Utils.hashRNG( params.seed * j, x1 + 1, y1 + 1 );',
+
+						'params.interpolator.set( [',
+							'{ pos: 0, color: [ v1 ] },',
+							'{ pos: 1, color: [ v2 ] }',
+						'] );',
+
+						'i1 = params.interpolator.getColorAt( dx );',
+
+						'params.interpolator.set( [',
+							'{ pos: 0, color: [ v3 ] },',
+							'{ pos: 1, color: [ v4 ] }',
+						'] );',
+
+						'i2 = params.interpolator.getColorAt( dx );',
+
+						'params.interpolator.set( [',
+							'{ pos: 0, color: [ i1[ 0 ] ] },',
+							'{ pos: 1, color: [ i2[ 0 ] ] }',
+						'] );',
+
+						'value += params.interpolator.getColorAt( dy )[ 0 ] * amp;',
+					'}',
+
+					'freq *= params.step;',
+					'amp *= params.persistence;',
+				'}',
+
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;',
 			].join('\n');
 		}
 	} );
@@ -439,11 +539,11 @@ TG.Twirl = function () {
 					'dist = Math.pow(params.radius - dist, 2) / params.radius;',
 
 					'var angle = 2.0 * Math.PI * (dist / (params.radius / params.strength));',
-					's = (((x - params.position[ 0 ]) * Math.cos(angle)) - ((y - params.position[ 0 ]) * Math.sin(angle)) + params.position[ 0 ] + 0.5);',
-					't = (((y - params.position[ 1 ]) * Math.cos(angle)) + ((x - params.position[ 1 ]) * Math.sin(angle)) + params.position[ 1 ] + 0.5);',
+					'var s = (((x - params.position[ 0 ]) * Math.cos(angle)) - ((y - params.position[ 0 ]) * Math.sin(angle)) + params.position[ 0 ] + 0.5);',
+					'var t = (((y - params.position[ 1 ]) * Math.cos(angle)) + ((x - params.position[ 1 ]) * Math.sin(angle)) + params.position[ 1 ] + 0.5);',
 				'} else {',
-					's = x;',
-					't = y;',
+					'var s = x;',
+					'var t = y;',
 				'}',
 
 				'color.set( src.getPixelBilinear( s, t ) );',
@@ -635,10 +735,10 @@ TG.ColorInterpolatorMethod = {
 
 // points must be a set pair (point, color):
 // [{ pos0: [r,g,b,a] } , ..., { posN: [r,g,b,a] } ] posX from 0..1
-TG.ColorInterpolator = function( ) {
+TG.ColorInterpolator = function( method ) {
 
 	this.points = [];
-	this.interpolation = TG.ColorInterpolator.SPLINE;
+	this.interpolation = ( typeof( method ) == 'undefined' ) ? TG.ColorInterpolatorMethod.LINEAR : method;
 	this.repeat = false;
 
 	return this;
@@ -731,7 +831,7 @@ TG.ColorInterpolator.prototype = {
 TG.RadialGradient = function () {
 
 	var params = {
-		gradient: new TG.ColorInterpolator( TG.ColorInterpolator.LINEAR ),
+		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR ),
 		radius: 255,
 		center: [ 128, 128 ],
 	};
@@ -775,7 +875,7 @@ TG.RadialGradient = function () {
 TG.LinearGradient = function () {
 
 	var params = {
-		gradient: new TG.ColorInterpolator( TG.ColorInterpolator.LINEAR )
+		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR )
 	};
 
 	return new TG.Program( {
@@ -847,6 +947,20 @@ TG.Utils = {
 
 		return deg * Math.PI / 180;
 
+	},
+
+	hashRNG: function ( seed, x, y ) {
+		seed = ( Math.abs( seed % 2147483648 ) == 0 ) ? 1 : seed;
+
+		var a = ( ( seed * ( x + 1 ) * 777 ) ^ ( seed * ( y + 1 ) * 123 ) ) % 2147483647;
+		a = (a ^ 61) ^ (a >> 16);
+		a = a + (a << 3);
+		a = a ^ (a >> 4);
+		a = a * 0x27d4eb2d;
+		a = a ^ (a >> 15);
+		a = a / 2147483647;
+
+		return a;
 	}
 
 };
