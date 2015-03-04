@@ -738,7 +738,7 @@ TG.ColorInterpolatorMethod = {
 TG.ColorInterpolator = function( method ) {
 
 	this.points = [];
-	this.interpolation = ( method == 'undefined' ) ? TG.ColorInterpolatorMethod.LINEAR : method;
+	this.interpolation = ( typeof( method ) == 'undefined' ) ? TG.ColorInterpolatorMethod.LINEAR : method;
 	this.repeat = false;
 
 	return this;
