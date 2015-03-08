@@ -623,11 +623,11 @@ TG.Pixelate = function () {
 };
 
 TG.GradientMap = function () {
-	
+
 	var params = {
 		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR )
 	};
-	
+
 	return new TG.Program( {
 		repeat: function ( value ) {
 			params.gradient.setRepeat( value );
@@ -647,18 +647,18 @@ TG.GradientMap = function () {
 		getSource: function () {
 			return [
 				'var v = src.getPixelNearest( x, y );',
-				
+
 				'var r = params.gradient.getColorAt( v[ 0 ] )[ 0 ];',
 				'var g = params.gradient.getColorAt( v[ 1 ] )[ 1 ];',
 				'var b = params.gradient.getColorAt( v[ 2 ] )[ 2 ];',
-				
+
 				'color[ 0 ] = r;',
 				'color[ 1 ] = g;',
 				'color[ 2 ] = b;'
 			].join('\n');
 		}
 	} );
-	
+
 };
 
 // Buffer
@@ -793,10 +793,10 @@ TG.ColorInterpolator.prototype = {
 		this.points.sort( function( a, b ) {
 			return a.pos - b.pos;
 		});
-		
+
 		this.low = this.points[ 0 ].pos;
 		this.high = this.points[ this.points.length - 1 ].pos;
-		
+
 		return this;
 
 	},
@@ -807,10 +807,10 @@ TG.ColorInterpolator.prototype = {
 		this.points.sort( function( a, b ) {
 			return a.pos - b.pos;
 		});
-		
+
 		this.low = this.points[ 0 ].pos;
 		this.high = this.points[ this.points.length - 1 ].pos;
-		
+
 		return this;
 
 	},
@@ -833,7 +833,7 @@ TG.ColorInterpolator.prototype = {
 
 		if ( pos > this.high )
 			pos = this.repeat ? pos % this.high : this.high;
-			
+
 		if ( pos < this.low )
 			pos = this.repeat ? pos % this.low : this.low;
 
