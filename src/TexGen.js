@@ -622,6 +622,45 @@ TG.Pixelate = function () {
 
 };
 
+TG.Normalize = function () {
+
+	var params = {
+		multiplier: 0,
+		offset: 0
+	}
+
+	return new TG.Program( {
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'if ( !params.init ) {',
+					'var high = -Infinity;',
+					'var low = Infinity;',
+
+					'for ( var j = 0, len = src.array.length; j < len; j++ ) {',
+						'if ( j % 4 == 3 ) continue;',
+
+						'high = ( src.array[ j ] > high ) ? src.array[ j ] : high;',
+						'low  = ( src.array[ j ] < low  ) ? src.array[ j ] : low;',
+					'}',
+
+					'params.offset = -low;',
+					'params.multiplier = 1 / ( high - low );',
+					'params.init = true;',
+				'}',
+
+				'var v = src.getPixelNearest( x, y );',
+				'color[ 0 ] = ( v[ 0 ] + params.offset ) * params.multiplier;',
+				'color[ 1 ] = ( v[ 1 ] + params.offset ) * params.multiplier;',
+				'color[ 2 ] = ( v[ 2 ] + params.offset ) * params.multiplier;'
+			].join( '\n' );
+
+		}
+	} );
+};
+
 // Buffer
 
 TG.Buffer = function ( width, height ) {
