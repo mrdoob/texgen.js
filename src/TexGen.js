@@ -867,12 +867,13 @@ TG.ColorInterpolator.prototype = {
 	},
 
 	getColorAt: function ( pos ) {
-
-		if ( pos > this.high )
-			pos = this.repeat ? pos % this.high : this.high;
-
-		if ( pos < this.low )
-			pos = this.repeat ? pos % this.low : this.low;
+		var range = ( this.high - this.low );
+		
+		if ( pos > this.high ) {
+			pos = ( this.repeat ) ? ( ( range + ( pos - this.low ) % range ) % range ) + this.low : this.high;
+		} else if ( pos < this.low ) {
+			pos = ( this.repeat ) ? ( ( range + ( pos - this.low ) % range ) % range ) + this.low : this.low;
+		}
 
 		var i = 0, points = this.points;
 
