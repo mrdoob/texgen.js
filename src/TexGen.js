@@ -868,37 +868,11 @@ TG.ColorInterpolator.prototype = {
 
 	getColorAt: function ( pos ) {
 		var range = ( this.high - this.low );
-
+		
 		if ( pos > this.high ) {
-
-			if ( this.repeat ) {
-				pos -= this.low;
-
-				if ( this.repeat >= 2 ) {
-					var flip = Math.abs( Math.floor( pos / range ) % 2 ); // due to rounding errors here, sometimes it flips one pixel too early...
-					pos = ( flip == 1 ) ? -pos : pos;
-				}
-
-				pos = ( range + pos % range ) % range;
-
-				pos += this.low;
-			} else pos = this.high;
-
+			pos = ( this.repeat ) ? ( ( range + ( pos - this.low ) % range ) % range ) + this.low : this.high;
 		} else if ( pos < this.low ) {
-
-			if ( this.repeat ) {
-				pos -= this.low;
-
-				if ( this.repeat >= 2 ) {
-					var flip = Math.abs( Math.floor( pos / range ) % 2 );
-					pos = ( flip == 1 ) ? -pos : pos;
-				}
-
-				pos = ( range + pos % range ) % range;
-
-				pos += this.low;
-			} else pos = this.low;
-
+			pos = ( this.repeat ) ? ( ( range + ( pos - this.low ) % range ) % range ) + this.low : this.low;
 		}
 
 		var i = 0, points = this.points;
