@@ -698,6 +698,32 @@ TG.Normalize = function () {
 	} );
 };
 
+TG.Posterize = function () {
+
+	var params = {
+		step: 1
+	};
+
+	return new TG.Program( {
+		step: function ( value ) {
+			params.step = Math.max( value, 2 )
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'var v = src.getPixelNearest( x, y );',
+				'color[ 0 ] = Math.floor( Math.floor( v[ 0 ] * 255 / ( 255 / params.step ) ) * 255 / ( params.step - 1 ) ) / 255;',
+				'color[ 1 ] = Math.floor( Math.floor( v[ 1 ] * 255 / ( 255 / params.step ) ) * 255 / ( params.step - 1 ) ) / 255;',
+				'color[ 2 ] = Math.floor( Math.floor( v[ 2 ] * 255 / ( 255 / params.step ) ) * 255 / ( params.step - 1 ) ) / 255;'
+			].join( '\n' );
+		}
+	} );
+
+};
+
 // Buffer
 
 TG.Buffer = function ( width, height ) {
