@@ -701,7 +701,7 @@ TG.Normalize = function () {
 TG.Posterize = function () {
 
 	var params = {
-		step: 1
+		step: 2
 	};
 
 	return new TG.Program( {
