@@ -1100,12 +1100,12 @@ TG.Utils = {
 
 	mirroredWrap: function ( value, min, max ) {
 		var v = value - min;
-		var r = (max - min) * 2;
+		var r = ( max - min ) * 2;
 
 		v = ( r + v % r ) % r;
 
 		if ( v > max - min ) {
-			return (-v + r) + min;
+			return ( r - v ) + min;
 		} else {
 			return v + min;
 		}
