@@ -469,6 +469,64 @@ TG.Circle = function () {
 
 };
 
+TG.PutTexture = function ( texture ) {
+
+	var params = {
+		offset: [ 0, 0 ],
+		repeat: false,
+		srcTex: texture.buffer
+	};
+
+	return new TG.Program( {
+		offset: function ( x, y ) {
+			params.offset = [ x, y ];
+			return this;
+		},
+		repeat: function ( value ) {
+			params.repeat = value;
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'var texWidth = params.srcTex.width;',
+				'var texHeight = params.srcTex.height;',
+
+				'var texX = x - params.offset[ 0 ];',
+				'var texY = y - params.offset[ 1 ];',
+
+				'if ( texX >= texWidth || texY >= texHeight || texX < 0 || texY < 0 ) {',
+					'if ( params.repeat ) {',
+						'var nx, ny;',
+						'var rangeX = texWidth - 1;',
+						'var rangeY = texHeight - 1;',
+
+						'if ( params.repeat == 1 ) {',
+							'nx = TG.Utils.wrap( texX, 0, texWidth );',
+							'ny = TG.Utils.wrap( texY, 0, texHeight );',
+						'} else if ( params.repeat == 2 ) {',
+							'nx = TG.Utils.mirroredWrap( texX, 0, rangeX );',
+							'ny = TG.Utils.mirroredWrap( texY, 0, rangeY );',
+						'} else if ( params.repeat == 3 ) {',
+							'nx = TG.Utils.clamp( texX, 0, rangeX );',
+							'ny = TG.Utils.clamp( texY, 0, rangeY );',
+						'}',
+
+						'color = params.srcTex.getPixelNearest( nx, ny );',
+					'} else {',
+						'color[ 0 ] = 0;',
+						'color[ 1 ] = 0;',
+						'color[ 2 ] = 0;',
+					'}',
+				'} else color = params.srcTex.getPixelNearest( texX, texY );',
+			].join( '\n' );
+		}
+	} );
+
+};
+
 // Filters
 
 TG.SineDistort = function () {
@@ -867,13 +925,10 @@ TG.ColorInterpolator.prototype = {
 	},
 
 	getColorAt: function ( pos ) {
-		var range = ( this.high - this.low );
 		
-		if ( pos > this.high ) {
-			pos = ( this.repeat ) ? ( ( range + ( pos - this.low ) % range ) % range ) + this.low : this.high;
-		} else if ( pos < this.low ) {
-			pos = ( this.repeat ) ? ( ( range + ( pos - this.low ) % range ) % range ) + this.low : this.low;
-		}
+		if ( this.repeat == 2 ) pos = TG.Utils.mirroredWrap( pos, this.low, this.high );
+		else if ( this.repeat ) pos = TG.Utils.wrap( pos, this.low, this.high );
+		else pos = TG.Utils.clamp( pos, this.low, this.high );
 
 		var i = 0, points = this.points;
 
@@ -1034,6 +1089,26 @@ TG.Utils = {
 
 		return Math.min( Math.max( value, min ), max );
 
+	},
+	
+	wrap: function ( value, min, max ) {
+		var v = value - min;
+		var r = max - min;
+
+		return ( ( r + v % r ) % r ) + min;
+	},
+
+	mirroredWrap: function ( value, min, max ) {
+		var v = value - min;
+		var r = (max - min) * 2;
+
+		v = ( r + v % r ) % r;
+
+		if ( v > max - min ) {
+			return (-v + r) + min;
+		} else {
+			return v + min;
+		}
 	},
 
 	deg2rad: function ( deg ) {
