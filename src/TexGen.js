@@ -494,8 +494,8 @@ TG.PutTexture = function ( texture ) {
 				'var texWidth = params.srcTex.width;',
 				'var texHeight = params.srcTex.height;',
 
-				'var texX = x - params.offset[ 0 ];',
-				'var texY = y - params.offset[ 1 ];',
+				'var texX = Math.floor( x - params.offset[ 0 ] );',
+				'var texY = Math.floor( y - params.offset[ 1 ] );',
 
 				'if ( texX >= texWidth || texY >= texHeight || texX < 0 || texY < 0 ) {',
 					'if ( params.repeat ) {',
