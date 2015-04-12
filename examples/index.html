@@ -255,6 +255,59 @@
 
 			document.body.appendChild( texture );
 
+			//---- Put-Texture ----
+
+			var s = 256;		// width and height of textures
+			var numSamples = 6;		// more samples = heavier effect
+
+			var vignette = new TG.Texture( s, s )		// predefine a vignette-effect so it can be used later
+				.set( new TG.Circle().radius( s ).position( s / 2, s / 2 ).delta( s * 0.7 ) );
+
+			var base = new TG.Texture( s, s )		// generating an image to be blurred
+				.set( new TG.FractalNoise().amplitude( 0.46 ).persistence( 0.78 ).interpolation( 0 ) )
+				.set( new TG.Normalize() );
+
+			var blur = new TG.Texture( s, s );		// the texture the samples are put onto
+
+			for ( i = 0; i <= numSamples; i++ ) {
+				var sample = new TG.Texture( s, s )
+				.set( new TG.PutTexture( base ) ) 		// copy the base texture, so that it doesn't get modified
+				.set( new TG.Transform().scale( 1 + 0.01 * i, 1 + 0.01 * i ).angle( 1 + 0.5 * i ) );		// modify the texture a bit more with each sample
+
+				blur.add( new TG.PutTexture( sample ) );		// adding the transformed sample to the result
+			}
+
+			blur.set( new TG.Normalize() )		// since the samples are not weighted, put everything in the visible range
+				.mul( new TG.PutTexture( vignette ) );		// adding the predefined vignette-effect
+
+			var texture = base.toCanvas();		// since we copied the base texture instead of modifying it directly, we can still use it how it was before
+			document.body.appendChild( texture );
+
+			var texture = blur.toCanvas();
+			document.body.appendChild( texture );
+
+			//----
+
+			var subDim = Math.floor( s / 4 );		// generate a smaller image so it can be mirrored later
+
+			var pixel = new TG.Texture( subDim, subDim )
+				.set( new TG.FractalNoise().baseFrequency( subDim / 15 ).octaves( 1 ).amplitude( 1 ) )		// generating a noise pattern with 15 pixels per length
+				.set( new TG.GradientMap().interpolation( 0 )		// divide the generated values into defined colors
+					.point( 0, [ 250, 230, 210 ] )		//[ 251, 255, 228 ] (alternative colors)
+					.point( 0.2, [ 255, 92, 103 ] )		//[ 130, 198, 184 ]
+					.point( 0.4, [ 200, 15, 17 ] )		//[ 42, 166, 137 ]
+					.point( 0.6, [ 140, 49, 59 ] )		//[ 58, 131, 114 ]
+					.point( 0.8, [ 35, 10, 12 ] )		//[ 4, 46, 27 ]
+					.point( 1, [ 0, 0, 0 ] ) )
+				.div( new TG.Number().tint( 255, 255, 255 ) );		// converting the 0-255 defined colors to the 0-1 space
+
+			var mirrored = new TG.Texture( s, s )
+				.add( new TG.PutTexture( pixel ).repeat( 2 ) )		// repeat the texture to get a cool mirrored pattern effect
+				.mul( new TG.PutTexture( vignette ).tint( 1.2, 1.2, 1.2 ) );		// adding the vignette from above
+
+			var texture = mirrored.toCanvas();
+			document.body.appendChild( texture );
+
 		</script>
 	</body>
 </html>
