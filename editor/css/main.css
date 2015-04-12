@@ -1,4 +1,5 @@
 body {
+	background-color: #111;
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	margin: 0;
@@ -14,22 +15,10 @@ button {
 	position: relative;
 }
 
-textarea {
-	tab-size: 4;
-	white-space: pre;
-	word-wrap: normal;
+input.Color {
+	width: 20px;
+	margin-right: 8px;
 }
-
-	textarea.success {
-		border-color: #8b8 !important;
-	}
-
-	textarea.fail {
-		border-color: #f00 !important;
-		background-color: rgba(255,0,0,0.05);
-	}
-
-textarea, input { outline: none; } /* osx */
 
 .Panel {
 	-moz-user-select: none;
@@ -67,64 +56,35 @@ textarea, input { outline: none; } /* osx */
 		display: none;
 	}
 
-.CodeMirror {
+/**/
 
-	position: absolute !important;
-	top: 37px;
-	width: 100% !important;
-	height: calc(100% - 37px) !important;
-
+#preview {
+	margin: 8px;
 }
 
-/* scene types */
-
-.type {
-	position:relative;
-	top:-2px;
-	padding: 0px 2px;
-	color: #ddd;
-}
-.type:after {
-	content: '■';
+#editor {
+	position: absolute;
+	left: 280px;
+	padding: 10px;
 }
 
-.Scene {
-	color: #ccccff;
+.layer {
+	padding: 5px;
+	width: 600px;
+	background-color: #eee;
+	border-bottom: 1px solid #ddd
 }
 
-.Object3D {
-	color: #aaaaee;
-}
+	.layer .operation {
+		width: 60px;
+		margin-right: 10px;
+	}
 
-.Mesh {
-	color: #8888ee;
-}
+	.layer .name {
+		width: 100px;
+		font-size: 13px;
+	}
 
-/* */
-
-.PointLight {
-	color: #dddd00;
-}
-
-/* */
-
-.Geometry {
-	color: #88ff88;
-}
-
-.BoxGeometry {
-	color: #bbeebb;
-}
-.TorusGeometry {
-	color: #aaeeaa;
-}
-
-/* */
-
-.Material {
-	color: #ff8888;
-}
-
-.MeshPhongMaterial {
-	color: #ffaa88;
-}
+	.layer .propertyName {
+		margin-right: 5px;
+	}

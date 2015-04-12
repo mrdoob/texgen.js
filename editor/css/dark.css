@@ -17,6 +17,7 @@
 	}
 
 input.Number {
+	width: 35px;
 	color: #2A75B7;
 	font-size: 12px;							/** TODO: Use of !imporant is not ideal **/
 	background-color: transparent!important;	/* For now this is a quick fix a rendering issue due to inherited background */

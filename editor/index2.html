@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>texgen.js editor</title>
+		<meta charset="utf-8">
+		<link href="css/main.css" rel="stylesheet" />
+		<link href="css/dark.css" rel="stylesheet" />
+	</head>
+	<body>
+		<script src="../src/TexGen.js"></script>
+		<script src="ext/ui.js"></script>
+		<script src="ext/sortable.min.js"></script>
+		<script>
+
+			var generators = [
+				'SinX', 'SinY', 'OR', 'XOR', 'Noise',
+				'CheckerBoard', 'Rect', 'Circle',
+				'SineDistort', 'Twirl', 'Transform',
+				'Pixelate', 'Normalize', 'Posterize'
+			];
+
+			// Preview
+
+			var canvas = document.createElement( 'canvas' );
+			canvas.width = 256;
+			canvas.height = 256;
+			canvas.id = 'preview';
+			canvas.style.cssFloat = 'left';
+			document.body.appendChild( canvas );
+
+			var updatePreview = function () {
+
+				var texture = new TG.Texture( canvas.width, canvas.height );
+
+				for ( var i = 0; i < layers.dom.children.length; i ++ ) {
+
+					var layer = layers.dom.children[ i ];
+
+					var data = layer.getData();
+					texture.set( data.generator, TG.OP[ data.operation ] );
+
+				}
+
+				texture.toCanvas( canvas );
+
+			};
+
+			// Generators
+
+			var editor = new UI.Panel();
+			editor.setId( 'editor' );
+			document.body.appendChild( editor.dom );
+
+			var createButton = function ( name ) {
+
+				var button = new UI.Button( name );
+				button.onClick( function () {
+
+					createLayer( name );
+
+				} );
+				editor.add( button );
+
+			};
+
+			for ( var i = 0; i < generators.length; i ++ ) {
+
+				createButton( generators[ i ] );
+
+			}
+
+			editor.add( new UI.Break(), new UI.Break() );
+
+			// Layers
+
+			var layers = new UI.Panel();
+			layers.setId( 'layers' );
+			editor.add( layers );
+
+			var sortable = Sortable.create( layers.dom, {
+				onUpdate: function ( event ) {
+					updatePreview();
+				}
+			} );
+
+			var options = {
+				'SET': '=',
+				'ADD': '+',
+				'SUB': '-',
+				'MUL': '*',
+				'DIV': '/',
+				'AND': '&',
+				'XOR': '^',
+				'MIN': 'min',
+				'MAX': 'max'
+			};
+
+			var hexToRgb = function ( hex ) {
+
+				var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+				return [
+					parseInt( result[ 1 ], 16 ) / 255,
+					parseInt( result[ 2 ], 16 ) / 255,
+					parseInt( result[ 3 ], 16 ) / 255
+				];
+
+			};
+
+			var rgbToHex = function ( r, g, b ) {
+
+				var hex = ( r * 255 ) << 16 ^ ( g * 255 ) << 8 ^ ( b * 255 ) << 0;
+				return '#' + ( '000000' + hex.toString( 16 ) ).slice( - 6 );
+
+			};
+
+			var createLayer = function ( name ) {
+
+				var layer = new UI.Panel().setClass( 'layer' );
+				layers.add( layer );
+
+				var opsSelect = new UI.Select().setClass( 'operation' );
+				opsSelect.setOptions( options );
+				opsSelect.onChange( updatePreview );
+				layer.add( opsSelect );
+
+				var nameText = new UI.Text( name ).setClass( 'name' );
+				layer.add( nameText );
+
+				var tintColor = new UI.Color();
+				tintColor.onChange( updatePreview );
+				layer.add( tintColor );
+
+				// parameters
+
+				var generator = new TG[ name ]();
+				var parameters = generator.getParams();
+
+				for ( var key in parameters ) {
+
+					var parameter = parameters[ key ];
+
+					var nameText = new UI.Text( key );
+					nameText.setClass( 'propertyName' );
+					layer.add( nameText );
+
+					if ( parameter instanceof Array ) {
+
+						for ( var j = 0; j < parameter.length; j ++ ) {
+
+							var valueNumber = createNumber( parameter, j );
+							layer.add( valueNumber );
+
+						}
+
+					} else {
+
+						var valueNumber = createNumber( parameters, key );
+						layer.add( valueNumber );
+
+					}
+
+				}
+
+				layer.dom.getData = function () {
+					var color = hexToRgb( tintColor.getValue() );
+					return {
+						operation: opsSelect.getValue(),
+						generator: generator.tint( color[ 0 ], color[ 1 ], color[ 2 ] )
+					}
+				};
+
+				updatePreview();
+
+			};
+
+			var createNumber = function ( object, key ) {
+
+				var number = new UI.Number( object[ key ] )
+				number.onChange( function () {
+
+					object[ key ] = this.getValue();
+					updatePreview();
+
+				} );
+				return number;
+
+			};
+
+		</script>
+	</body>
+</html>
