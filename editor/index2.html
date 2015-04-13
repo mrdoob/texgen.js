@@ -160,6 +160,9 @@
 					}
 
 				}
+				
+				var button = createLayerButtons(layer)
+				layer.add(button)
 
 				layer.dom.getData = function () {
 					var color = hexToRgb( tintColor.getValue() );
@@ -186,6 +189,19 @@
 
 			};
 
+			var createLayerButtons = function (layer) {
+
+				var button = new UI.Button('Remove')
+				button.onClick( function () {
+
+					var parent = layer.dom.parentNode
+					parent.removeChild(layer.dom);
+					updatePreview();
+
+				} );
+				return button;
+
+			};
 		</script>
 	</body>
 </html>
