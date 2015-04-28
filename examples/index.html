@@ -56,38 +56,11 @@
 		<p>Change size: <a href="#128">128x128</a> <a href="#256">256x256</a> <a href="#512">512x512</a> <a id="customSize" href="javascript:void();">custom...</a></p>
 		
 		<div id="generated">
-			<h2>Generating...</h2>
 		</div>
 			
 		<!--<script src="../build/texgen.min.js"></script> -->
 		<script src="../src/TexGen.js"></script>
 		<script>
-		
-			s = 256;
-
-			function generateTextures () {
-				generated.innerHTML = "";
-
-				if ( window.location.hash ) s = parseInt( window.location.hash.substring( 1 ), 10 );
-				
-				for ( var a = 0, len = examples.length; a < len; a++ ) {
-					var div = document.createElement( "div" );
-					var source = document.createElement( "pre" );
-					
-					div.className = "example";
-					
-					source.innerHTML = examples[ a ].toString()
-						.replace( /([\n\t]+return[\s\S]+)|(^\t{4})/gm, "" )
-						.replace( /^[\s\S]+?\n/, "" )
-						.replace( /\t/g, "    " );
-					
-					div.appendChild( examples[ a ]( s ) );
-					div.appendChild( source );
-					generated.appendChild( div );
-					generated.appendChild( document.createElement( "br" ) );
-				}
-			};
-
 			var generated = document.getElementById( "generated" );
 			var examples = [];
 
@@ -117,6 +90,7 @@
 					.add( new TG.Noise().tint( 0, 0, 0.1 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -133,6 +107,7 @@
 					.add( new TG.SinX().frequency( 0.004 ).tint( -0.25, 0.1, 0.6 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -148,6 +123,7 @@
 					.add( new TG.Noise().tint( 0.1, 0.1, 0.2 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -161,6 +137,7 @@
 					.mul( new TG.SinY().frequency( 0.015 ) )
 					.add( new TG.Noise().tint( 0.1, 0.1, 0.3 ) )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -177,6 +154,7 @@
 					.add( new TG.SinX().frequency( 0.003 ).tint( 0.5, 0, 0 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -190,6 +168,7 @@
 					.mul( new TG.SinY().offset( 16 ).frequency( 0.044 ).tint( 2, 2, 2 ) )
 					.sub( new TG.Number().tint( 0.5, 2, 4 ) )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -207,6 +186,7 @@
 					.add( new TG.Noise().tint( 0, 0, 0.1 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -220,6 +200,7 @@
 					.sub( new TG.CheckerBoard().offset( 16, 16 ).tint( 0.5, 0.5, 0 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -232,6 +213,7 @@
 					.add( new TG.Rect().position( size / 4.8, size / 2.5 ).size( size / 1.7, size / 2 ).tint( 0.25, 0.25, 1 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -242,6 +224,7 @@
 					.add( new TG.CheckerBoard().size( 32, 32 ).tint( 0.5, 0, 0 ) )
 					.set( new TG.SineDistort() )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -254,6 +237,7 @@
 					.set( new TG.Twirl().radius( size / 2 ).position( size / 2, size / 2 ).strength ( 75 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -263,6 +247,7 @@
 				var texture = new TG.Texture( size, size )
 					.add( new TG.Circle().position( size / 2, size / 2 ).radius( size / 4 ) )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -275,6 +260,7 @@
 					.set( new TG.Pixelate().size( size / 32, size / 32 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -285,6 +271,7 @@
 					.add( new TG.CheckerBoard().tint( 1, 1, 0 ) )
 					.set( new TG.Transform().offset( 10, 20 ).angle( 23 ).scale( 2, 0.5 ) )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -298,6 +285,7 @@
 					.xor( new TG.Circle().position( size / 2, size / 2 ).radius( size / 4 ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -309,6 +297,7 @@
 					.set( new TG.Twirl().radius( size / 2 ).strength( 75 ).position( size / 2, size / 2 ) )
 					.min( new TG.Circle().position( size / 2, size / 2 ).radius( size / 2 ).delta( size / 2 ) )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -324,6 +313,7 @@
 						.point( 1, [ 1, 0, 1, 1 ] ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -337,6 +327,7 @@
 						.point( 0.5, [ 0.5, 0.2, 0.5, 1 ] )
 						.point( 1, [ 1, 0, 1, 1 ] ) )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -352,8 +343,10 @@
 						.point( 1, [ 1, 0, 1, 1 ] ) )
 					.toCanvas();
 
+
 				return texture;
 			});
+
 
 
 			//
@@ -366,6 +359,7 @@
 						.point( 0.5, [ 0.5, 0.2, 0.5, 1] )
 						.point( 1, [ 1, 0, 1, 1 ] ) )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -381,6 +375,7 @@
 						.point( 1, [ 1, 0, 1, 1 ] ) )
 					.toCanvas();
 
+
 				return texture;
 			});
 
@@ -394,6 +389,7 @@
 						.point( 0.5, [ 0.5, 0.2, 0.5, 1 ] )
 						.point( 1, [ 1, 0, 1, 1 ] ) )
 					.toCanvas();
+
 
 				return texture;
 			});
@@ -454,12 +450,33 @@
 				
 				return texture;
 			});
-
-			setTimeout( generateTextures, 2 )
+			
+			//----------------
+			
+			function generateTexture ( a ) {
+				if ( a >= examples.length ) return;
+			
+				var div = document.createElement( "div" );
+				var source = document.createElement( "pre" );
+				
+				source.innerHTML = examples[ a ].toString()
+					.replace( /([\n\t]+return[\s\S]+)|(^\t{4})/gm, "" )
+					.replace( /^[\s\S]+?\n/, "" )
+					.replace( /\t/g, "    " );
+				
+				div.appendChild( examples[ a ]( s ) );
+				div.appendChild( source );
+				generated.appendChild( div );
+				generated.appendChild( document.createElement( "br" ) );
+				
+				setTimeout( function () { generateTexture( a + 1 ); } )
+			};
+			
+			var s = ( window.location.hash ) ? parseInt( window.location.hash.substring( 1 ), 10 ) : 256;
+			setTimeout( function () { generateTexture(0); } );
 
 			window.addEventListener( "hashchange", function () { 
-				generated.innerHTML = "<h2>Generating...</h2>";
-				setTimeout( generateTextures, 2);
+				window.location.reload();
 			});
 
 			document.getElementById("customSize").addEventListener("click", function () {
@@ -471,3 +488,4 @@
 		</script>
 	</body>
 </html>
+
