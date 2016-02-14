@@ -365,6 +365,135 @@ TG.FractalNoise = function () {
 
 };
 
+TG.CellularNoise = function () {
+
+	var params = {
+		seed: Date.now(),
+		density: 32,
+		weightRange: 0
+	};
+
+	return new TG.Program( {
+		seed: function ( value ) {
+			params.seed = value;
+			return this;
+		},
+		density: function ( value ) {
+			params.density = value;
+			return this;
+		},
+		weightRange: function ( value ) {
+			params.weightRange = Math.max( 0, value );
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'var qx, qy, rx, ry, px, py, dx, dy;',
+				'var dist, value;',
+				'var grid = Math.abs( params.density );',
+				'var shortest = Infinity;',
+
+				'for ( var sx = -2; sx <= 2; sx++ ) {',
+					'for ( var sy = -2; sy <= 2; sy++ ) {',
+						'qx = Math.ceil( x / grid ) + sx;',
+						'qy = Math.ceil( y / grid) + sy;',
+
+						'rx = TG.Utils.hashRNG( params.seed, qx, qy );',
+						'ry = TG.Utils.hashRNG( params.seed * 2, qx, qy );',
+						'w = ( params.weightRange > 0 ) ? 1 + TG.Utils.hashRNG( params.seed * 3, qx, qy ) * params.weightRange : 1;',
+
+						'px = Math.floor( ( rx + qx ) * grid );',
+						'py = Math.floor( ( ry + qy ) * grid );',
+
+						'dx = Math.abs( px - x );',
+						'dy = Math.abs( py - y );',
+
+						'dist =	(dx * dx + dy * dy) * w;',
+
+						'if ( dist < shortest ) shortest = dist;',
+					'}',
+				'}',
+
+				'shortest = Math.sqrt( shortest );',
+				'value = 1 - ( shortest / params.density );',
+
+				'if ( params.density < 0 ) value -= 1;',
+
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
+			].join('\n');
+		}
+	} );
+
+};
+
+TG.VoronoiNoise = function () {
+
+	var params = {
+		seed: Date.now(),
+		density: 32,
+		weightRange: 0
+	};
+
+	return new TG.Program( {
+		seed: function ( value ) {
+			params.seed = value;
+			return this;
+		},
+		density: function ( value ) {
+			params.density = value;
+			return this;
+		},
+		weightRange: function ( value ) {
+			params.weightRange = Math.max( 0, value );
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'var qx, qy, rx, ry, w, px, py, dx, dy;',
+				'var dist, value;',
+				'var shortest = Infinity;',
+
+				'for ( var sx = -2; sx <= 2; sx++ ) {',
+					'for ( var sy = -2; sy <= 2; sy++ ) {',
+						'qx = Math.ceil( x / params.density ) + sx;',
+						'qy = Math.ceil( y / params.density ) + sy;',
+
+						'rx = TG.Utils.hashRNG( params.seed, qx, qy );',
+						'ry = TG.Utils.hashRNG( params.seed * 2, qx, qy );',
+						'w = ( params.weightRange > 0 ) ? 1 + TG.Utils.hashRNG( params.seed * 3, qx, qy ) * params.weightRange : 1;',
+
+						'px = Math.floor( (rx + qx) * params.density );',
+						'py = Math.floor( (ry + qy) * params.density );',
+
+						'dx = Math.abs(px - x);',
+						'dy = Math.abs(py - y);',
+
+						'dist =	(dx * dx + dy * dy) * w;',
+
+						'if ( dist < shortest ) {',
+							'shortest = dist;',
+							'value = rx;',
+						'}',
+					'}',
+				'}',
+
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;'
+			].join('\n');
+		}
+	} );
+
+};
+
 TG.CheckerBoard = function () {
 
 	var params = {
@@ -868,7 +997,7 @@ TG.ColorInterpolator.prototype = {
 
 	getColorAt: function ( pos ) {
 		var range = ( this.high - this.low );
-		
+
 		if ( pos > this.high ) {
 			pos = ( this.repeat ) ? ( ( range + ( pos - this.low ) % range ) % range ) + this.low : this.high;
 		} else if ( pos < this.low ) {
