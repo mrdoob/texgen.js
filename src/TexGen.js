@@ -391,35 +391,9 @@ TG.CellularNoise = function () {
 		},
 		getSource: function () {
 			return [
-				'var qx, qy, rx, ry, px, py, dx, dy;',
-				'var dist, value;',
-				'var grid = Math.abs( params.density );',
-				'var shortest = Infinity;',
+				'var p = TG.Utils.cellNoiseBase( x, y, params.seed, params.density, params.weightRange );',
 
-				'for ( var sx = -2; sx <= 2; sx++ ) {',
-					'for ( var sy = -2; sy <= 2; sy++ ) {',
-						'qx = Math.ceil( x / grid ) + sx;',
-						'qy = Math.ceil( y / grid) + sy;',
-
-						'rx = TG.Utils.hashRNG( params.seed, qx, qy );',
-						'ry = TG.Utils.hashRNG( params.seed * 2, qx, qy );',
-						'w = ( params.weightRange > 0 ) ? 1 + TG.Utils.hashRNG( params.seed * 3, qx, qy ) * params.weightRange : 1;',
-
-						'px = Math.floor( ( rx + qx ) * grid );',
-						'py = Math.floor( ( ry + qy ) * grid );',
-
-						'dx = Math.abs( px - x );',
-						'dy = Math.abs( py - y );',
-
-						'dist =	(dx * dx + dy * dy) * w;',
-
-						'if ( dist < shortest ) shortest = dist;',
-					'}',
-				'}',
-
-				'shortest = Math.sqrt( shortest );',
-				'value = 1 - ( shortest / params.density );',
-
+				'var value = 1 - ( p.dist / params.density );',
 				'if ( params.density < 0 ) value -= 1;',
 
 				'color[ 0 ] = value;',
@@ -457,37 +431,150 @@ TG.VoronoiNoise = function () {
 		},
 		getSource: function () {
 			return [
-				'var qx, qy, rx, ry, w, px, py, dx, dy;',
-				'var dist, value;',
-				'var shortest = Infinity;',
+				'var p = TG.Utils.cellNoiseBase( x, y, params.seed, params.density, params.weightRange );',
 
-				'for ( var sx = -2; sx <= 2; sx++ ) {',
-					'for ( var sy = -2; sy <= 2; sy++ ) {',
-						'qx = Math.ceil( x / params.density ) + sx;',
-						'qy = Math.ceil( y / params.density ) + sy;',
+				'color[ 0 ] = p.value;',
+				'color[ 1 ] = p.value;',
+				'color[ 2 ] = p.value;'
+			].join('\n');
+		}
+	} );
 
-						'rx = TG.Utils.hashRNG( params.seed, qx, qy );',
-						'ry = TG.Utils.hashRNG( params.seed * 2, qx, qy );',
-						'w = ( params.weightRange > 0 ) ? 1 + TG.Utils.hashRNG( params.seed * 3, qx, qy ) * params.weightRange : 1;',
+};
 
-						'px = Math.floor( (rx + qx) * params.density );',
-						'py = Math.floor( (ry + qy) * params.density );',
+TG.CellularFractal = function () {
 
-						'dx = Math.abs(px - x);',
-						'dy = Math.abs(py - y);',
+	var params = {
+		seed: Date.now(),
+		weightRange: 0,
+		baseDensity: 64,
+		amplitude: 0.7,
+		persistence: 0.45,
+		octaves: 4,
+		step: 2
+	};
 
-						'dist =	(dx * dx + dy * dy) * w;',
+	return new TG.Program( {
+		seed: function ( value ) {
+			params.seed = value;
+			return this;
+		},
+		baseDensity: function ( value ) {
+			params.baseDensity = value;
+			return this;
+		},
+		weightRange: function ( value ) {
+			params.weightRange = Math.max( 0, value );
+			return this;
+		},
+		amplitude: function ( value ) {
+			params.amplitude = value;
+			return this;
+		},
+		persistence: function ( value ) {
+			params.persistence = value;
+			return this;
+		},
+		octaves: function ( value ) {
+			params.octaves = Math.max( 1, value );
+			return this;
+		},
+		step: function ( value ) {
+			params.step = Math.max( 1, value );
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'var p;',
+				'var value = 0;',
+				'var amp = params.amplitude;',
+				'var dens = params.baseDensity;',
 
-						'if ( dist < shortest ) {',
-							'shortest = dist;',
-							'value = rx;',
-						'}',
-					'}',
+				'for ( var j = 1; j <= params.octaves; j++ ) {',
+					'p = TG.Utils.cellNoiseBase( x, y, params.seed * j, dens, params.weightRange );',
+
+					'p.dist = 1 - ( p.dist / dens );',
+					'if ( dens < 0 ) p.dist -= 1;',
+
+					'value += p.dist * amp;',
+					'dens /= params.step;',
+					'amp *= params.persistence;',
 				'}',
 
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
-				'color[ 2 ] = value;'
+				'color[ 2 ] = value;',
+			].join('\n');
+		}
+	} );
+
+};
+
+TG.VoronoiFractal = function () {
+
+	var params = {
+		seed: Date.now(),
+		weightRange: 0,
+		baseDensity: 64,
+		amplitude: 0.6,
+		persistence: 0.6,
+		octaves: 4,
+		step: 2
+	};
+
+	return new TG.Program( {
+		seed: function ( value ) {
+			params.seed = value;
+			return this;
+		},
+		baseDensity: function ( value ) {
+			params.baseDensity = value;
+			return this;
+		},
+		weightRange: function ( value ) {
+			params.weightRange = Math.max( 0, value );
+			return this;
+		},
+		amplitude: function ( value ) {
+			params.amplitude = value;
+			return this;
+		},
+		persistence: function ( value ) {
+			params.persistence = value;
+			return this;
+		},
+		octaves: function ( value ) {
+			params.octaves = Math.max( 1, value );
+			return this;
+		},
+		step: function ( value ) {
+			params.step = Math.max( 1, value );
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'var p;',
+				'var value = 0;',
+				'var amp = params.amplitude;',
+				'var dens = params.baseDensity;',
+
+				'for ( var j = 1; j <= params.octaves; j++ ) {',
+					'p = TG.Utils.cellNoiseBase( x, y, params.seed * j, dens, params.weightRange );',
+
+					'value += p.value * amp;',
+					'dens /= params.step;',
+					'amp *= params.persistence;',
+				'}',
+
+				'color[ 0 ] = value;',
+				'color[ 1 ] = value;',
+				'color[ 2 ] = value;',
 			].join('\n');
 		}
 	} );
@@ -1183,6 +1270,39 @@ TG.Utils = {
 		a = a / 2147483647;
 
 		return a;
+	},
+	
+	cellNoiseBase: function ( x, y, seed, density, weightRange ) {
+		var qx, qy, rx, ry, w, px, py, dx, dy;
+		var dist, value;
+		var shortest = Infinity;
+		density = Math.abs( density );
+
+		for ( var sx = -2; sx <= 2; sx++ ) {
+			for ( var sy = -2; sy <= 2; sy++ ) {
+				qx = Math.ceil( x / density ) + sx;
+				qy = Math.ceil( y / density ) + sy;
+
+				rx = TG.Utils.hashRNG( seed, qx, qy );
+				ry = TG.Utils.hashRNG( seed * 2, qx, qy );
+				w = ( weightRange > 0 ) ? 1 + TG.Utils.hashRNG( seed * 3, qx, qy ) * weightRange : 1;
+
+				px = ( rx + qx ) * density;
+				py = ( ry + qy ) * density;
+
+				dx = Math.abs( px - x );
+				dy = Math.abs( py - y );
+
+				dist =	( dx * dx + dy * dy ) * w;
+
+				if ( dist < shortest ) {
+					shortest = dist;
+					value = rx;
+				}
+			}
+		}
+
+		return { dist: Math.sqrt( shortest ), value: value };
 	}
 
 };
