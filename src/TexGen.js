@@ -502,11 +502,11 @@ TG.SinX = function () {
 
 	return new TG.Program( {
 		frequency: function ( value ) {
-			params.frequency = value * Math.PI;
+			params.frequency = ( 2 / value ) * Math.PI;
 			return this;
 		},
 		offset: function ( value ) {
-			params.offset = value;
+			params.offset = -value;
 			return this;
 		},
 		getParams: function () {
@@ -533,11 +533,11 @@ TG.SinY = function () {
 
 	return new TG.Program( {
 		frequency: function ( value ) {
-			params.frequency = value * Math.PI;
+			params.frequency = ( 2 / value ) * Math.PI;
 			return this;
 		},
 		offset: function ( value ) {
-			params.offset = value;
+			params.offset = -value;
 			return this;
 		},
 		getParams: function () {
@@ -950,7 +950,7 @@ TG.CheckerBoard = function () {
 			return this;
 		},
 		offset: function ( x, y ) {
-			params.offset = [ x, y ];
+			params.offset = [ -x, -y ];
 			return this;
 		},
 		rowShift: function ( value ) {
@@ -1272,7 +1272,7 @@ TG.Transform = function () {
 
 	return new TG.Program( {
 		offset: function ( x, y ) {
-			params.offset = [ x, y ];
+			params.offset = [ -x, -y ];
 			return this;
 		},
 		angle: function ( value ) {

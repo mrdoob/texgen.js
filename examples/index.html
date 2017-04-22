@@ -67,10 +67,10 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.XOR().tint( 1, 0.5, 0.7 ) )
-					.add( new TG.SinX().frequency( 0.004 ).tint( 0.25, 0, 0 ) )
-					.sub( new TG.SinY().frequency( 0.004 ).tint( 0.25, 0, 0 ) )
-					.add( new TG.SinX().frequency( 0.0065 ).tint( 0.1, 0.5, 0.2 ) )
-					.add( new TG.SinY().frequency( 0.0065 ).tint( 0, 0.4, 0.5 ) )
+					.add( new TG.SinX().frequency( size / 2 ).tint( 0.25, 0, 0 ) )
+					.sub( new TG.SinY().frequency( size / 2 ).tint( 0.25, 0, 0 ) )
+					.add( new TG.SinX().frequency( size / 0.8 ).tint( 0.1, 0.5, 0.2 ) )
+					.add( new TG.SinY().frequency( size / 0.8 ).tint( 0, 0.4, 0.5 ) )
 					.add( new TG.Noise().tint( 0.1, 0.1, 0.2 ) )
 					.toCanvas();
 					return texture;
@@ -80,11 +80,11 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.SinX().offset( - 16 ).frequency( 0.03 ).tint( 0.1, 0.25, 0.5 ) )
-					.add( new TG.SinY().offset( - 16 ).frequency( 0.03 ).tint( 0.1, 0.25, 0.5 ) )
+					.add( new TG.SinX().offset( size / 16 ).frequency( size / 3 ).tint( 0.1, 0.25, 0.5 ) )
+					.add( new TG.SinY().offset( size / 16 ).frequency( size / 3 ).tint( 0.1, 0.25, 0.5 ) )
 					.add( new TG.Fill().tint( 0.75, 0.5, 0.5 ) )
-					.add( new TG.SinX().frequency( 0.03 ).tint( 0.2, 0.2, 0.2 ) )
-					.add( new TG.SinY().frequency( 0.03 ).tint( 0.2, 0.2, 0.2 ) )
+					.add( new TG.SinX().frequency( size / 3 ).tint( 0.2 ) )
+					.add( new TG.SinY().frequency( size / 3 ).tint( 0.2 ) )
 					.add( new TG.Noise().tint( 0.1, 0, 0 ) )
 					.add( new TG.Noise().tint( 0, 0.1, 0 ) )
 					.add( new TG.Noise().tint( 0, 0, 0.1 ) )
@@ -98,13 +98,13 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.SinX().frequency( 0.1 ) )
-					.mul( new TG.SinX().frequency( 0.05 ) )
-					.mul( new TG.SinX().frequency( 0.025 ) )
-					.mul( new TG.SinY().frequency( 0.1 ) )
-					.mul( new TG.SinY().frequency( 0.05 ) )
-					.mul( new TG.SinY().frequency( 0.025 ) )
-					.add( new TG.SinX().frequency( 0.004 ).tint( -0.25, 0.1, 0.6 ) )
+					.add( new TG.SinX().frequency( size / 12.8 ) )
+					.mul( new TG.SinX().frequency( size / 6.4 ) )
+					.mul( new TG.SinX().frequency( size / 3.2 ) )
+					.mul( new TG.SinY().frequency( size / 12.8 ) )
+					.mul( new TG.SinY().frequency( size / 6.4 ) )
+					.mul( new TG.SinY().frequency( size / 3.2 ) )
+					.add( new TG.SinX().frequency( size * 2 ).tint( -0.25, 0.1, 0.6 ) )
 					.toCanvas();
 
 
@@ -117,9 +117,9 @@
 				var texture = new TG.Texture( size, size )
 					.add( new TG.XOR() )
 					.mul( new TG.OR().tint( 0.5, 0.8, 0.5 ) )
-					.mul( new TG.SinX().frequency( 0.0312 ) )
-					.div( new TG.SinY().frequency( 0.0312 ) )
-					.add( new TG.SinX().frequency( 0.004 ).tint( 0.5, 0, 0 ) )
+					.mul( new TG.SinX().frequency( 64 ) )
+					.div( new TG.SinY().frequency( 64 ) )
+					.add( new TG.SinX().frequency( 512 ).tint( 0.5, 0, 0 ) )
 					.add( new TG.Noise().tint( 0.1, 0.1, 0.2 ) )
 					.toCanvas();
 
@@ -131,10 +131,10 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.SinX().frequency( 0.01 ) )
-					.mul( new TG.SinY().frequency( 0.0075 ) )
-					.add( new TG.SinX().frequency( 0.0225 ) )
-					.mul( new TG.SinY().frequency( 0.015 ) )
+					.add( new TG.SinX().frequency( 2 / 0.01 ) )
+					.mul( new TG.SinY().frequency( 2 / 0.0075 ) )
+					.add( new TG.SinX().frequency( 2 / 0.0225 ) )
+					.mul( new TG.SinY().frequency( 2 / 0.015 ) )
 					.add( new TG.Noise().tint( 0.1, 0.1, 0.3 ) )
 					.toCanvas();
 
@@ -146,12 +146,12 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.SinX().frequency( 0.05 ) )
-					.mul( new TG.SinX().frequency( 0.08 ) )
-					.add( new TG.SinY().frequency( 0.05 ) )
-					.mul( new TG.SinY().frequency( 0.08 ) )
+					.add( new TG.SinX().frequency( 40 ) )
+					.mul( new TG.SinX().frequency( 25 ) )
+					.add( new TG.SinY().frequency( 40 ) )
+					.mul( new TG.SinY().frequency( 25 ) )
 					.div( new TG.Fill().tint( 1, 2, 1 ) )
-					.add( new TG.SinX().frequency( 0.003 ).tint( 0.5, 0, 0 ) )
+					.add( new TG.SinX().frequency( 1 / 0.003 ).tint( 0.5, 0, 0 ) )
 					.toCanvas();
 
 
@@ -162,10 +162,10 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.SinX().frequency( 0.066 ) )
-					.add( new TG.SinY().frequency( 0.066 ) )
-					.mul( new TG.SinX().offset( 32 ).frequency( 0.044 ).tint( 2, 2, 2 ) )
-					.mul( new TG.SinY().offset( 16 ).frequency( 0.044 ).tint( 2, 2, 2 ) )
+					.add( new TG.SinX().frequency( size / 8.6 ) )
+					.add( new TG.SinY().frequency( size / 8.6 ) )
+					.mul( new TG.SinX().offset( -32 ).frequency( size / 6.4 ).tint( 2 ) )
+					.mul( new TG.SinY().offset( -16 ).frequency( size / 6.4 ).tint( 2 ) )
 					.sub( new TG.Fill().tint( 0.5, 2, 4 ) )
 					.toCanvas();
 
@@ -177,10 +177,10 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.SinX().frequency( 0.004 ) )
-					.mul( new TG.SinY().frequency( 0.004 ) )
-					.mul( new TG.SinY().offset( 32 ).frequency( 0.02 ) )
-					.div( new TG.SinX().frequency( 0.02 ).tint( 8, 5, 4 ) )
+					.add( new TG.SinX().frequency( size * 2 ) )
+					.mul( new TG.SinY().frequency( size * 2 ) )
+					.mul( new TG.SinY().offset( -size / 8 ).frequency( size / 2 ) )
+					.div( new TG.SinX().frequency( size / 2 ).tint( 8, 5, 4 ) )
 					.add( new TG.Noise().tint( 0.1, 0, 0 ) )
 					.add( new TG.Noise().tint( 0, 0.1, 0 ) )
 					.add( new TG.Noise().tint( 0, 0, 0.1 ) )
@@ -195,9 +195,9 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.CheckerBoard() )
-					.add( new TG.CheckerBoard().size( 2, 2 ).tint( 0.5, 0, 0 ) )
-					.add( new TG.CheckerBoard().size( 8, 8 ).tint( 1, 0.5, 0.5 ) )
-					.sub( new TG.CheckerBoard().offset( 16, 16 ).tint( 0.5, 0.5, 0 ) )
+					.add( new TG.CheckerBoard().size( 2 ).tint( 0.5, 0, 0 ) )
+					.add( new TG.CheckerBoard().size( 8 ).tint( 1, 0.5, 0.5 ) )
+					.sub( new TG.CheckerBoard().offset( -16, -16 ).tint( 0.5, 0.5, 0 ) )
 					.toCanvas();
 
 
@@ -221,7 +221,7 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.CheckerBoard().size( 32, 32 ).tint( 0.5, 0, 0 ) )
+					.add( new TG.CheckerBoard().size( 32 ).tint( 0.5, 0, 0 ) )
 					.set( new TG.SineDistort() )
 					.toCanvas();
 
@@ -233,7 +233,7 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.CheckerBoard().size( 32, 32 ).tint( 0.5, 0, 0 ) )
+					.add( new TG.CheckerBoard().size( 32 ).tint( 0.5, 0, 0 ) )
 					.set( new TG.Twirl().radius( size / 2 ).position( size / 2, size / 2 ).strength ( 75 ) )
 					.toCanvas();
 
@@ -257,7 +257,7 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.Circle().position( size / 2, size / 2 ).radius( size / 4 ).delta( size / 4 ).tint( 1, 0.25, 0.25 ) )
-					.set( new TG.Pixelate().size( size / 32, size / 32 ) )
+					.set( new TG.Pixelate().size( size / 32 ) )
 					.toCanvas();
 
 
@@ -293,7 +293,7 @@
 
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
-					.add( new TG.CheckerBoard().size( size / 16, size / 16 ) )
+					.add( new TG.CheckerBoard().size( size / 16 ) )
 					.set( new TG.Twirl().radius( size / 2 ).strength( 75 ).position( size / 2, size / 2 ) )
 					.min( new TG.Circle().position( size / 2, size / 2 ).radius( size / 2 ).delta( size / 2 ) )
 					.toCanvas();
@@ -307,10 +307,10 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.LinearGradient().interpolation( 0 )
-						.point( 0, [ 1, 1, 0, 0 ] )
-						.point( 0.25, [ 0.2, 0, 0.5, 1 ] )
-						.point( 0.5, [ 0.5, 0.2, 0.5, 1 ] )
-						.point( 1, [ 1, 0, 1, 1 ] ) )
+						.point( 0, [ 1, 1, 0 ] )
+						.point( 0.25, [ 0.2, 0, 0.5 ] )
+						.point( 0.5, [ 0.5, 0.2, 0.5 ] )
+						.point( 1, [ 1, 0, 1 ] ) )
 					.toCanvas();
 
 
@@ -322,10 +322,10 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.LinearGradient().interpolation( 1 )
-						.point( 0, [ 1, 1, 0, 0 ] )
-						.point( 0.25, [ 0.2, 0, 0.5, 1 ] )
-						.point( 0.5, [ 0.5, 0.2, 0.5, 1 ] )
-						.point( 1, [ 1, 0, 1, 1 ] ) )
+						.point( 0, [ 1, 1, 0 ] )
+						.point( 0.25, [ 0.2, 0, 0.5 ] )
+						.point( 0.5, [ 0.5, 0.2, 0.5 ] )
+						.point( 1, [ 1, 0, 1 ] ) )
 					.toCanvas();
 
 
@@ -337,10 +337,10 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.LinearGradient().interpolation( 2 )
-						.point( 0, [ 1, 1, 0, 0 ] )
-						.point( 0.25, [ 0.2, 0, 0.5, 1 ] )
-						.point( 0.5, [ 0.5, 0.2, 0.5, 1 ] )
-						.point( 1, [ 1, 0, 1, 1 ] ) )
+						.point( 0, [ 1, 1, 0 ] )
+						.point( 0.25, [ 0.2, 0, 0.5 ] )
+						.point( 0.5, [ 0.5, 0.2, 0.5 ] )
+						.point( 1, [ 1, 0, 1 ] ) )
 					.toCanvas();
 
 
@@ -354,10 +354,10 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.RadialGradient().center( size / 2, size / 2 ).radius( size / 8 ).repeat( true ).interpolation( 0 )
-						.point( 0, [ 1, 1, 0, 0 ] )
-						.point( 0.25, [ 0.2, 0, 0.5, 1 ] )
-						.point( 0.5, [ 0.5, 0.2, 0.5, 1] )
-						.point( 1, [ 1, 0, 1, 1 ] ) )
+						.point( 0, [ 1, 1, 0 ] )
+						.point( 0.25, [ 0.2, 0, 0.5 ] )
+						.point( 0.5, [ 0.5, 0.2, 0.5 ] )
+						.point( 1, [ 1, 0, 1 ] ) )
 					.toCanvas();
 
 
@@ -369,10 +369,10 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.RadialGradient().center( 0, 0 ).radius( size * 2 ).interpolation( 1 )
-						.point( 0, [ 1, 1, 0, 0 ] )
-						.point( 0.25, [ 0.2, 0, 0.5, 1 ] )
-						.point( 0.5, [ 0.5, 0.2, 0.5, 1 ] )
-						.point( 1, [ 1, 0, 1, 1 ] ) )
+						.point( 0, [ 1, 1, 0 ] )
+						.point( 0.25, [ 0.2, 0, 0.5 ] )
+						.point( 0.5, [ 0.5, 0.2, 0.5 ] )
+						.point( 1, [ 1, 0, 1 ] ) )
 					.toCanvas();
 
 
@@ -384,10 +384,10 @@
 			examples.push( function ( size ) {
 				var texture = new TG.Texture( size, size )
 					.add( new TG.RadialGradient().center( size / 2, 0 ).radius( size ).interpolation( 2 )
-						.point( 0, [ 1, 1, 0, 0 ] )
-						.point( 0.25, [ 0.2, 0, 0.5, 1 ] )
-						.point( 0.5, [ 0.5, 0.2, 0.5, 1 ] )
-						.point( 1, [ 1, 0, 1, 1 ] ) )
+						.point( 0, [ 1, 1, 0 ] )
+						.point( 0.25, [ 0.2, 0, 0.5 ] )
+						.point( 0.5, [ 0.5, 0.2, 0.5 ] )
+						.point( 1, [ 1, 0, 1 ] ) )
 					.toCanvas();
 
 
@@ -411,7 +411,7 @@
 				for ( i = 0; i <= numSamples; i++ ) {
 					var sample = new TG.Texture( size, size )
 					.set( new TG.PutTexture( base ) ) 		// copy the base texture, so that it doesn't get modified
-					.set( new TG.Transform().scale( 1 + 0.01 * i, 1 + 0.01 * i ).angle( 0.5 * i ) );		// modify the texture a bit more with each sample
+					.set( new TG.Transform().scale( 1 + 0.01 * i ).angle( 0.5 * i ) );		// modify the texture a bit more with each sample
 
 					blur.add( new TG.PutTexture( sample ) );		// adding the transformed sample to the result
 				}
@@ -439,12 +439,12 @@
 						.point( 0.4, [ 200, 15, 17 ] )		//[ 42, 166, 137 ]
 						.point( 0.6, [ 140, 49, 59 ] )		//[ 58, 131, 114 ]
 						.point( 0.8, [ 35, 10, 12 ] )		//[ 4, 46, 27 ]
-						.point( 1, [ 0, 0, 0 ] ) )
-					.div( new TG.Fill().tint( 255, 255, 255 ) );		// converting the 0-255 defined colors to the 0-1 space
+						.point( 1, 0 ) )
+					.div( new TG.Fill().tint( 255 ) );		// converting the 0-255 defined colors to the 0-1 space
 
 				var mirrored = new TG.Texture( size, size )
 					.add( new TG.PutTexture( pixel ).repeat( 2 ) )		// repeat the texture to get a cool mirrored pattern effect
-					.mul( new TG.PutTexture( vignette ).tint( 1.2, 1.2, 1.2 ) );		// adding the vignette from the example above
+					.mul( new TG.PutTexture( vignette ).tint( 1.2 ) );		// adding the vignette from the example above
 
 				var texture = mirrored.toCanvas();
 				
