@@ -152,9 +152,14 @@ TG.ColorInterpolator.prototype = {
 
 	},
 
-	addPoint: function ( position, color ) {
+	addPoint: function ( position, r, g, b ) {
+		if ( Array.isArray( r ) ) {
+			b = r[ 2 ]; g = r[ 1 ]; r = r[ 0 ];
+		}
+		if ( typeof g == 'undefined' ) g = r;
+		if ( typeof b == 'undefined' ) b = r;
 
-		this.points.push( { pos: position, color: color } );
+		this.points.push( { pos: position, color: [ r, g, b ] } );
 		this.points.sort( function( a, b ) {
 			return a.pos - b.pos;
 		});
@@ -458,8 +463,8 @@ TG.Program = function ( object ) {
 
 	object.tint = function ( r, g, b ) {
 		tint[ 0 ] = r;
-		tint[ 1 ] = g;
-		tint[ 2 ] = b;
+		tint[ 1 ] = ( typeof g == 'undefined' ) ? r : g;
+		tint[ 2 ] = ( typeof b == 'undefined' ) ? r : b;
 		return this;
 	};
 
@@ -940,6 +945,7 @@ TG.CheckerBoard = function () {
 
 	return new TG.Program( {
 		size: function ( x, y ) {
+			if ( typeof y == "undefined" ) y = x;
 			params.size = [ x, y ];
 			return this;
 		},
@@ -979,6 +985,7 @@ TG.Rect = function () {
 			return this;
 		},
 		size: function ( x, y ) {
+			if ( typeof y == "undefined" ) y = x;
 			params.size = [ x, y ];
 			return this;
 		},
@@ -1117,8 +1124,8 @@ TG.RadialGradient = function () {
 			params.center = [ x, y ];
 			return this;
 		},
-		point: function ( position, color ) {
-			params.gradient.addPoint( position, color );
+		point: function ( position, r, g, b ) {
+			params.gradient.addPoint( position, r, g, b );
 			return this;
 		},
 		getParams: function () {
@@ -1151,8 +1158,8 @@ TG.LinearGradient = function () {
 			params.gradient.setInterpolation( value );
 			return this;
 		},
-		point: function ( position, color ) {
-			params.gradient.addPoint( position, color );
+		point: function ( position, r, g, b ) {
+			params.gradient.addPoint( position, r, g, b );
 			return this;
 		},
 		getParams: function () {
@@ -1181,6 +1188,7 @@ TG.SineDistort = function () {
 
 	return new TG.Program( {
 		sines: function ( x, y ) {
+			if ( typeof y == "undefined" ) y = x;
 			params.sines = [ x, y ];
 			return this;
 		},
@@ -1189,6 +1197,7 @@ TG.SineDistort = function () {
 			return this;
 		},
 		amplitude: function ( x, y ) {
+			if ( typeof y == "undefined" ) y = x;
 			params.amplitude = [ x, y ];
 			return this;
 		},
@@ -1271,7 +1280,9 @@ TG.Transform = function () {
 				return this;
 			},
 			scale: function ( x, y ) {
-				if ( x === 0 || y === 0 ) return;
+				x = x || 1;
+				y = y || x;
+
 				params.scale = [ x, y ];
 				return this;
 			},
@@ -1304,6 +1315,7 @@ TG.Pixelate = function () {
 
 	return new TG.Program( {
 		size: function ( x, y ) {
+			if ( typeof y == "undefined" ) y = x;
 			params.size = [ x, y ];
 			return this;
 		},
@@ -1337,8 +1349,8 @@ TG.GradientMap = function () {
 			params.gradient.setInterpolation( value );
 			return this;
 		},
-		point: function ( position, color ) {
-			params.gradient.addPoint( position, color );
+		point: function ( position, r, g, b ) {
+			params.gradient.addPoint( position, r, g, b );
 			return this;
 		},
 		getParams: function () {
