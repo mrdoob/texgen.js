@@ -341,7 +341,8 @@ TG.OP = {
 	AND: function ( x, y ) { return x & y; },
 	XOR: function ( x, y ) { return x ^ y; },
 	MIN: function ( x, y ) { return Math.min( x, y ); },
-	MAX: function ( x, y ) { return Math.max( x, y ); }
+	MAX: function ( x, y ) { return Math.max( x, y ); },
+	POW: function ( x, y ) { return Math.pow( x, y ); }
 };
 
 TG.Texture = function ( width, height ) {
@@ -397,6 +398,8 @@ TG.Texture.prototype = {
 	min: function ( program ) { return this.set( program, TG.OP.MIN ); },
 
 	max: function ( program ) { return this.set( program, TG.OP.MAX ); },
+
+	pow: function ( program ) { return this.set( program, TG.OP.POW ); },
 
 	toImageData: function ( context ) {
 
