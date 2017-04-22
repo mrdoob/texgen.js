@@ -461,7 +461,7 @@ TG.Program = function ( object ) {
 
 	var tint = new Float32Array( [ 1, 1, 1 ] );
 
-	object.tint = function ( r, g, b ) {
+	object.tint = function ( r, g, b ) { 		// multiplies each color channel of the generated image by 'r', 'g' and 'b' respectively
 		tint[ 0 ] = r;
 		tint[ 1 ] = ( typeof g == 'undefined' ) ? r : g;
 		tint[ 2 ] = ( typeof b == 'undefined' ) ? r : b;
@@ -478,7 +478,7 @@ TG.Program = function ( object ) {
 
 // --- Generators ---
 
-TG.Fill = function () {
+TG.Fill = function () { 		// every pixel set to 1; together with tint can be used to do basic calculations (e.g. .mul( TG.Fill().tint( 2 ) ) -> double the value of each pixel)
 
 	return new TG.Program( {
 		getParams: function () {},
@@ -493,7 +493,7 @@ TG.Fill = function () {
 
 };
 
-TG.SinX = function () {
+TG.SinX = function () { 		// generates a sine wave on the x and value (brightness) axes
 
 	var params = {
 		frequency: 1,
@@ -501,11 +501,11 @@ TG.SinX = function () {
 	};
 
 	return new TG.Program( {
-		frequency: function ( value ) {
+		frequency: function ( value ) { 		// sets the 'width' of the sine wave in pixels
 			params.frequency = ( 2 / value ) * Math.PI;
 			return this;
 		},
-		offset: function ( value ) {
+		offset: function ( value ) { 		// moves the wave by 'value' pixels
 			params.offset = -value;
 			return this;
 		},
@@ -524,7 +524,7 @@ TG.SinX = function () {
 
 };
 
-TG.SinY = function () {
+TG.SinY = function () { 		// generates a sine wave on the y and value (brightness) axes
 
 	var params = {
 		frequency: 1,
@@ -532,11 +532,11 @@ TG.SinY = function () {
 	};
 
 	return new TG.Program( {
-		frequency: function ( value ) {
+		frequency: function ( value ) { 		// sets the 'width' of the sine wave in pixels
 			params.frequency = ( 2 / value ) * Math.PI;
 			return this;
 		},
-		offset: function ( value ) {
+		offset: function ( value ) { 		// moves the wave by 'value' pixels
 			params.offset = -value;
 			return this;
 		},
@@ -555,7 +555,7 @@ TG.SinY = function () {
 
 };
 
-TG.OR = function () {
+TG.OR = function () { 		// generates a pattern using bitwise OR on the x and y coordinates
 
 	return new TG.Program( {
 		getParams: function () {},
@@ -571,7 +571,7 @@ TG.OR = function () {
 
 };
 
-TG.XOR = function () {
+TG.XOR = function () { 		// generates a pattern using bitwise XOR on the x and y coordinates
 
 	return new TG.Program( {
 		getParams: function () {},
@@ -587,7 +587,7 @@ TG.XOR = function () {
 
 };
 
-TG.Noise = function () {
+TG.Noise = function () { 		// generates a random noise pattern
 
 	var params = {
 		seed: TG.Utils.globalSeed++,
@@ -595,11 +595,11 @@ TG.Noise = function () {
 	};
 
 	return new TG.Program( {
-		seed: function ( value ) {
+		seed: function ( value ) { 		// the same seed always results in the same noise pattern
 			params.seed = value;
 			return this;
 		},
-		size: function ( value ) {
+		size: function ( value ) { 		// sets the size of the pixel grid for the noise function
 			params.size = value;
 			return this;
 		},
@@ -618,7 +618,7 @@ TG.Noise = function () {
 
 };
 
-TG.FractalNoise = function () {
+TG.FractalNoise = function () { 		// generates a noise pattern with extra 'depth' by overlaying noise of different sizes
 
 	var params = {
 		interpolator: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.STEP ),
@@ -631,31 +631,31 @@ TG.FractalNoise = function () {
 	};
 
 	return new TG.Program( {
-		seed: function ( value ) {
+		seed: function ( value ) { 		// the same seed always results in the same noise pattern
 			params.seed = value;
 			return this;
 		},
-		baseFrequency: function ( value ) {
+		baseFrequency: function ( value ) { 		// sets the size of the noise for the first octave in pixels
 			params.baseFrequency = 1 / value;
 			return this;
 		},
-		amplitude: function ( value ) {
+		amplitude: function ( value ) { 		// sets how much 'contrast' the noise should initially have; gets decreased with each octave
 			params.amplitude = value;
 			return this;
 		},
-		persistence: function ( value ) {
+		persistence: function ( value ) { 		// how much the amplitude should be decreased with each octave
 			params.persistence = value;
 			return this;
 		},
-		octaves: function ( value ) {
+		octaves: function ( value ) { 		// how many different noise patterns are layered on top of each other
 			params.octaves = Math.max( 1, value );
 			return this;
 		},
-		step: function ( value ) {
+		step: function ( value ) { 		// how much the frequency gets decreased with each octave (e.g. a value of 2 halves the size each time)
 			params.step = Math.max( 0, value );
 			return this;
 		},
-		interpolation: function ( value ) {
+		interpolation: function ( value ) { 		// which interpolation algorithm should be used for non-whole coordinates -> should the noise be smooth or rough? (see TG.ColorInterpolator below)
 			params.interpolator.setInterpolation( value );
 			return this;
 		},
@@ -719,7 +719,7 @@ TG.FractalNoise = function () {
 
 };
 
-TG.CellularNoise = function () {
+TG.CellularNoise = function () { 		// noise based on the distance of randomly distributed points on the xy-plane
 
 	var params = {
 		seed: TG.Utils.globalSeed++,
@@ -728,15 +728,15 @@ TG.CellularNoise = function () {
 	};
 
 	return new TG.Program( {
-		seed: function ( value ) {
+		seed: function ( value ) { 		// the same seed always results in the same noise pattern
 			params.seed = value;
 			return this;
 		},
-		density: function ( value ) {
+		density: function ( value ) { 		// the average distance betweeen each point in pixels; negative values invert the pattern
 			params.density = value;
 			return this;
 		},
-		weightRange: function ( value ) {
+		weightRange: function ( value ) { 		// gives some points more or less 'influence' making them bigger or smaller; too high values can break the point finding algorithm!
 			params.weightRange = Math.max( 0, value );
 			return this;
 		},
@@ -759,7 +759,7 @@ TG.CellularNoise = function () {
 
 };
 
-TG.VoronoiNoise = function () {
+TG.VoronoiNoise = function () { 		// noise based on voronoi diagrams of randomly distributed points on the xy-plane
 
 	var params = {
 		seed: TG.Utils.globalSeed++,
@@ -768,15 +768,15 @@ TG.VoronoiNoise = function () {
 	};
 
 	return new TG.Program( {
-		seed: function ( value ) {
+		seed: function ( value ) { 		// the same seed always results in the same noise pattern
 			params.seed = value;
 			return this;
 		},
-		density: function ( value ) {
+		density: function ( value ) { 		// the average distance betweeen each point in pixels
 			params.density = value;
 			return this;
 		},
-		weightRange: function ( value ) {
+		weightRange: function ( value ) { 		// gives some points more or less 'influence'; too high values can break the point finding algorithm!
 			params.weightRange = Math.max( 0, value );
 			return this;
 		},
@@ -796,7 +796,7 @@ TG.VoronoiNoise = function () {
 
 };
 
-TG.CellularFractal = function () {
+TG.CellularFractal = function () { 		// generates a noise pattern with extra 'depth' by overlaying cellular noise with different densities
 
 	var params = {
 		seed: TG.Utils.globalSeed++,
@@ -809,31 +809,31 @@ TG.CellularFractal = function () {
 	};
 
 	return new TG.Program( {
-		seed: function ( value ) {
+		seed: function ( value ) { 		// the same seed always results in the same noise pattern
 			params.seed = value;
 			return this;
 		},
-		baseDensity: function ( value ) {
+		baseDensity: function ( value ) { 		// sets the density for the first octave
 			params.baseDensity = value;
 			return this;
 		},
-		weightRange: function ( value ) {
+		weightRange: function ( value ) { 		// sets the weightRange for the cellular noise; see TG.CellularNoise above
 			params.weightRange = Math.max( 0, value );
 			return this;
 		},
-		amplitude: function ( value ) {
+		amplitude: function ( value ) { 		// sets how much 'contrast' the noise should initially have; gets decreased with each octave
 			params.amplitude = value;
 			return this;
 		},
-		persistence: function ( value ) {
+		persistence: function ( value ) { 		// how much the amplitude should be decreased with each octave
 			params.persistence = value;
 			return this;
 		},
-		octaves: function ( value ) {
+		octaves: function ( value ) { 		// how many different noise patterns are layered on top of each other
 			params.octaves = Math.max( 1, value );
 			return this;
 		},
-		step: function ( value ) {
+		step: function ( value ) { 		// how much the density gets decreased with each octave (e.g. a value of 2 halves the density each time)
 			params.step = Math.max( 1, value );
 			return this;
 		},
@@ -867,7 +867,7 @@ TG.CellularFractal = function () {
 
 };
 
-TG.VoronoiFractal = function () {
+TG.VoronoiFractal = function () { 		// generates a noise pattern with extra 'depth' by overlaying voronoi noise with different densities
 
 	var params = {
 		seed: TG.Utils.globalSeed++,
@@ -880,31 +880,31 @@ TG.VoronoiFractal = function () {
 	};
 
 	return new TG.Program( {
-		seed: function ( value ) {
+		seed: function ( value ) { 		// the same seed always results in the same noise pattern
 			params.seed = value;
 			return this;
 		},
-		baseDensity: function ( value ) {
+		baseDensity: function ( value ) { 		// sets the density for the first octave
 			params.baseDensity = value;
 			return this;
 		},
-		weightRange: function ( value ) {
+		weightRange: function ( value ) { 		// sets the weightRange for the voronoi noise; see TG.VoronoiNoise above
 			params.weightRange = Math.max( 0, value );
 			return this;
 		},
-		amplitude: function ( value ) {
+		amplitude: function ( value ) { 		// sets how much 'contrast' the noise should initially have; gets decreased with each octave
 			params.amplitude = value;
 			return this;
 		},
-		persistence: function ( value ) {
+		persistence: function ( value ) { 		// how much the amplitude should be decreased with each octave (values over 1 increase the amplitude instead)
 			params.persistence = value;
 			return this;
 		},
-		octaves: function ( value ) {
+		octaves: function ( value ) { 		// how many different noise patterns are layered on top of each other
 			params.octaves = Math.max( 1, value );
 			return this;
 		},
-		step: function ( value ) {
+		step: function ( value ) { 		// how much the density gets decreased with each octave (e.g. a value of 2 halves the density each time)
 			params.step = Math.max( 1, value );
 			return this;
 		},
@@ -935,7 +935,7 @@ TG.VoronoiFractal = function () {
 
 };
 
-TG.CheckerBoard = function () {
+TG.CheckerBoard = function () { 		// generates a grid pattern of alternating black and white cells
 
 	var params = {
 		size: [ 32, 32 ],
@@ -944,16 +944,16 @@ TG.CheckerBoard = function () {
 	};
 
 	return new TG.Program( {
-		size: function ( x, y ) {
+		size: function ( x, y ) { 		// sets the width and height of each square in pixels
 			if ( typeof y == "undefined" ) y = x;
 			params.size = [ x, y ];
 			return this;
 		},
-		offset: function ( x, y ) {
+		offset: function ( x, y ) { 		// moves the origin of the pattern to 'x' and 'y' in pixels
 			params.offset = [ -x, -y ];
 			return this;
 		},
-		rowShift: function ( value ) {
+		rowShift: function ( value ) { 		// offsets each row by 'value' pixels
 			params.rowShift = value;
 			return this;
 		},
@@ -972,7 +972,7 @@ TG.CheckerBoard = function () {
 
 };
 
-TG.Rect = function () {
+TG.Rect = function () { 		// generates a basic white rectangle
 
 	var params = {
 		position: [ 0, 0 ],
@@ -980,11 +980,11 @@ TG.Rect = function () {
 	};
 
 	return new TG.Program( {
-		position: function ( x, y ) {
+		position: function ( x, y ) { 		// sets the coordinates of the top-leftmost point of the rectangle
 			params.position = [ x, y ];
 			return this;
 		},
-		size: function ( x, y ) {
+		size: function ( x, y ) { 		// sets the width and height of the rectangle
 			if ( typeof y == "undefined" ) y = x;
 			params.size = [ x, y ];
 			return this;
@@ -1004,7 +1004,7 @@ TG.Rect = function () {
 
 };
 
-TG.Circle = function () {
+TG.Circle = function () { 		// generates a basic white circle
 
 	var params = {
 		position: [ 0, 0 ],
@@ -1013,15 +1013,15 @@ TG.Circle = function () {
 	};
 
 	return new TG.Program( {
-		delta: function ( value ) {
+		delta: function ( value ) { 		// sets how many pixels from the edge of the circle the brightness should gradually decrease; 0 results in a completely crisp circle
 			params.delta = value;
 			return this;
 		},
-		position: function ( x, y ) {
+		position: function ( x, y ) { 		// sets the coordinates of the center of the circle
 			params.position = [ x, y ];
 			return this;
 		},
-		radius: function ( value ) {
+		radius: function ( value ) { 		// sets the radius of the circle in pixels
 			params.radius = value;
 			return this;
 		},
@@ -1041,7 +1041,7 @@ TG.Circle = function () {
 
 };
 
-TG.PutTexture = function ( texture ) {
+TG.PutTexture = function ( texture ) { 		// puts an already existing texture onto another one
 
 	var params = {
 		offset: [ 0, 0 ],
@@ -1050,11 +1050,11 @@ TG.PutTexture = function ( texture ) {
 	};
 
 	return new TG.Program( {
-		offset: function ( x, y ) {
+		offset: function ( x, y ) { 		// sets the coordinates of the top-leftmost point
 			params.offset = [ x, y ];
 			return this;
 		},
-		repeat: function ( value ) {
+		repeat: function ( value ) { 		// which algorithm should be used on coordinates outside of the texture; 1 = wrap around, 2 = wrap around but mirrored, 3 = extend the last pixel
 			params.repeat = value;
 			return this;
 		},
@@ -1099,7 +1099,7 @@ TG.PutTexture = function ( texture ) {
 
 };
 
-TG.RadialGradient = function () {
+TG.RadialGradient = function () { 		// generates a circular gradient around a point
 
 	var params = {
 		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR ),
@@ -1108,23 +1108,23 @@ TG.RadialGradient = function () {
 	};
 
 	return new TG.Program( {
-		repeat: function ( value ) {
+		repeat: function ( value ) { 		// sets how the gradient should repeat if outside of the range of the added points; 0 = clamp to the last point, 1 = wrap around, 2 = wrap around but mirrored
 			params.gradient.setRepeat( value );
 			return this;
 		},
-		radius: function ( value ) {
+		radius: function ( value ) { 		// sets how far from the center the last point (i.e. position 1) of the gradient is
 			params.radius = value;
 			return this;
 		},
-		interpolation: function ( value ) {
+		interpolation: function ( value ) { 		// sets the interpolation method of the gradient; 0 = step -> do not interpolate, 1 = linear-, 2 = spline-, 3 = cosine-interpolation
 			params.gradient.setInterpolation( value );
 			return this;
 		},
-		center: function ( x, y ) {
+		center: function ( x, y ) { 		// sets the center around which the gradient is generated
 			params.center = [ x, y ];
 			return this;
 		},
-		point: function ( position, r, g, b ) {
+		point: function ( position, r, g, b ) { 		// adds a point to the gradient; position 0 is the center and 1 is the radius
 			params.gradient.addPoint( position, r, g, b );
 			return this;
 		},
@@ -1143,22 +1143,22 @@ TG.RadialGradient = function () {
 
 };
 
-TG.LinearGradient = function () {
+TG.LinearGradient = function () { 		// generates a gradient across the whole texture
 
 	var params = {
 		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR )
 	};
 
 	return new TG.Program( {
-		repeat: function ( value ) {
+		repeat: function ( value ) { 		// sets how the gradient should repeat if outside of the range of the added points; 0 = clamp to the last point, 1 = wrap around, 2 = wrap around but mirrored
 			params.gradient.setRepeat( value );
 			return this;
 		},
-		interpolation: function ( value ) {
+		interpolation: function ( value ) { 		// sets the interpolation method of the gradient; 0 = step -> do not interpolate, 1 = linear-, 2 = spline-, 3 = cosine-interpolation
 			params.gradient.setInterpolation( value );
 			return this;
 		},
-		point: function ( position, r, g, b ) {
+		point: function ( position, r, g, b ) { 		// adds a point to the gradient; position 0 is x0 and 1 is the width of the texture
 			params.gradient.addPoint( position, r, g, b );
 			return this;
 		},
@@ -1178,7 +1178,7 @@ TG.LinearGradient = function () {
 
 // --- Filters ---
 
-TG.SineDistort = function () {
+TG.SineDistort = function () { 		// warps the texture in a wavy pattern
 
 	var params = {
 		sines: [ 4, 4 ],
@@ -1187,16 +1187,16 @@ TG.SineDistort = function () {
 	};
 
 	return new TG.Program( {
-		sines: function ( x, y ) {
+		sines: function ( x, y ) { 		// sets the width of the sine waves on the x and y axis respectively
 			if ( typeof y == "undefined" ) y = x;
 			params.sines = [ x, y ];
 			return this;
 		},
-		offset: function ( x, y ) {
+		offset: function ( x, y ) { 		// shifts the 'phase' of each wave
 			params.offset = [ x, y ];
 			return this;
 		},
-		amplitude: function ( x, y ) {
+		amplitude: function ( x, y ) { 		// sets the 'amplitude' of each wave (or intensity of the filter)
 			if ( typeof y == "undefined" ) y = x;
 			params.amplitude = [ x, y ];
 			return this;
@@ -1215,7 +1215,7 @@ TG.SineDistort = function () {
 
 };
 
-TG.Twirl = function () {
+TG.Twirl = function () { 		// distorts the texture into a vortex around a point
 
 	var params = {
 		strength: 0,
@@ -1224,15 +1224,15 @@ TG.Twirl = function () {
 	};
 
 	return new TG.Program( {
-		strength: function ( value ) {
+		strength: function ( value ) { 		// sets how much the texture should be rotated
 			params.strength = value / 100.0;
 			return this;
 		},
-		radius: function ( value ) {
+		radius: function ( value ) { 		// sets the radius of influence
 			params.radius = value;
 			return this;
 		},
-		position: function ( x, y ) {
+		position: function ( x, y ) { 		// sets the coordinates of the center of the swirl
 			params.position = [ x, y ];
 			return this;
 		},
@@ -1262,7 +1262,7 @@ TG.Twirl = function () {
 
 };
 
-TG.Transform = function () {
+TG.Transform = function () { 		// moves, rotates or scales the texture
 
 	var params = {
 		offset: [ 0, 0 ],
@@ -1271,15 +1271,15 @@ TG.Transform = function () {
 	};
 
 	return new TG.Program( {
-		offset: function ( x, y ) {
+		offset: function ( x, y ) { 		// moves the texture by 'x' and 'y' pixels
 			params.offset = [ -x, -y ];
 			return this;
 		},
-		angle: function ( value ) {
+		angle: function ( value ) { 		// rotates the texture by 'value' degrees around the origin (x: 0, y: 0)
 			params.angle = TG.Utils.deg2rad( value );
 			return this;
 		},
-		scale: function ( x, y ) {
+		scale: function ( x, y ) { 		// scales the texture by 'x' and 'y' (e.g. 2 doubles the size)
 			x = x || 1;
 			y = y || x;
 
@@ -1307,14 +1307,14 @@ TG.Transform = function () {
 
 };
 
-TG.Pixelate = function () {
+TG.Pixelate = function () { 		// divides the texture into 'pixels'
 
 	var params = {
 		size: [ 1, 1 ]
 	};
 
 	return new TG.Program( {
-		size: function ( x, y ) {
+		size: function ( x, y ) { 		// set the width and height of each 'pixel'
 			if ( typeof y == "undefined" ) y = x;
 			params.size = [ x, y ];
 			return this;
@@ -1334,22 +1334,22 @@ TG.Pixelate = function () {
 
 };
 
-TG.GradientMap = function () {
+TG.GradientMap = function () { 		// takes the value of each pixel and maps it to a color in a gradient; best used on a grayscale image
 
 	var params = {
 		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR )
 	};
 
 	return new TG.Program( {
-		repeat: function ( value ) {
+		repeat: function ( value ) { 		// how to map values that are out of range onto the gradient; 0 = clamp to the last (first) point of the gradient, 1 = wrap around, 2 = wrap around but mirrored
 			params.gradient.setRepeat( value );
 			return this;
 		},
-		interpolation: function ( value ) {
+		interpolation: function ( value ) { 		// set the interpolation method for the gradient; 0 = step -> do not interpolate, 1 = linear-, 2 = spline-, 3 = cosine-interpolation
 			params.gradient.setInterpolation( value );
 			return this;
 		},
-		point: function ( position, r, g, b ) {
+		point: function ( position, r, g, b ) { 		// add a point to the gradient; position 0 is black and 1 is white in the original texture
 			params.gradient.addPoint( position, r, g, b );
 			return this;
 		},
@@ -1370,9 +1370,10 @@ TG.GradientMap = function () {
 			].join('\n');
 		}
 	} );
+
 };
 
-TG.Normalize = function () {
+TG.Normalize = function () { 		// adjusts the whole texture so that every pixel is in the visible range (0 - 1)
 
 	return new TG.Program( {
 		getParams: function () {},
@@ -1404,14 +1405,14 @@ TG.Normalize = function () {
 
 };
 
-TG.Posterize = function () {
+TG.Posterize = function () { 		// reduces the amount of colors in a texture
 
 	var params = {
 		step: 2
 	};
 
 	return new TG.Program( {
-		step: function ( value ) {
+		step: function ( value ) { 		// sets how many possible values each color channel is divided into (2 means possible values are 0 and 1, 3 means 0, 0.5 and 1 etc.)
 			params.step = Math.max( value, 2 );
 			return this;
 		},
