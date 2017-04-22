@@ -8,6 +8,8 @@ var TG = {};
 
 TG.Utils = {
 
+	globalSeed: Date.now(), 		// used as a somewhat random seed, increased on each use so that each default seed is different
+
 	smoothStep: function ( edge0, edge1, x ) {
 
 		// Scale, bias and saturate x to 0..1 range
@@ -68,15 +70,15 @@ TG.Utils = {
 	},
 
 	hashRNG: function ( seed, x, y ) {
-		seed = ( Math.abs( seed % 2147483648 ) == 0 ) ? 1 : seed;
+		seed = Math.abs(seed % 0x7FFFFFFF) + 1;
 
-		var a = ( ( seed * ( x + 1 ) * 777 ) ^ ( seed * ( y + 1 ) * 123 ) ) % 2147483647;
+		var a = ( seed * ( ( x ^ seed * 777 ) || 556 ) * ( ( y ^ seed * 314 ) || 989 ) + seed * 123 ) % 0x7FFFFFFF;
 		a = (a ^ 61) ^ (a >> 16);
 		a = a + (a << 3);
 		a = a ^ (a >> 4);
 		a = a * 0x27d4eb2d;
 		a = a ^ (a >> 15);
-		a = a / 2147483647;
+		a = a / 0x7FFFFFFF;
 
 		return a;
 	},
@@ -572,7 +574,8 @@ TG.XOR = function () {
 TG.Noise = function () {
 
 	var params = {
-		seed: Date.now()
+		seed: TG.Utils.globalSeed++,
+		size: 1
 	};
 
 	return new TG.Program( {
@@ -580,12 +583,16 @@ TG.Noise = function () {
 			params.seed = value;
 			return this;
 		},
+		size: function ( value ) {
+			params.size = value;
+			return this;
+		},
 		getParams: function () {
 			return params;
 		},
 		getSource: function () {
 			return [
-				'var value = TG.Utils.hashRNG( params.seed, x, y );',
+				'var value = TG.Utils.hashRNG( params.seed, Math.floor( x / params.size ), Math.floor( y / params.size ) );',
 				'color[ 0 ] = value;',
 				'color[ 1 ] = value;',
 				'color[ 2 ] = value;'
@@ -599,7 +606,7 @@ TG.FractalNoise = function () {
 
 	var params = {
 		interpolator: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.STEP ),
-		seed: Date.now(),
+		seed: TG.Utils.globalSeed++,
 		baseFrequency: 0.03125,
 		amplitude: 0.4,
 		persistence: 0.72,
@@ -699,7 +706,7 @@ TG.FractalNoise = function () {
 TG.CellularNoise = function () {
 
 	var params = {
-		seed: Date.now(),
+		seed: TG.Utils.globalSeed++,
 		density: 32,
 		weightRange: 0
 	};
@@ -739,7 +746,7 @@ TG.CellularNoise = function () {
 TG.VoronoiNoise = function () {
 
 	var params = {
-		seed: Date.now(),
+		seed: TG.Utils.globalSeed++,
 		density: 32,
 		weightRange: 0
 	};
@@ -776,7 +783,7 @@ TG.VoronoiNoise = function () {
 TG.CellularFractal = function () {
 
 	var params = {
-		seed: Date.now(),
+		seed: TG.Utils.globalSeed++,
 		weightRange: 0,
 		baseDensity: 64,
 		amplitude: 0.7,
@@ -847,7 +854,7 @@ TG.CellularFractal = function () {
 TG.VoronoiFractal = function () {
 
 	var params = {
-		seed: Date.now(),
+		seed: TG.Utils.globalSeed++,
 		weightRange: 0,
 		baseDensity: 64,
 		amplitude: 0.6,
