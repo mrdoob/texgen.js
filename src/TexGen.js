@@ -2,18 +2,346 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-var TG = {
-	OP: {
-		SET: function ( x, y ) { return y; },
-		ADD: function ( x, y ) { return x + y; },
-		SUB: function ( x, y ) { return x - y; },
-		MUL: function ( x, y ) { return x * y; },
-		DIV: function ( x, y ) { return x / y; },
-		AND: function ( x, y ) { return x & y; },
-		XOR: function ( x, y ) { return x ^ y; },
-		MIN: function ( x, y ) { return Math.min( x, y ); },
-		MAX: function ( x, y ) { return Math.max( x, y ); }
+var TG = {};
+
+//
+
+TG.Utils = {
+
+	smoothStep: function ( edge0, edge1, x ) {
+
+		// Scale, bias and saturate x to 0..1 range
+		x = TG.Utils.clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 );
+
+		// Evaluate polynomial
+		return x * x * ( 3 - 2 * x );
+
+	},
+
+	mixColors: function( c1, c2, delta ) {
+
+		return [
+			c1[ 0 ] * ( 1 - delta ) + c2[ 0 ] * delta,
+			c1[ 1 ] * ( 1 - delta ) + c2[ 1 ] * delta,
+			c1[ 2 ] * ( 1 - delta ) + c2[ 2 ] * delta,
+			c1[ 3 ] * ( 1 - delta ) + c2[ 3 ] * delta,
+		];
+	},
+
+	distance: function( x0, y0, x1, y1 ) {
+
+		var dx = x1 - x0, dy = y1 - y0;
+		return Math.sqrt( dx * dx + dy * dy );
+
+	},
+
+	clamp: function( value, min, max ) {
+
+		return Math.min( Math.max( value, min ), max );
+
+	},
+
+	wrap: function ( value, min, max ) {
+		var v = value - min;
+		var r = max - min;
+
+		return ( ( r + v % r ) % r ) + min;
+	},
+
+	mirroredWrap: function ( value, min, max ) {
+		var v = value - min;
+		var r = ( max - min ) * 2;
+
+		v = ( r + v % r ) % r;
+
+		if ( v > max - min ) {
+			return ( r - v ) + min;
+		} else {
+			return v + min;
+		}
+	},
+
+	deg2rad: function ( deg ) {
+
+		return deg * Math.PI / 180;
+
+	},
+
+	hashRNG: function ( seed, x, y ) {
+		seed = ( Math.abs( seed % 2147483648 ) == 0 ) ? 1 : seed;
+
+		var a = ( ( seed * ( x + 1 ) * 777 ) ^ ( seed * ( y + 1 ) * 123 ) ) % 2147483647;
+		a = (a ^ 61) ^ (a >> 16);
+		a = a + (a << 3);
+		a = a ^ (a >> 4);
+		a = a * 0x27d4eb2d;
+		a = a ^ (a >> 15);
+		a = a / 2147483647;
+
+		return a;
+	},
+
+	cellNoiseBase: function ( x, y, seed, density, weightRange ) {
+		var qx, qy, rx, ry, w, px, py, dx, dy;
+		var dist, value;
+		var shortest = Infinity;
+		density = Math.abs( density );
+
+		for ( var sx = -2; sx <= 2; sx++ ) {
+			for ( var sy = -2; sy <= 2; sy++ ) {
+				qx = Math.ceil( x / density ) + sx;
+				qy = Math.ceil( y / density ) + sy;
+
+				rx = TG.Utils.hashRNG( seed, qx, qy );
+				ry = TG.Utils.hashRNG( seed * 2, qx, qy );
+				w = ( weightRange > 0 ) ? 1 + TG.Utils.hashRNG( seed * 3, qx, qy ) * weightRange : 1;
+
+				px = ( rx + qx ) * density;
+				py = ( ry + qy ) * density;
+
+				dx = Math.abs( px - x );
+				dy = Math.abs( py - y );
+
+				dist =	( dx * dx + dy * dy ) * w;
+
+				if ( dist < shortest ) {
+					shortest = dist;
+					value = rx;
+				}
+			}
+		}
+
+		return { dist: Math.sqrt( shortest ), value: value };
 	}
+
+};
+
+TG.ColorInterpolatorMethod = {
+	STEP: 0,
+	LINEAR: 1,
+	SPLINE: 2,
+};
+
+TG.ColorInterpolator = function( method ) {
+
+	this.points = []; 		// points must be a set pair (point, color): [{ pos-n: [r,g,b,a] } , ..., { pos-N: [r,g,b,a] } ]
+	this.low = 0;
+	this.high = 0;
+	this.interpolation = ( typeof( method ) == 'undefined' ) ? TG.ColorInterpolatorMethod.LINEAR : method;
+	this.repeat = false;
+
+	return this;
+};
+
+TG.ColorInterpolator.prototype = {
+
+	set: function ( points ) {
+
+		this.points = points;
+		this.points.sort( function( a, b ) {
+			return a.pos - b.pos;
+		});
+
+		this.low = this.points[ 0 ].pos;
+		this.high = this.points[ this.points.length - 1 ].pos;
+
+		return this;
+
+	},
+
+	addPoint: function ( position, color ) {
+
+		this.points.push( { pos: position, color: color } );
+		this.points.sort( function( a, b ) {
+			return a.pos - b.pos;
+		});
+
+		this.low = this.points[ 0 ].pos;
+		this.high = this.points[ this.points.length - 1 ].pos;
+
+		return this;
+
+	},
+
+	setRepeat: function ( value ) {
+
+		this.repeat = value;
+		return this;
+
+	},
+
+	setInterpolation: function ( value ) {
+
+		this.interpolation = value;
+		return this;
+
+	},
+
+	getColorAt: function ( pos ) {
+
+		if ( this.repeat == 2 ) pos = TG.Utils.mirroredWrap( pos, this.low, this.high );
+		else if ( this.repeat ) pos = TG.Utils.wrap( pos, this.low, this.high );
+		else pos = TG.Utils.clamp( pos, this.low, this.high );
+
+		var i = 0, points = this.points;
+
+		while ( points[ i + 1 ].pos < pos ) i ++;
+
+		var p1 = points[ i ];
+		var p2 = points[ i + 1 ];
+
+		var delta = ( pos - p1.pos ) / ( p2.pos - p1.pos );
+
+		if ( this.interpolation == TG.ColorInterpolatorMethod.STEP ) {
+
+			return p1.color;
+
+		} else if ( this.interpolation == TG.ColorInterpolatorMethod.LINEAR ) {
+
+			return TG.Utils.mixColors( p1.color, p2.color, delta );
+
+		} else if ( this.interpolation == TG.ColorInterpolatorMethod.SPLINE ) {
+
+			var ar =  2 * p1.color[ 0 ] - 2 * p2.color[ 0 ];
+			var br = -3 * p1.color[ 0 ] + 3 * p2.color[ 0 ];
+			var dr = p1.color[ 0 ];
+
+			var ag =  2 * p1.color[ 1 ] - 2 * p2.color[ 1 ];
+			var bg = -3 * p1.color[ 1 ] + 3 * p2.color[ 1 ];
+			var dg = p1.color[ 1 ];
+
+			var ab =  2 * p1.color[ 2 ] - 2 * p2.color[ 2 ];
+			var bb = -3 * p1.color[ 2 ] + 3 * p2.color[ 2 ];
+			var db = p1.color[ 2 ];
+
+			var delta2 = delta * delta;
+			var delta3 = delta2 * delta;
+
+			return [
+				ar * delta3 + br * delta2 + dr,
+				ag * delta3 + bg * delta2 + dg,
+				ab * delta3 + bb * delta2 + db
+			];
+
+		}
+
+	}
+
+};
+
+//
+
+TG.Buffer = function ( width, height ) {
+
+	this.width = width;
+	this.height = height;
+
+	this.array = new Float32Array( width * height * 4 );
+	this.color = new Float32Array( 4 );
+
+};
+
+TG.Buffer.prototype = {
+
+	constructor: TG.Buffer,
+
+	copy: function ( buffer ) {
+
+		this.array.set( buffer.array );
+
+	},
+
+	getPixelNearest: function ( x, y ) {
+
+		if ( y >= this.height ) y -= this.height;
+		if ( y < 0 ) y += this.height;
+		if ( x >= this.width ) x -= this.width;
+		if ( x < 0 ) x += this.width;
+
+		var array = this.array;
+		var color = this.color;
+		var offset = Math.round( y ) * this.width * 4 + Math.round( x ) * 4;
+
+		color[ 0 ] = array[ offset     ];
+		color[ 1 ] = array[ offset + 1 ];
+		color[ 2 ] = array[ offset + 2 ];
+
+		return this.color;
+
+	},
+
+	getPixelBilinear: function ( x, y ) {
+
+		var px = Math.floor( x );
+		var py = Math.floor( y );
+		var p0 = px + py * this.width;
+
+		var array = this.array;
+		var color = this.color;
+
+		// Calculate the weights for each pixel
+		var fx = x - px;
+		var fy = y - py;
+		var fx1 = 1 - fx;
+		var fy1 = 1 - fy;
+
+		var w1 = fx1 * fy1;
+		var w2 = fx  * fy1;
+		var w3 = fx1 * fy ;
+		var w4 = fx  * fy ;
+
+		var p1 = p0 * 4; 							// 0 + 0 * w
+		var p2 = ( 1 + p0 ) * 4; 					// 1 + 0 * w
+		var p3 = ( 1 * this.width + p0 ) * 4; 		// 0 + 1 * w
+		var p4 = ( 1 + 1 * this.width + p0 ) * 4; 	// 1 + 1 * w
+
+		var len = this.width * this.height * 4;
+
+		if ( p1 >= len ) p1 -= len;
+		if ( p1 < 0 ) p1 += len;
+		if ( p2 >= len ) p2 -= len;
+		if ( p2 < 0 ) p2 += len;
+		if ( p3 >= len ) p3 -= len;
+		if ( p3 < 0 ) p3 += len;
+		if ( p4 >= len ) p4 -= len;
+		if ( p4 < 0 ) p4 += len;
+
+		// Calculate the weighted sum of pixels (for each color channel)
+		color[ 0 ] = array[ p1 + 0 ] * w1 + array[ p2 + 0 ] * w2 + array[ p3 + 0 ] * w3 + array[ p4 + 0 ] * w4;
+		color[ 1 ] = array[ p1 + 1 ] * w1 + array[ p2 + 1 ] * w2 + array[ p3 + 1 ] * w3 + array[ p4 + 1 ] * w4;
+		color[ 2 ] = array[ p1 + 2 ] * w1 + array[ p2 + 2 ] * w2 + array[ p3 + 2 ] * w3 + array[ p4 + 2 ] * w4;
+		color[ 3 ] = array[ p1 + 3 ] * w1 + array[ p2 + 3 ] * w2 + array[ p3 + 3 ] * w3 + array[ p4 + 3 ] * w4;
+
+		return this.color;
+	},
+
+	getPixelOffset: function ( offset ) {
+
+		var array = this.array;
+		var color = this.color;
+
+		offset = parseInt( offset * 4 );
+
+		color[ 0 ] = array[ offset     ];
+		color[ 1 ] = array[ offset + 1 ];
+		color[ 2 ] = array[ offset + 2 ];
+		color[ 3 ] = array[ offset + 3 ];
+
+		return this.color;
+	},
+
+};
+
+TG.OP = {
+	SET: function ( x, y ) { return y; },
+	ADD: function ( x, y ) { return x + y; },
+	SUB: function ( x, y ) { return x - y; },
+	MUL: function ( x, y ) { return x * y; },
+	DIV: function ( x, y ) { return x / y; },
+	AND: function ( x, y ) { return x & y; },
+	XOR: function ( x, y ) { return x ^ y; },
+	MIN: function ( x, y ) { return Math.min( x, y ); },
+	MAX: function ( x, y ) { return Math.max( x, y ); }
 };
 
 TG.Texture = function ( width, height ) {
@@ -108,8 +436,6 @@ TG.Texture.prototype = {
 
 };
 
-//
-
 TG.Program = function ( object ) {
 
 	var tint = new Float32Array( [ 1, 1, 1 ] );
@@ -128,6 +454,8 @@ TG.Program = function ( object ) {
 	return object;
 
 };
+
+// --- Generators ---
 
 TG.Number = function () {
 
@@ -743,7 +1071,84 @@ TG.PutTexture = function ( texture ) {
 
 };
 
-// Filters
+TG.RadialGradient = function () {
+
+	var params = {
+		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR ),
+		radius: 255,
+		center: [ 128, 128 ],
+	};
+
+	return new TG.Program( {
+		repeat: function ( value ) {
+			params.gradient.setRepeat( value );
+			return this;
+		},
+		radius: function ( value ) {
+			params.radius = value;
+			return this;
+		},
+		interpolation: function ( value ) {
+			params.gradient.setInterpolation( value );
+			return this;
+		},
+		center: function ( x, y ) {
+			params.center = [ x, y ];
+			return this;
+		},
+		point: function ( position, color ) {
+			params.gradient.addPoint( position, color );
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+
+				'var dist = TG.Utils.distance( x, y, params.center[ 0 ], params.center[ 1 ] );',
+				'color = params.gradient.getColorAt( dist / params.radius );',
+
+			].join('\n');
+		}
+	} );
+
+};
+
+TG.LinearGradient = function () {
+
+	var params = {
+		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR )
+	};
+
+	return new TG.Program( {
+		repeat: function ( value ) {
+			params.gradient.setRepeat( value );
+			return this;
+		},
+		interpolation: function ( value ) {
+			params.gradient.setInterpolation( value );
+			return this;
+		},
+		point: function ( position, color ) {
+			params.gradient.addPoint( position, color );
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+
+				'color = params.gradient.getColorAt( x / width );',
+
+			].join('\n');
+		}
+	} );
+
+};
+
+// --- Filters ---
 
 TG.SineDistort = function () {
 
@@ -998,412 +1403,3 @@ TG.Posterize = function () {
 
 };
 
-// Buffer
-
-TG.Buffer = function ( width, height ) {
-
-	this.width = width;
-	this.height = height;
-
-	this.array = new Float32Array( width * height * 4 );
-	this.color = new Float32Array( 4 );
-
-};
-
-TG.Buffer.prototype = {
-
-	constructor: TG.Buffer,
-
-	copy: function ( buffer ) {
-
-		this.array.set( buffer.array );
-
-	},
-
-	getPixelNearest: function ( x, y ) {
-
-		if ( y >= this.height ) y -= this.height;
-		if ( y < 0 ) y += this.height;
-		if ( x >= this.width ) x -= this.width;
-		if ( x < 0 ) x += this.width;
-
-		var array = this.array;
-		var color = this.color;
-		var offset = Math.round( y ) * this.width * 4 + Math.round( x ) * 4;
-
-		color[ 0 ] = array[ offset     ];
-		color[ 1 ] = array[ offset + 1 ];
-		color[ 2 ] = array[ offset + 2 ];
-
-		return this.color;
-
-	},
-
-	getPixelBilinear: function ( x, y ) {
-
-		var px = Math.floor( x );
-		var py = Math.floor( y );
-		var p0 = px + py * this.width;
-
-		var array = this.array;
-		var color = this.color;
-
-		// Calculate the weights for each pixel
-		var fx = x - px;
-		var fy = y - py;
-		var fx1 = 1 - fx;
-		var fy1 = 1 - fy;
-
-		var w1 = fx1 * fy1;
-		var w2 = fx  * fy1;
-		var w3 = fx1 * fy ;
-		var w4 = fx  * fy ;
-
-		var p1 = p0 * 4; 							// 0 + 0 * w
-		var p2 = ( 1 + p0 ) * 4; 					// 1 + 0 * w
-		var p3 = ( 1 * this.width + p0 ) * 4; 		// 0 + 1 * w
-		var p4 = ( 1 + 1 * this.width + p0 ) * 4; 	// 1 + 1 * w
-
-		var len = this.width * this.height * 4;
-
-		if ( p1 >= len ) p1 -= len;
-		if ( p1 < 0 ) p1 += len;
-		if ( p2 >= len ) p2 -= len;
-		if ( p2 < 0 ) p2 += len;
-		if ( p3 >= len ) p3 -= len;
-		if ( p3 < 0 ) p3 += len;
-		if ( p4 >= len ) p4 -= len;
-		if ( p4 < 0 ) p4 += len;
-
-		// Calculate the weighted sum of pixels (for each color channel)
-		color[ 0 ] = array[ p1 + 0 ] * w1 + array[ p2 + 0 ] * w2 + array[ p3 + 0 ] * w3 + array[ p4 + 0 ] * w4;
-		color[ 1 ] = array[ p1 + 1 ] * w1 + array[ p2 + 1 ] * w2 + array[ p3 + 1 ] * w3 + array[ p4 + 1 ] * w4;
-		color[ 2 ] = array[ p1 + 2 ] * w1 + array[ p2 + 2 ] * w2 + array[ p3 + 2 ] * w3 + array[ p4 + 2 ] * w4;
-		color[ 3 ] = array[ p1 + 3 ] * w1 + array[ p2 + 3 ] * w2 + array[ p3 + 3 ] * w3 + array[ p4 + 3 ] * w4;
-
-		return this.color;
-	},
-
-	getPixelOffset: function ( offset ) {
-
-		var array = this.array;
-		var color = this.color;
-
-		offset = parseInt( offset * 4 );
-
-		color[ 0 ] = array[ offset     ];
-		color[ 1 ] = array[ offset + 1 ];
-		color[ 2 ] = array[ offset + 2 ];
-		color[ 3 ] = array[ offset + 3 ];
-
-		return this.color;
-	},
-
-};
-
-//
-
-TG.ColorInterpolatorMethod = {
-	STEP: 0,
-	LINEAR: 1,
-	SPLINE: 2,
-};
-
-// points must be a set pair (point, color):
-// [{ pos-n: [r,g,b,a] } , ..., { pos-N: [r,g,b,a] } ]
-TG.ColorInterpolator = function( method ) {
-
-	this.points = [];
-	this.low = 0;
-	this.high = 0;
-	this.interpolation = ( typeof( method ) == 'undefined' ) ? TG.ColorInterpolatorMethod.LINEAR : method;
-	this.repeat = false;
-
-	return this;
-};
-
-TG.ColorInterpolator.prototype = {
-
-	set: function ( points ) {
-
-		this.points = points;
-		this.points.sort( function( a, b ) {
-			return a.pos - b.pos;
-		});
-
-		this.low = this.points[ 0 ].pos;
-		this.high = this.points[ this.points.length - 1 ].pos;
-
-		return this;
-
-	},
-
-	addPoint: function ( position, color ) {
-
-		this.points.push( { pos: position, color: color } );
-		this.points.sort( function( a, b ) {
-			return a.pos - b.pos;
-		});
-
-		this.low = this.points[ 0 ].pos;
-		this.high = this.points[ this.points.length - 1 ].pos;
-
-		return this;
-
-	},
-
-	setRepeat: function ( value ) {
-
-		this.repeat = value;
-		return this;
-
-	},
-
-	setInterpolation: function ( value ) {
-
-		this.interpolation = value;
-		return this;
-
-	},
-
-	getColorAt: function ( pos ) {
-		
-		if ( this.repeat == 2 ) pos = TG.Utils.mirroredWrap( pos, this.low, this.high );
-		else if ( this.repeat ) pos = TG.Utils.wrap( pos, this.low, this.high );
-		else pos = TG.Utils.clamp( pos, this.low, this.high );
-
-		var i = 0, points = this.points;
-
-		while ( points[ i + 1 ].pos < pos ) i ++;
-
-		var p1 = points[ i ];
-		var p2 = points[ i + 1 ];
-
-		var delta = ( pos - p1.pos ) / ( p2.pos - p1.pos );
-
-		if ( this.interpolation == TG.ColorInterpolatorMethod.STEP ) {
-
-			return p1.color;
-
-		} else if ( this.interpolation == TG.ColorInterpolatorMethod.LINEAR ) {
-
-			return TG.Utils.mixColors( p1.color, p2.color, delta );
-
-		} else if ( this.interpolation == TG.ColorInterpolatorMethod.SPLINE ) {
-
-			var ar =  2 * p1.color[ 0 ] - 2 * p2.color[ 0 ];
-			var br = -3 * p1.color[ 0 ] + 3 * p2.color[ 0 ];
-			var dr = p1.color[ 0 ];
-
-			var ag =  2 * p1.color[ 1 ] - 2 * p2.color[ 1 ];
-			var bg = -3 * p1.color[ 1 ] + 3 * p2.color[ 1 ];
-			var dg = p1.color[ 1 ];
-
-			var ab =  2 * p1.color[ 2 ] - 2 * p2.color[ 2 ];
-			var bb = -3 * p1.color[ 2 ] + 3 * p2.color[ 2 ];
-			var db = p1.color[ 2 ];
-
-			var delta2 = delta * delta;
-			var delta3 = delta2 * delta;
-
-			return [
-				ar * delta3 + br * delta2 + dr,
-				ag * delta3 + bg * delta2 + dg,
-				ab * delta3 + bb * delta2 + db
-			];
-
-		}
-
-	}
-
-};
-
-TG.RadialGradient = function () {
-
-	var params = {
-		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR ),
-		radius: 255,
-		center: [ 128, 128 ],
-	};
-
-	return new TG.Program( {
-		repeat: function ( value ) {
-			params.gradient.setRepeat( value );
-			return this;
-		},
-		radius: function ( value ) {
-			params.radius = value;
-			return this;
-		},
-		interpolation: function ( value ) {
-			params.gradient.setInterpolation( value );
-			return this;
-		},
-		center: function ( x, y ) {
-			params.center = [ x, y ];
-			return this;
-		},
-		getParams: function () {
-			return params;
-		},
-		point: function ( position, color ) {
-			params.gradient.addPoint( position, color );
-			return this;
-		},
-		getSource: function () {
-			return [
-
-				'var dist = TG.Utils.distance( x, y, params.center[ 0 ], params.center[ 1 ] );',
-				'color = params.gradient.getColorAt( dist / params.radius );',
-
-			].join('\n');
-		}
-	} );
-
-};
-
-TG.LinearGradient = function () {
-
-	var params = {
-		gradient: new TG.ColorInterpolator( TG.ColorInterpolatorMethod.LINEAR )
-	};
-
-	return new TG.Program( {
-		repeat: function ( value ) {
-			params.gradient.setRepeat( value );
-			return this;
-		},
-		interpolation: function ( value ) {
-			params.gradient.setInterpolation( value );
-			return this;
-		},
-		getParams: function () {
-			return params;
-		},
-		point: function ( position, color ) {
-			params.gradient.addPoint( position, color );
-			return this;
-		},
-		getSource: function () {
-			return [
-
-				'color = params.gradient.getColorAt( x / width );',
-
-			].join('\n');
-		}
-	} );
-
-};
-
-
-//
-
-TG.Utils = {
-
-	smoothStep: function ( edge0, edge1, x ) {
-
-		// Scale, bias and saturate x to 0..1 range
-		x = TG.Utils.clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 );
-
-		// Evaluate polynomial
-		return x * x * ( 3 - 2 * x );
-
-	},
-
-	mixColors: function( c1, c2, delta ) {
-
-		return [
-			c1[ 0 ] * ( 1 - delta ) + c2[ 0 ] * delta,
-			c1[ 1 ] * ( 1 - delta ) + c2[ 1 ] * delta,
-			c1[ 2 ] * ( 1 - delta ) + c2[ 2 ] * delta,
-			c1[ 3 ] * ( 1 - delta ) + c2[ 3 ] * delta,
-		];
-	},
-
-	distance: function( x0, y0, x1, y1 ) {
-
-		var dx = x1 - x0, dy = y1 - y0;
-		return Math.sqrt( dx * dx + dy * dy );
-
-	},
-
-	clamp: function( value, min, max ) {
-
-		return Math.min( Math.max( value, min ), max );
-
-	},
-	
-	wrap: function ( value, min, max ) {
-		var v = value - min;
-		var r = max - min;
-
-		return ( ( r + v % r ) % r ) + min;
-	},
-
-	mirroredWrap: function ( value, min, max ) {
-		var v = value - min;
-		var r = ( max - min ) * 2;
-
-		v = ( r + v % r ) % r;
-
-		if ( v > max - min ) {
-			return ( r - v ) + min;
-		} else {
-			return v + min;
-		}
-	},
-
-	deg2rad: function ( deg ) {
-
-		return deg * Math.PI / 180;
-
-	},
-
-	hashRNG: function ( seed, x, y ) {
-		seed = ( Math.abs( seed % 2147483648 ) == 0 ) ? 1 : seed;
-
-		var a = ( ( seed * ( x + 1 ) * 777 ) ^ ( seed * ( y + 1 ) * 123 ) ) % 2147483647;
-		a = (a ^ 61) ^ (a >> 16);
-		a = a + (a << 3);
-		a = a ^ (a >> 4);
-		a = a * 0x27d4eb2d;
-		a = a ^ (a >> 15);
-		a = a / 2147483647;
-
-		return a;
-	},
-	
-	cellNoiseBase: function ( x, y, seed, density, weightRange ) {
-		var qx, qy, rx, ry, w, px, py, dx, dy;
-		var dist, value;
-		var shortest = Infinity;
-		density = Math.abs( density );
-
-		for ( var sx = -2; sx <= 2; sx++ ) {
-			for ( var sy = -2; sy <= 2; sy++ ) {
-				qx = Math.ceil( x / density ) + sx;
-				qy = Math.ceil( y / density ) + sy;
-
-				rx = TG.Utils.hashRNG( seed, qx, qy );
-				ry = TG.Utils.hashRNG( seed * 2, qx, qy );
-				w = ( weightRange > 0 ) ? 1 + TG.Utils.hashRNG( seed * 3, qx, qy ) * weightRange : 1;
-
-				px = ( rx + qx ) * density;
-				py = ( ry + qy ) * density;
-
-				dx = Math.abs( px - x );
-				dy = Math.abs( py - y );
-
-				dist =	( dx * dx + dy * dy ) * w;
-
-				if ( dist < shortest ) {
-					shortest = dist;
-					value = rx;
-				}
-			}
-		}
-
-		return { dist: Math.sqrt( shortest ), value: value };
-	}
-
-};
