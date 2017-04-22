@@ -370,6 +370,7 @@ TG.Texture.prototype = {
 			'var x = 0, y = 0;',
 			'var array = dst.array;',
 			'var width = dst.width, height = dst.height;',
+			( typeof program.getInit == 'function' ) ? program.getInit() : '',
 			'for ( var i = 0, il = array.length; i < il; i += 4 ) {',
 				'	' + program.getSource(),
 				'	array[ i     ] = op( array[ i     ], color[ 0 ] * tint[ 0 ] );',
@@ -636,7 +637,7 @@ TG.FractalNoise = function () {
 			return this;
 		},
 		step: function ( value ) {
-			params.step = Math.max( 1, value );
+			params.step = Math.max( 0, value );
 			return this;
 		},
 		interpolation: function ( value ) {
@@ -673,18 +674,18 @@ TG.FractalNoise = function () {
 							'{ pos: 1, color: [ v2 ] }',
 						'] );',
 
-						'i1 = params.interpolator.getColorAt( dx );',
+						'i1 = params.interpolator.getColorAt( dx )[ 0 ];',
 
 						'params.interpolator.set( [',
 							'{ pos: 0, color: [ v3 ] },',
 							'{ pos: 1, color: [ v4 ] }',
 						'] );',
 
-						'i2 = params.interpolator.getColorAt( dx );',
+						'i2 = params.interpolator.getColorAt( dx )[ 0 ];',
 
 						'params.interpolator.set( [',
-							'{ pos: 0, color: [ i1[ 0 ] ] },',
-							'{ pos: 1, color: [ i2[ 0 ] ] }',
+							'{ pos: 0, color: [ i1 ] },',
+							'{ pos: 1, color: [ i2 ] }',
 						'] );',
 
 						'value += params.interpolator.getColorAt( dy )[ 0 ] * amp;',
@@ -1351,40 +1352,34 @@ TG.GradientMap = function () {
 
 TG.Normalize = function () {
 
-	var params = {
-		multiplier: 0,
-		offset: 0
-	};
-
 	return new TG.Program( {
-		getParams: function () {
-			return params;
+		getParams: function () {},
+		getInit: function () {
+			return [
+				'var high = -Infinity;',
+				'var low = Infinity;',
+
+				'for ( var j = 0, len = src.array.length; j < len; j++ ) {',
+					'if ( j % 4 == 3 ) continue;',
+
+					'high = ( src.array[ j ] > high ) ? src.array[ j ] : high;',
+					'low  = ( src.array[ j ] < low  ) ? src.array[ j ] : low;',
+				'}',
+
+				'var offset = -low;',
+				'var multiplier = 1 / ( high - low );',
+			].join( '\n' );
 		},
 		getSource: function () {
 			return [
-				'if ( !params.init ) {',
-					'var high = -Infinity;',
-					'var low = Infinity;',
-
-					'for ( var j = 0, len = src.array.length; j < len; j++ ) {',
-						'if ( j % 4 == 3 ) continue;',
-
-						'high = ( src.array[ j ] > high ) ? src.array[ j ] : high;',
-						'low  = ( src.array[ j ] < low  ) ? src.array[ j ] : low;',
-					'}',
-
-					'params.offset = -low;',
-					'params.multiplier = 1 / ( high - low );',
-					'params.init = true;',
-				'}',
-
 				'var v = src.getPixelNearest( x, y );',
-				'color[ 0 ] = ( v[ 0 ] + params.offset ) * params.multiplier;',
-				'color[ 1 ] = ( v[ 1 ] + params.offset ) * params.multiplier;',
-				'color[ 2 ] = ( v[ 2 ] + params.offset ) * params.multiplier;'
+				'color[ 0 ] = ( v[ 0 ] + offset ) * multiplier;',
+				'color[ 1 ] = ( v[ 1 ] + offset ) * multiplier;',
+				'color[ 2 ] = ( v[ 2 ] + offset ) * multiplier;'
 			].join( '\n' );
 		}
 	} );
+
 };
 
 TG.Posterize = function () {
@@ -1395,7 +1390,7 @@ TG.Posterize = function () {
 
 	return new TG.Program( {
 		step: function ( value ) {
-			params.step = Math.max( value, 2 )
+			params.step = Math.max( value, 2 );
 			return this;
 		},
 		getParams: function () {
@@ -1404,9 +1399,9 @@ TG.Posterize = function () {
 		getSource: function () {
 			return [
 				'var v = src.getPixelNearest( x, y );',
-				'color[ 0 ] = Math.floor( Math.floor( v[ 0 ] * 255 / ( 255 / params.step ) ) * 255 / ( params.step - 1 ) ) / 255;',
-				'color[ 1 ] = Math.floor( Math.floor( v[ 1 ] * 255 / ( 255 / params.step ) ) * 255 / ( params.step - 1 ) ) / 255;',
-				'color[ 2 ] = Math.floor( Math.floor( v[ 2 ] * 255 / ( 255 / params.step ) ) * 255 / ( params.step - 1 ) ) / 255;'
+				'color[ 0 ] = Math.floor( v[ 0 ] / ( 1 / params.step ) ) / ( params.step - 1 );',
+				'color[ 1 ] = Math.floor( v[ 1 ] / ( 1 / params.step ) ) / ( params.step - 1 );',
+				'color[ 2 ] = Math.floor( v[ 2 ] / ( 1 / params.step ) ) / ( params.step - 1 );'
 			].join( '\n' );
 		}
 	} );
