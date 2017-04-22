@@ -1271,38 +1271,38 @@ TG.Transform = function () {
 	};
 
 	return new TG.Program( {
-			offset: function ( x, y ) {
-				params.offset = [ x, y ];
-				return this;
-			},
-			angle: function ( value ) {
-				params.angle = TG.Utils.deg2rad( value );
-				return this;
-			},
-			scale: function ( x, y ) {
-				x = x || 1;
-				y = y || x;
+		offset: function ( x, y ) {
+			params.offset = [ x, y ];
+			return this;
+		},
+		angle: function ( value ) {
+			params.angle = TG.Utils.deg2rad( value );
+			return this;
+		},
+		scale: function ( x, y ) {
+			x = x || 1;
+			y = y || x;
 
-				params.scale = [ x, y ];
-				return this;
-			},
-			getParams: function () {
-				return params;
-			},
-			getSource: function () {
-				return [
-					'var x2 = x - width / 2;',
-					'var y2 = y - height / 2;',
+			params.scale = [ x, y ];
+			return this;
+		},
+		getParams: function () {
+			return params;
+		},
+		getSource: function () {
+			return [
+				'var x2 = x - width / 2;',
+				'var y2 = y - height / 2;',
 
-					'var s = x2 * ( Math.cos( params.angle ) / params.scale[ 0 ] ) + y2 * -( Math.sin( params.angle ) / params.scale[ 0 ] );',
-					'var t = x2 * ( Math.sin( params.angle ) / params.scale[ 1 ] ) + y2 *  ( Math.cos( params.angle ) / params.scale[ 1 ] );',
+				'var s = x2 * ( Math.cos( params.angle ) / params.scale[ 0 ] ) + y2 * -( Math.sin( params.angle ) / params.scale[ 0 ] );',
+				'var t = x2 * ( Math.sin( params.angle ) / params.scale[ 1 ] ) + y2 *  ( Math.cos( params.angle ) / params.scale[ 1 ] );',
 
-					's += params.offset[ 0 ] + width / 2;',
-					't += params.offset[ 1 ] + height / 2;',
+				's += params.offset[ 0 ] + width / 2;',
+				't += params.offset[ 1 ] + height / 2;',
 
-					'color.set( src.getPixelBilinear( s, t ) );',
-				].join( '\n' );
-			}
+				'color.set( src.getPixelBilinear( s, t ) );',
+			].join( '\n' );
+		}
 	} );
 
 };
