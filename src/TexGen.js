@@ -478,7 +478,7 @@ TG.Program = function ( object ) {
 
 // --- Generators ---
 
-TG.Number = function () {
+TG.Fill = function () {
 
 	return new TG.Program( {
 		getParams: function () {},

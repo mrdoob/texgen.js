@@ -82,7 +82,7 @@
 				var texture = new TG.Texture( size, size )
 					.add( new TG.SinX().offset( - 16 ).frequency( 0.03 ).tint( 0.1, 0.25, 0.5 ) )
 					.add( new TG.SinY().offset( - 16 ).frequency( 0.03 ).tint( 0.1, 0.25, 0.5 ) )
-					.add( new TG.Number().tint( 0.75, 0.5, 0.5 ) )
+					.add( new TG.Fill().tint( 0.75, 0.5, 0.5 ) )
 					.add( new TG.SinX().frequency( 0.03 ).tint( 0.2, 0.2, 0.2 ) )
 					.add( new TG.SinY().frequency( 0.03 ).tint( 0.2, 0.2, 0.2 ) )
 					.add( new TG.Noise().tint( 0.1, 0, 0 ) )
@@ -150,7 +150,7 @@
 					.mul( new TG.SinX().frequency( 0.08 ) )
 					.add( new TG.SinY().frequency( 0.05 ) )
 					.mul( new TG.SinY().frequency( 0.08 ) )
-					.div( new TG.Number().tint( 1, 2, 1 ) )
+					.div( new TG.Fill().tint( 1, 2, 1 ) )
 					.add( new TG.SinX().frequency( 0.003 ).tint( 0.5, 0, 0 ) )
 					.toCanvas();
 
@@ -166,7 +166,7 @@
 					.add( new TG.SinY().frequency( 0.066 ) )
 					.mul( new TG.SinX().offset( 32 ).frequency( 0.044 ).tint( 2, 2, 2 ) )
 					.mul( new TG.SinY().offset( 16 ).frequency( 0.044 ).tint( 2, 2, 2 ) )
-					.sub( new TG.Number().tint( 0.5, 2, 4 ) )
+					.sub( new TG.Fill().tint( 0.5, 2, 4 ) )
 					.toCanvas();
 
 
@@ -440,7 +440,7 @@
 						.point( 0.6, [ 140, 49, 59 ] )		//[ 58, 131, 114 ]
 						.point( 0.8, [ 35, 10, 12 ] )		//[ 4, 46, 27 ]
 						.point( 1, [ 0, 0, 0 ] ) )
-					.div( new TG.Number().tint( 255, 255, 255 ) );		// converting the 0-255 defined colors to the 0-1 space
+					.div( new TG.Fill().tint( 255, 255, 255 ) );		// converting the 0-255 defined colors to the 0-1 space
 
 				var mirrored = new TG.Texture( size, size )
 					.add( new TG.PutTexture( pixel ).repeat( 2 ) )		// repeat the texture to get a cool mirrored pattern effect
