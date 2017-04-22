@@ -122,6 +122,7 @@ TG.ColorInterpolatorMethod = {
 	STEP: 0,
 	LINEAR: 1,
 	SPLINE: 2,
+	COSINE: 3,
 };
 
 TG.ColorInterpolator = function( method ) {
@@ -223,6 +224,15 @@ TG.ColorInterpolator.prototype = {
 				ar * delta3 + br * delta2 + dr,
 				ag * delta3 + bg * delta2 + dg,
 				ab * delta3 + bb * delta2 + db
+			];
+
+		} else if ( this.interpolation == TG.ColorInterpolatorMethod.COSINE ) {
+			var cos = (1 - Math.cos(delta * Math.PI)) / 2;
+
+			return [
+				( p1.color[ 0 ] * ( 1 - cos ) ) + ( p2.color[ 0 ] * cos ),
+				( p1.color[ 1 ] * ( 1 - cos ) ) + ( p2.color[ 1 ] * cos ),
+				( p1.color[ 2 ] * ( 1 - cos ) ) + ( p2.color[ 2 ] * cos ),
 			];
 
 		}
