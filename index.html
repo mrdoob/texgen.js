@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset='utf-8'>
+		<title>texgen.js - Procedural Texture Generator</title>
+		<style>
+			body {
+				background-color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>Texgen.js</h1>
+			<h2>Procedural Texture Generator</h2>
+		</header>
+
+		<section id="downloads" class="clearfix">
+			<a href="https://github.com/mrdoob/texgen.js/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+			<a href="https://github.com/mrdoob/texgen.js/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+			<a href="https://github.com/mrdoob/texgen.js" id="view-on-github" class="button"><span>View on GitHub</span></a>
+		</section>
+
+		<section id="main_content">
+			<p><img src="https://raw.githubusercontent.com/mrdoob/texgen.js/master/files/samples.png" alt="examples"></p>
+			<h3>Usage</h3>
+
+			<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> texture <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">TG.Texture</span>( <span class="pl-c1">256</span>, <span class="pl-c1">256</span> )
+      .<span class="pl-s3">add</span>( <span class="pl-k">new</span> <span class="pl-en">TG.XOR</span>().tint( <span class="pl-c1">1</span>, <span class="pl-c1">0.5</span>, <span class="pl-c1">0.7</span> ) )
+      .<span class="pl-s3">add</span>( <span class="pl-k">new</span> <span class="pl-en">TG.SinX</span>().frequency( <span class="pl-c1">0.004</span> ).tint( <span class="pl-c1">0.5</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span> ) )
+      .mul( <span class="pl-k">new</span> <span class="pl-en">TG.SinY</span>().frequency( <span class="pl-c1">0.004</span> ).tint( <span class="pl-c1">0.5</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span> ) )
+      .<span class="pl-s3">add</span>( <span class="pl-k">new</span> <span class="pl-en">TG.SinX</span>().frequency( <span class="pl-c1">0.0065</span> ).tint( <span class="pl-c1">0.1</span>, <span class="pl-c1">0.5</span>, <span class="pl-c1">0.2</span> ) )
+      .<span class="pl-s3">add</span>( <span class="pl-k">new</span> <span class="pl-en">TG.SinY</span>().frequency( <span class="pl-c1">0.0065</span> ).tint( <span class="pl-c1">0.5</span>, <span class="pl-c1">0.5</span>, <span class="pl-c1">0.5</span> ) )
+      .<span class="pl-s3">add</span>( <span class="pl-k">new</span> <span class="pl-en">TG.Noise</span>().tint( <span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.2</span> ) )
+      .toCanvas();
+
+<span class="pl-s3">document</span>.<span class="pl-sc">body</span>.<span class="pl-s3">appendChild</span>( texture );</pre></div>
+		</section>
+
+	</body>
+</html>
