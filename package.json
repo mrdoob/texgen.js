@@ -1,6 +1,6 @@
 {
   "name": "texgen",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "JavaScript Procedural Texture Generator",
   "main": "build/texgen.min.js",
   "repository": {
@@ -8,7 +8,7 @@
     "url": "https://github.com/mrdoob/texgen.js"
   },
   "files": [
-    "build/texgen.min.js"
+    "build/texgen.min.js",
     "LICENSE",
     "package.json",
     "README.md",
