@@ -1,0 +1,28 @@
+{
+  "name": "texgen",
+  "version": "0.0.0",
+  "description": "JavaScript Procedural Texture Generator",
+  "main": "build/texgen.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrdoob/texgen.js"
+  },
+  "files": [
+    "build/texgen.min.js"
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "src"
+  ],
+  "keywords": [
+    "texgen",
+    "texgen.js",
+    "javascript"
+  ],
+  "author": "mrdoob",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrdoob/texgen.js/issues"
+  },
+  "homepage": "https://texgenjs.org/"
+}
